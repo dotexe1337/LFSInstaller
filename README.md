@@ -15,6 +15,9 @@ also compiles the entire image of the following to make it runnable for the end-
 Not only this tool provides the means of building your own Linux distribution from scratch but it can also be optional for the user to extend the Linux distribution from other distribution that the user dislikes, such as creating their own variant of Debian 
 as their goal and so fourth.
 
+This would be extremely suitable for those who wants to program their own embedded linux systems, their own personal OS and any other specialized means of achieving the same tasks that other distribution have not achieved before, as a means of 
+producing a blueprint of their upcoming idea to represent the means of what tasks to perform with the distribution.
+
 ## Features
 
 
