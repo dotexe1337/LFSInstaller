@@ -1,5 +1,4 @@
-# Linux Distribution Automator
-
+# DistroCraft - Linux Distribution Scratch Automator
 
 ## Description
 Producing a linux distribution from scratch, even from an experienced linux user, is a diffuclt task since it requires deep understanding of the inner mechanisms of what holds a 'Linux distribution' such as its kernel, file type, and so fourth.
@@ -19,8 +18,7 @@ This would be extremely suitable for those who wants to program their own embedd
 producing a blueprint of their upcoming idea to represent the means of what tasks to perform with the distribution.
 
 ## Features
-
-
+Insert list of features over here
 
 ## Demo
 Insert demo over here
