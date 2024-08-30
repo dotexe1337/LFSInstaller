@@ -12,6 +12,9 @@ However, the following depth of knowledge required to build such a distribution 
 In this case, the following bash script automates the extensive process of compiling its own image by using C programming language (the same language to produce the Operating System) to not only produce the C code for the Linux Distribution but in addition,
 also compiles the entire image of the following to make it runnable for the end-user to implement it from scratch.
 
+Not only this tool provides the means of building your own Linux distribution from scratch but it can also be optional for the user to extend the Linux distribution from other distribution that the user dislikes, such as creating their own variant of Debian 
+as their goal and so fourth.
+
 ## Features
 
 
