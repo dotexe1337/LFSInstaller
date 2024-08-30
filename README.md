@@ -20,6 +20,8 @@ producing a blueprint of their upcoming idea to represent the means of what task
 ## Features
 Insert list of features over here
 
+Specifies the list of kernels, bootloader, file system for the user to pick their choice.
+
 ## Demo
 Insert demo over here
 
