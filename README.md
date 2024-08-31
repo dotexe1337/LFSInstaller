@@ -21,41 +21,41 @@ producing a blueprint of their upcoming idea to represent the means of what task
 ## Features
 - **Kernel**
   **Kernel** is essential for maintaining resources of the computer itself 
-  - Monolithic Kernel
-  - Micro Kernel
-  - Hybrid Kernel
-  - Exo Kernel
-  - Nano Kernel
+  - _Monolithic Kernel_
+  - _Micro Kernel_
+  - _Hybrid Kernel_
+  - _Exo Kernel_
+  - _Nano Kernel_
 
 - **Bootleader**
   **Bootleader** is essential for loading a d running when a computer is first turned on or when it restarts.
-  - Systemd-bootleader
-  - Clover
-  - EFISTUB
-  - GRUB
-  - GRUB Legacy
-  - GRUB/EFI
-  - LILO
-  - Limne
-  - REFind
-  - Syslinux
-  - Unified kernel image
+  - _Systemd-bootleader_
+  - _Clover_
+  - _EFISTUB_
+  - _GRUB_
+  - _GRUB Legacy_
+  - _GRUB/EFI_
+  - _LILO_
+  - _Limne_
+  - _REFind_
+  - _Syslinux_
+  - _Unified Kernel Image_
 
 - **File System**
   Directories that contains root directory and its subdirectories, which contains a partition that usually has only one file system, but may have more than one file system.
-  -  ext2
-  -  Xiafs
-  -  ext3 
-  -  ext4
-  -  JFS (Journaled File System)
-  -  ReiserFS
-  -  SquashFS
-  -  Reiser4
-  -  XFS
-  -  btrfs
-  -  FAT32
+  -  _ext2_
+  -  _Xiafs_
+  -  _ext3_ 
+  -  _ext4_
+  -  _JFS (Journaled File System)_
+  -  _ReiserFS_
+  -  _SquashFS_
+  -  _Reiser4_
+  -  _XFS_
+  -  _btrfs_
+  -  _FAT32_
 
 ## Demo
-Insert demo over here
+The demo would be shown through GUI on Bash Script and/or Qt Creator which can be compiled on C/C++ which can be implemented through source code and header files by implementing them through source code.
 
 ## License
