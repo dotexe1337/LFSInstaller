@@ -1,4 +1,4 @@
-# DistroCraft - Linux From Scratch Automator
+# DistroGen - Linux From Scratch Automator
 GUI Application for creating a Linux Distribution as a template to be built in C/C++ for compatibility with the specified hardware.
 
 ## Description
