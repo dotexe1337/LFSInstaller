@@ -19,9 +19,41 @@ This would be extremely suitable for those who wants to program their own embedd
 producing a blueprint of their upcoming idea to represent the means of what tasks to perform with the distribution.
 
 ## Features
-Insert list of features over here
+- Kernel
+  Kernel is essential for maintaining resources of the computer itself 
+  - Monolithic Kernel
+  - Micro Kernel
+  - Hybrid Kernel
+  - Exo Kernel
+  - Nano Kernel
 
-Specifies the list of kernels, bootloader, file system for the user to pick their choice.
+- Bootleader
+  Bootleader is essential for loading a d running when a computer is first turned on or when it restarts.
+  - Systemd-bootleader
+  - Clover
+  - EFISTUB
+  - GRUB
+  - GRUB Legacy
+  - GRUB/EFI
+  - LILO
+  - Limne
+  - REFind
+  - Syslinux
+  - Unified kernel image
+
+- File System
+  Directories that contains root directory and its subdirectories, which contains a partition that usually has only one file system, but may have more than one file system.
+  -  ext2
+  -  Xiafs
+  -  ext3 
+  -  ext4
+  -  JFS (Journaled File System)
+  -  ReiserFS
+  -  SquashFS
+  -  Reiser4
+  -  XFS
+  -  btrfs
+  -  FAT32
 
 ## Demo
 Insert demo over here
