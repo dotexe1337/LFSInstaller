@@ -1,5 +1,6 @@
-# DistroGen - Linux From Scratch Automator
-GUI Application for creating a Linux Distribution as a template to be built in C/C++ for compatibility with the specified hardware.
+# DistroGen - Linux From Scratch Distribution-Independent Installer Framework
+DistroGen is a distribution-independent system installer, with an advanced partiionining feature for both manual and automated partitioning operations. DistroGen is designed to be a customizable by distribution maintainers without the need for cumbersome patching, thanks to third-party branding and external modules.
+----------------------------------------------------------------------------------------------------------------------------
 
 ## Description
 Producing a linux distribution from scratch, even from an experienced linux user, is a diffuclt task since it requires deep understanding of the inner mechanisms of what holds a 'Linux distribution' such as its kernel, file type, and so fourth.
@@ -17,6 +18,20 @@ as their goal and so fourth.
 
 This would be extremely suitable for those who wants to program their own embedded linux systems, their own personal OS and any other specialized means of achieving the same tasks that other distribution have not achieved before, as a means of 
 producing a blueprint of their upcoming idea to represent the means of what tasks to perform with the distribution.
+
+# Target Audience
+DistroGen is a Linux installer; users who install linux on a computer will hopefully use it just once, to install their Linux distribution. DistroGen is not a "ready to use" application: distributions apply a huge amount of customization and configuration to DistroGen, and the target audience for this repository if those distributions, and the people who make those Linux Distros.
+
+DistroGen has some generic user documentation for end-users, but most of what we have is for distro developers.
+
+# Getting DistroGen
+Clone DistroGen from GitHub. The default branch of is distroGen.
+
+```
+git clone https://github.com/calamares/calamares.git
+```
+
+DistroGen is a KDE-Frameworks and Qt-Based, C++17, CMake-built applications. The dependencies are explained in CONTRIBUTING.md.
 
 ## Features
 - **Kernel**
