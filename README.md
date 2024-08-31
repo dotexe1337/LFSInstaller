@@ -1,4 +1,5 @@
 # DistroCraft - Linux Distribution Scratch Automator
+GUI Application for creating a Linux Distribution as a template to be built in C/C++ for compatibility with the specified hardware.
 
 ## Description
 Producing a linux distribution from scratch, even from an experienced linux user, is a diffuclt task since it requires deep understanding of the inner mechanisms of what holds a 'Linux distribution' such as its kernel, file type, and so fourth.
