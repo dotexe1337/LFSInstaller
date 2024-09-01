@@ -29,7 +29,7 @@ DistroGen has some generic user documentation for end-users, but most of what we
 Clone DistroGen from GitHub. The default branch of is distroGen.
 
 ```
-git clone https://github.com/calamares/calamares.git
+git clone https://github.com/eliaz5536/distrogen.git
 ```
 
 DistroGen is a KDE-Frameworks and Qt-Based, C++17, CMake-built applications. The dependencies are explained in CONTRIBUTING.md.
