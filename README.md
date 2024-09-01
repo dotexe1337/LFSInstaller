@@ -1,5 +1,5 @@
 # DistroGen - Linux From Scratch Distribution-Independent Installer Framework
-----------------------------------------------------------------------------------------------------------------------------
+
 DistroGen is a distribution-independent system installer, with an advanced partiionining feature for both manual and automated partitioning operations. DistroGen is designed to be a customizable by distribution maintainers without the need for cumbersome patching, thanks to third-party branding and external modules.
 ----------------------------------------------------------------------------------------------------------------------------
 
