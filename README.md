@@ -23,12 +23,12 @@ This would be extremely suitable for those who wants to program their own embedd
 producing a blueprint of their upcoming idea to represent the means of what tasks to perform with the distribution.
 
 # Target Audience
-DistroGen is a Linux installer; users who install linux on a computer will hopefully use it just once, to install their Linux distribution. DistroGen is not a "ready to use" application: distributions apply a huge amount of customization and configuration to DistroGen, and the target audience for this repository if those distributions, and the people who make those Linux Distros.
+LinuxOS is a Linux installer; users who install linux on a computer will hopefully use it just once, to install their Linux distribution. DistroGen is not a "ready to use" application: distributions apply a huge amount of customization and configuration to DistroGen, and the target audience for this repository if those distributions, and the people who make those Linux Distros.
 
 DistroGen has some generic user documentation for end-users, but most of what we have is for distro developers.
 
 # Getting LinuxOS
-Clone DistroGen from GitHub. The default branch of is distroGen.
+Clone LinuxOS from GitHub. The default branch of is distroGen.
 
 ```
 git clone https://github.com/eliaz5536/distrogen.git
