@@ -27,14 +27,14 @@ DistroGen is a Linux installer; users who install linux on a computer will hopef
 
 DistroGen has some generic user documentation for end-users, but most of what we have is for distro developers.
 
-# Getting DistroGen
+# Getting LinuxOS
 Clone DistroGen from GitHub. The default branch of is distroGen.
 
 ```
 git clone https://github.com/eliaz5536/distrogen.git
 ```
 
-DistroGen is a KDE-Frameworks and Qt-Based, C++17, CMake-built applications. The dependencies are explained in CONTRIBUTING.md.
+LinuxOS is a KDE-Frameworks and Qt-Based, C++17, CMake-built applications. The dependencies are explained in CONTRIBUTING.md.
 
 ## Features
 - **Kernel**
