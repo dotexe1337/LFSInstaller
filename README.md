@@ -77,4 +77,4 @@ LinuxOS is a KDE-Frameworks and Qt-Based, C++17, CMake-built applications. The d
 The demo would be shown through GUI on Bash Script and/or Qt Creator which can be compiled on C/C++ which can be implemented through source code and header files by implementing them through source code.
 
 ## License
-This project is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE] file for details.
