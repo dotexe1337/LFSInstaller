@@ -1,6 +1,6 @@
 # LinuxISO - Linux From Scratch Distribution-Independent Installer Framework
 
-![LinuxISO official logo](https://github.com/user-attachments/assets/5c733bc7-a181-4b1a-9b61-82b18cbe8e79)
+![LinuxISO official logo](https://github.com/user-attachments/assets/5aea1be6-8105-446a-a43e-d773d17531ab)
 
 LinuxISO is a distribution-independent system installer, with an advanced partiionining feature for both manual and automated partitioning operations. LinuxISO is designed to be a customizable by distribution maintainers without the need for cumbersome patching, thanks to third-party branding and external modules.
 ----------------------------------------------------------------------------------------------------------------------------
