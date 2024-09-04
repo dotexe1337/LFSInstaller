@@ -28,6 +28,13 @@ LinuxOS is a Linux installer; users who install linux on a computer will hopeful
 DistroGen has some generic user documentation for end-users, but most of what we have is for distro developers.
 
 # Getting LinuxOS
+
+It is recommended for you target machine host to be using Debian (or Debian fork such as Ubuntu 
+if the following are installed of the following of these latest versions).
+
+
+
+
 Clone LinuxOS from GitHub. The default branch of is distroGen.
 
 ```
