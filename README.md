@@ -1,6 +1,6 @@
-# KernelSmith - Linux From Scratch Distribution-Independent Installer Framework
+# LinuxISO - Linux From Scratch Distribution-Independent Installer Framework
 
-DistroGen is a distribution-independent system installer, with an advanced partiionining feature for both manual and automated partitioning operations. DistroGen is designed to be a customizable by distribution maintainers without the need for cumbersome patching, thanks to third-party branding and external modules.
+LinuxISO is a distribution-independent system installer, with an advanced partiionining feature for both manual and automated partitioning operations. LinuxISO is designed to be a customizable by distribution maintainers without the need for cumbersome patching, thanks to third-party branding and external modules.
 ----------------------------------------------------------------------------------------------------------------------------
 
 ## Description
