@@ -1,6 +1,6 @@
 # LinuxISO - Linux From Scratch Distribution-Independent Installer Framework
 
-![LinuxISO official logo](https://github.com/user-attachments/assets/5aea1be6-8105-446a-a43e-d773d17531ab)
+![LinuxFromScratch_Banner-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/dfb8c3ce-6ce2-4996-86bb-858b5663b01f)
 
 LinuxISO or DistroBuilder is a distribution-independent system installer, with an advanced partiionining feature for both manual and automated partitioning operations. LinuxISO is designed to be a customizable by distribution maintainers without the need for cumbersome patching, thanks to third-party branding and external modules.
 ----------------------------------------------------------------------------------------------------------------------------
