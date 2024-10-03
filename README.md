@@ -40,13 +40,15 @@ git clone https://github.com/eliaz5536/lfsinstaller.git
 
 
 
-
-### Patching 
-
+### Resume Paused Installation
 
 
-## Demo
-The demo would be shown through GUI on Bash Script and/or Qt Creator which can be compiled on C/C++ which can be implemented through source code and header files by implementing them through source code.
+
+### Resolves Patching Effectively
+
+
+
+
 
 ## License
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE] file for details.
