@@ -31,12 +31,7 @@ git clone https://github.com/eliaz5536/lfsinstaller.git
 
 
 
-### Disk Management
-
-
-
-
-### Partition
+### Automatic Disk Management & Partition Selection
 
 
 
