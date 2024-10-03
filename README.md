@@ -2,7 +2,7 @@
 
 ![new_video-ezgif com-crop](https://github.com/user-attachments/assets/72c916b2-268c-49a4-a3c7-a00c1f8a1659)
 
-Complete LFS installer from LFS book (_LinuxFromScratch.org_) to be a customizable for Linux enthusiasts or professionals who want to select their tools of choosing that fits the requirement of the target machine.
+LFS installer from LFS book (_LinuxFromScratch.org_) for Linux enthusiasts and/or professionals who want to select their tools without extreme maintenance.
 
 ----------------------------------------------------------------------------------------------------------------------------
 
