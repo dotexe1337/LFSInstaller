@@ -100,8 +100,12 @@ bash version-check.sh
 # create partition here
 
 # 2.5. Creating a File System on the Partition
-mkfs -v -t ext4 /dev/<xxx>
-mkswap /dev/<yyy>
+# mkfs -v -t ext4 /dev/<xxx> --> Scan for the selected rive
+## --> Use fdisk -l to retrieve info on which drive with the highest memory
+## --> Or you can manually set it before hand to pick which drive for this
+mkfs -v -t ext4 /dev/sda1
+# mkswap /dev/<yyy> --> Scan for SWAP drive
+mkswap /dev/sda2
 
 # 2.6. Setting the $LFS Variable
 export LFS=/mnt/lfs
