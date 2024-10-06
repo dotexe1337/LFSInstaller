@@ -137,7 +137,7 @@ mkdir -v $LFS/home
 mount -v -t ext4 /dev/sda2 $LFS/home
 
 # Add this line to /etc/fstab
-# /dev/<xxx>  /mnt/lfs ext4   defaults      1     1
+echo "/dev/sda1  /mnt/lfs ext4   defaults      1     1" >> /etc/fstab
 
 # If you are using a swap partition, ensure that it is enabled using the swapon command:
 /sbin/swapon -v /dev/sda2
