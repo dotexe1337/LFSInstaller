@@ -1001,7 +1001,7 @@ unset ZONEINFO
 tzselect
 
 # Create the /etc/localtime by running:
-ln -sfv /usr/share/zoneinfo/<xxx> /etc/localtime
+ln -sfv /usr/share/zoneinfo/Europe/London /etc/localtime
 
 # 8.5.2.3. Configuring the Dynamic Loader
 # Create a new file /etc/ld.conf by running the following:
