@@ -163,6 +163,9 @@ popd
 # If the packages and patches are downloaded as a non-root user, these files will be owned by the user. If you won't assign the same UID for your user in the LFS system, change the owners of these files to root now to avoid this issue:
 chown root:root $LFS/sources/*
 
+# Extract all files to /mnt/lfs/osurces
+for file in /mnt/lfs/sources/*.{xz,gz,bz2}; do tar -xf "$file" -C /mnt/lfs/sources; done
+
 # ===========================================================================
 # Chapter 4. Final Preparations
 # ===========================================================================
@@ -195,4 +198,6 @@ case $(uname -m) in
 esac
 
 # Start a shell running as user lfs. This can be done by logging in as lfs on a virtual console or with the following substitute/switch user command:
-su - lfs -c "./phase2.sh"
+# su - lfs -c "./phase2.sh"
+
+echo "Execute phase 2 for package installation..."
