@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# ===========================================================================
+# Chapter 2. Preparing the Host System
+# ===========================================================================
+
 # 2.2. Host System Requirements
 cat > version-check.sh << "EOF"
 #!/bin/bash
@@ -96,6 +100,11 @@ EOF
 
 bash version-check.sh
 
+sudo apt-get install bison
+sudo apt-get install gawk
+sudo apt-get install m4
+sudo apt-get install texinfo
+
 # 2.4. Create a new Partition
 # create partition here
 
@@ -114,22 +123,25 @@ echo $LFS
 # 2.7. Mounting the New Partition
 # Creating the mount point and mount the LFS file system with these commands:
 mkdir -pv $LFS
-mount -v -t ext4 /dev/<xxx> $LFS
+mount -v -t ext4 /dev/sda1 $LFS
 # Reaplce <xxx> with the name of the LFS partition.
 
 # If you are using multiple partitions for LFS (e.g. one for / and another for /home), mount them like this:
 mkdir -pv $LFS
-mount -v -t ext4 /dev/<xxx> $LFS
+mount -v -t ext4 /dev/sda1 $LFS
 mkdir -v $LFS/home
-mount -v -t ext4 /dev/<yyy> $LFS/home
+mount -v -t ext4 /dev/sda2 $LFS/home
 
 # Add this line to /etc/fstab
 # /dev/<xxx>  /mnt/lfs ext4   defaults      1     1
 
 # If you are using a swap partition, ensure that it is enabled using the swapon command:
-/sbin/swapon -v /dev/<zzz>
+/sbin/swapon -v /dev/sda2
 # Replace <zzz> with the name of the swap partition.
 
+# ===========================================================================
+# Chapter 3. Packages and Patches
+# ===========================================================================
 # 3.1. Introduction
 # To create this directory, execute the following command, as user root, before starting the download session:
 mkdir -v $LFS/sources
@@ -147,7 +159,9 @@ popd
 # If the packages and patches are downloaded as a non-root user, these files will be owned by the user. If you won't assign the same UID for your user in the LFS system, change the owners of these files to root now to avoid this issue:
 chown root:root $LFS/sources/*
 
-
+# ===========================================================================
+# Chapter 4. Final Preparations
+# ===========================================================================
 # 4.2. Creating a Limited Directory Layout in the LFS Filesystem
 mkdir -pv $LFS/{etc,var} $LFS/usr/{bin,lib,sbin}
 
@@ -208,6 +222,9 @@ source ~/.bash_profile
 # iii. General Compilation Instructions
 # make sure to perform symbolic links
 
+# ===========================================================================
+# Chapter 5. Compiling a Cross-Toolchain
+# ===========================================================================
 # 5.2. Binutils-2.43.1 - Pass 1
 cd /mnt/lfs/sources/binutils-2.43.1
 
@@ -340,7 +357,9 @@ make
 make DESTDIR=$LFS install
 rm -v $LFS/usr/lib/lib{stdc++{,exp,fs},supc++}.la
 
-
+# ===========================================================================
+# Chapter 6. Cross Compiling Temporary Tools
+# ===========================================================================
 # 6.2. M4-1.4.19
 cd /mnt/lfs/sources/m4-1.4.19
 ./configure --prefix=/usr   \
@@ -615,7 +634,6 @@ cd       build
     --disable-libvtv                               \
     --enable-languages=c,c++
 
-
 make 
 
 make DESTDIR=$LFS install
@@ -625,7 +643,6 @@ ln -sv gcc $LFS/usr/bin/cc
 # ===========================================================================
 # Chapter 7. Entering chroot and Building Additional Temporary Tools
 # ===========================================================================
-
 # 7.2. Changing Ownership
 # To address this issue, change the ownership of the $LFS/& directories to user root by running the following command:
 chown --from lfs -R root:root $LFS/{usr,lib,var,etc,bin,sbin,tools}
@@ -750,7 +767,6 @@ install -o tester -d /home/tester
 exec /usr/bin/bash --login
 
 # The login, agetty and init programs (and others) use a number of log files to record information such as who was logged into the system and when. However, these programs will not wrie to the log files if they do not already exist. Initialize the log files and give them proper permissions:
-
 touch /var/log/{btmp,lastlog,faillog,wtmp}
 chgrp -v utmp /var/log/lastlog
 chmod -v 664  /var/log/lastlog
@@ -853,7 +869,9 @@ find /usr/{lib,libexec} -name \*.la -delete
 # The current system size is now about 3 GB, however the /tools directory is no longer needed. It uses about 1 GB of disk space. Delete it now:
 rm -rf /tools
 
-# 8. Installing Basic System Software
+# ===========================================================================
+# Chapter 8. Installing Basic System Software
+# ===========================================================================
 # 8.3. Man-pages-6.9.1
 cd /mnt/lfs/sources/man-pages-6.9.1
 # Remove two man pages for password hashing functions. Libxcrypt will provide a better version of these man pages:
@@ -2380,7 +2398,6 @@ userdel -r tester
 # ===========================================================================
 # Chapter 9. System Configuration
 # ===========================================================================
-
 # 9.2. LFS-Bootscripts-20240825
 cd /mnt/lfs/sources/lfs-bootscripts-20240825
 
@@ -2581,7 +2598,7 @@ locale -a
 LC_ALL=en_GB.iso88591 locale charmap
 
 # For the en_GB.iso88591 locale, the above command will print:
-ISO-8859-1
+# ISO-8859-1
 
 # The results in a final locale setting of en_GB.ISO-8859-1. It is important that the locale found using the heuristic above is tested prior it being added to the Bashstartup files:
 LC_ALL="en_GB.iso88591" locale language
