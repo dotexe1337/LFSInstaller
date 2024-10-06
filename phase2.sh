@@ -6,32 +6,36 @@
 
 # 4.4. Setting Up the Environment
 # Set up a good working environment by creating two new startup files for the bash shell. While logged in as user lfs, issue the following command to create a new .bash_profile:
-cat > ~/.bash_profile << "EOF"
-exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
-EOF
+#cat > ~/.bash_profile << "EOF"
+#exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
+#EOF
 
 # The new instance of the shell is a non-login shell, which does not read and execute the contents of the /etc/profile or .bash_profile files, but rather reads and executes the .bashrc file instead. Create the .bashrc file now:
-cat > ~/.bashrc << "EOF"
-set +h
-umask 022
-LFS=/mnt/lfs
-LC_ALL=POSIX
-LFS_TGT=$(uname -m)-lfs-linux-gnu
-PATH=/usr/bin
-if [ ! -L /bin ]; then PATH=/bin:$PATH; fi
-PATH=$LFS/tools/bin:$PATH
-CONFIG_SITE=$LFS/usr/share/config.site
-export LFS LC_ALL LFS_TGT PATH CONFIG_SITE
-EOF
+#cat > ~/.bashrc << "EOF"
+#set +h
+#umask 022
+#LFS=/mnt/lfs
+#LC_ALL=POSIX
+#LFS_TGT=$(uname -m)-lfs-linux-gnu
+#PATH=/usr/bin
+#if [ ! -L /bin ]; then PATH=/bin:$PATH; fi
+#PATH=$LFS/tools/bin:$PATH
+#CONFIG_SITE=$LFS/usr/share/config.site
+#export LFS LC_ALL LFS_TGT PATH CONFIG_SITE
+#EOF
 
 # As the root user, run the following to clear lfs user's environment
 [ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 
 # To ensure the environment is fully prepared for building the temporary tools, force the bash shell to read the new user profile:
-source ~/.bash_profile
+#source ~/.bash_profile
 
 # iii. General Compilation Instructions
-# make sure to perform symbolic links
+export LFS=/mnt/lfs
+export LC_ALL=POSIX
+export LFS_TGT=$(uname -m)-lfs-linux-gnu
+export PATH=$LFS/tools/bin:/usr/bin:/bin
+export CONFIG_SITE=$LFS/usr/share/config.site
 
 # ===========================================================================
 # Chapter 5. Compiling a Cross-Toolchain
