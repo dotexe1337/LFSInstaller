@@ -193,7 +193,7 @@ groupadd lfs
 useradd -s /bin/bash -g lfs -m -k /dev/null lfs
 
 # If you want to log in as lfs or switch to lfs from a non-root user (as opposed to switching to user lfs when logged in as root, which does not require the lfs user to have a password), you need to set a password for lfs. Issue the following command as the root user to set the password:
-passwd lfs
+# passwd lfs
 
 # Grant lfs full access to all the directories under $LFS by making lfs the owner:
 chown -v lfs $LFS/{usr{,/*},lib,var,etc,bin,sbin,tools}
