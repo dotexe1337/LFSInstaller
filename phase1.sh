@@ -109,6 +109,10 @@ sudo apt-get install gawk
 sudo apt-get install m4
 sudo apt-get install texinfo
 
+sudo rm /bin/sh
+sudo ln -s /bin/bash /bin/sh
+ls -l /bin/sh
+
 # 2.4. Create a new Partition
 # create partition here
 
