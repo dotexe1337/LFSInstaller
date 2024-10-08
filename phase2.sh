@@ -391,7 +391,7 @@ mkdir -v build
 cd       build
 
 ../configure                   \
-    --prefix=/usr              \
+    --prefix=$LFS/usr          \
     --build=$(../config.guess) \
     --host=$LFS_TGT            \
     --disable-nls              \
@@ -499,6 +499,8 @@ fi
 #    TESTSUITEFLAGS="-j$(nproc)" \
 #    /bin/bash --login
 
+# We can try and execute the following commands through root without chroot
+
 # 7.5. Creating Directories
 # Create some root-level directories thatre not in the limited set required in the previous chapters by issuing the following command:
 mkdir -pv $LFS/{boot,home,mnt,opt,srv}
@@ -527,7 +529,7 @@ install -dv -m 1777 $LFS/tmp $LFS/var/tmp
 ln -sv $LFS/proc/self/mounts $LFS/etc/mtab
 
 # Create a basic /etc/hosts file to be references in some test suites, and in one of the Perl's configuration files as well:
-cat > $LFs/etc/hosts << EOF
+cat > $LFS/etc/hosts << EOF
 127.0.0.1  localhost $(hostname)
 ::1        localhost
 EOF
@@ -633,7 +635,7 @@ make install
 # 7.10. Python-3.12.5
 cd /mnt/lfs/sources/Python-3.12.5
 
-./configure --prefix=/usr   \
+./configure --prefix=$LFS/usr   \
             --enable-shared \
             --without-ensurepip
 
@@ -644,7 +646,7 @@ make install
 # 7.11. Texinfo-7.1
 cd /mnt/lfs/sources/texinfo-7.1
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make 
 
@@ -655,8 +657,8 @@ cd /mnt/lfs/sources/util-linux-2.40.2
 
 mkdir -pv /var/lib/hwclock
 
-./configure --libdir=/usr/lib     \
-            --runstatedir=/run    \
+./configure --libdir=$LFS/usr/lib     \
+            --runstatedir=$LFS/run    \
             --disable-chfn-chsh   \
             --disable-login       \
             --disable-nologin     \
@@ -667,8 +669,8 @@ mkdir -pv /var/lib/hwclock
             --disable-static      \
             --disable-liblastlog2 \
             --without-python      \
-            ADJTIME_PATH=/var/lib/hwclock/adjtime \
-            --docdir=/usr/share/doc/util-linux-2.40.2
+            ADJTIME_PATH=$LFS/var/lib/hwclock/adjtime \
+            --docdir=$LFS/usr/share/doc/util-linux-2.40.2
 
 make
 
@@ -677,13 +679,13 @@ make install
 # 7.12. Cleaning up and Saving the Temporary System
 # 7.13.1. Cleaning
 # First, remove the currently installed documentation files to prevent them from ending up in the final system, and to save about 35 MB:
-rm -rf /usr/share/{info,man,doc}/*
+rm -rf $LFS/usr/share/{info,man,doc}/*
 
 # Second, on a modern Linux system, the libtool .la file are only useful for libltdl. No libraries in LFS are loaded by libltdl, and it's known that some .la files can cause BLFS package failures. Remove those files now:
-find /usr/{lib,libexec} -name \*.la -delete
+find $LFS/usr/{lib,libexec} -name \*.la -delete
 
 # The current system size is now about 3 GB, however the /tools directory is no longer needed. It uses about 1 GB of disk space. Delete it now:
-rm -rf /tools
+rm -rf $LFS/tools
 
 # ===========================================================================
 # Chapter 8. Installing Basic System Software
@@ -693,12 +695,12 @@ cd /mnt/lfs/sources/man-pages-6.9.1
 # Remove two man pages for password hashing functions. Libxcrypt will provide a better version of these man pages:
 rm -v man3/crypt*
 # Install Man-pages by running:
-make prefix=/usr install
+make prefix=$LFS/usr install
 
 # 8.4. Iana-Etc-20240806
 # For this package, we only need to copy the files into place:
 cd /mnt/lfs/sources/iana-etc-20240806
-cp services protocols /etc
+cp services protocols $LFS/etc
 
 # 8.5. Glibc-2.40
 cd /mnt/lfs/sources/glibc-2.40
@@ -708,9 +710,9 @@ patch -Np1 -i ../glibc-2.40-fhs-1.patch
 mkdir -v build
 cd       build
 
-echo "rootsbindir=/usr/sbin" > configparms
+echo "rootsbindir=$LFS/usr/sbin" > configparms
 
-../configure --prefix=/usr                            \
+../configure --prefix=$LFS/usr                        \
              --disable-werror                         \
              --enable-kernel=4.19                     \
              --enable-stack-protector=strong          \
@@ -721,7 +723,7 @@ make
 
 make check
 
-touch /etc/ld.so.conf
+touch $LFS/etc/ld.so.conf
 
 sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
 
@@ -777,7 +779,7 @@ localedef -i ja_JP -f SHIFT_JIS ja_JP.SJIS 2> /dev/null || true
 
 # The /etc/nsswitch.conf file needs to becreated because the glibc defaults do not work well in a networked environment.
 # Create a new file /etc/nsswitch.conf by running the following:
-cat > /etc/nsswitch.conf << "EOF"
+cat > $LFS/etc/nsswitch.conf << "EOF"
 # Begin /etc/nsswitch.conf
 
 passwd: files
@@ -799,7 +801,7 @@ EOF
 # Install and set up the time zone data with the following:
 tar -xf ../../tzdata2024a.tar.gz
 
-ZONEINFO=/usr/share/zoneinfo
+ZONEINFO=$LFS/usr/share/zoneinfo
 mkdir -pv $ZONEINFO/{posix,right}
 
 for tz in etcetera southamerica northamerica europe africa antarctica  \
@@ -817,11 +819,11 @@ unset ZONEINFO
 tzselect
 
 # Create the /etc/localtime by running:
-ln -sfv /usr/share/zoneinfo/Europe/London /etc/localtime
+ln -sfv $LFS/usr/share/zoneinfo/Europe/London /etc/localtime
 
 # 8.5.2.3. Configuring the Dynamic Loader
 # Create a new file /etc/ld.conf by running the following:
-cat > /etc/ld.so.conf << "EOF"
+cat > $LFS/etc/ld.so.conf << "EOF"
 # Begin /etc/ld.so.conf
 /usr/local/lib
 /opt/lib
@@ -831,7 +833,7 @@ EOF
 # 8.6. Zlib-1.3.1
 cd /mnt/lfs/sources/zlib-1.3.1
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -839,7 +841,7 @@ make check
 
 make install
 
-rm -fv /usr/lib/libz.a
+rm -fv $LFS/usr/lib/libz.a
 
 # 8.7. Bzip2-1.0.8
 cd /mnt/lfs/sources/bzip2-1.0.8
@@ -855,22 +857,22 @@ make clean
 
 make
 
-make PREFIX=/usr install
+make PREFIX=$LFS/usr install
 
-cp -av libbz2.so.* /usr/lib
-ln -sv libbz2.so.1.0.8 /usr/lib/libbz2.so
+cp -av libbz2.so.* $LFS/usr/lib
+ln -sv libbz2.so.1.0.8 $LFS/usr/lib/libbz2.so
 
-cp -v bzip2-shared /usr/bin/bzip2
+cp -v bzip2-shared $LFS/usr/bin/bzip2
 for i in /usr/bin/{bzcat,bunzip2}; do
   ln -sfv bzip2 $i
 done
 
-rm -fv /usr/lib/libbz2.a
+rm -fv $LFS/usr/lib/libbz2.a
 
 # 8.8. Xz-5.6.2.
 cd /mnt/lfs/sources/xz-5.6.2
 
-./configure --prefix=/usr    \
+./configure --prefix=$LFS/usr    \
             --disable-static \
             --docdir=/usr/share/doc/xz-5.6.2
 
@@ -883,27 +885,27 @@ make install
 # 8.9. Lz4-1.10.0
 cd /mnt/lfs/sources/lz4-1.10.0
 
-make BUILD_STATIC=no PREFIX=/usr
+make BUILD_STATIC=no PREFIX=$LFS/usr
 
 make -j1 check
 
-make BUILD_STATIC=no PREFIX=/usr install
+make BUILD_STATIC=no PREFIX=$LFS/usr install
 
 # 8.10. Zstd-1.5.6
 cd /mnt/lfs/sources/zstd-1.5.6
 
-make prefix=/usr
+make prefix=$LFS/usr
 
 make check
 
-make prefix=/usr install
+make prefix=$LFS/usr install
 
-rm -v /usr/lib/libzstd.a
+rm -v $LFS/usr/lib/libzstd.a
 
 # 8.11. File-5.45
 cd /mnt/lfs/sources/file-5.45
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -919,21 +921,21 @@ sed -i '/{OLDSUFF}/c:' support/shlib-install
 
 sed -i 's/-Wl,-rpath,[^ ]*//' support/shobj-conf
 
-./configure --prefix=/usr    \
+./configure --prefix=$LFS/usr    \
             --disable-static \
             --with-curses    \
-            --docdir=/usr/share/doc/readline-8.2.13
+            --docdir=$LFS/usr/share/doc/readline-8.2.13
 
 make SHLIB_LIBS="-lncursesw"
 
 make SHLIB_LIBS="-lncursesw" install
 
-install -v -m644 doc/*.{ps,pdf,html,dvi} /usr/share/doc/readline-8.2.13
+install -v -m644 doc/*.{ps,pdf,html,dvi} $LFS/usr/share/doc/readline-8.2.13
 
 # 8.13. M4-1.4.19
 cd /mnt/lfs/sources/m4-1.4.19
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -944,7 +946,7 @@ make install
 # 8.14. Bc-6.7.6
 cd /mnt/lfs/sources/bc-6.7.6
 
-CC=gcc ./configure --prefix=/usr -G -O3 -r
+CC=gcc ./configure --prefix=$LFS/usr -G -O3 -r
 
 make
 
@@ -955,8 +957,8 @@ make install
 # 8.15. Flex-2.6.4
 cd /mnt/lfs/sources/flex-2.6.4
 
-./configure --prefix=/usr \
-            --docdir=/usr/share/doc/flex-2.6.4 \
+./configure --prefix=$LFS/usr \
+            --docdir=$LFS/usr/share/doc/flex-2.6.4 \
             --disable-static
 
 make
@@ -965,16 +967,16 @@ make check
 
 make install
 
-ln -sv flex   /usr/bin/lex
-ln -sv flex.1 /usr/share/man/man1/lex.1
+ln -sv flex   $LFS/usr/bin/lex
+ln -sv flex.1 $LFS/usr/share/man/man1/lex.1
 
 # 8.16. Tcl-8.6.14
 cd /mnt/lfs/sources/tcl8.6.14-src
 
 SRCDIR=$(pwd)
 cd unix
-./configure --prefix=/usr           \
-            --mandir=/usr/share/man \
+./configure --prefix=$LFS/usr           \
+            --mandir=$LFS/usr/share/man \
             --disable-rpath
 
 make
@@ -1000,18 +1002,18 @@ make test
 
 make install
 
-chmod -v u+w /usr/lib/libtcl8.6.so
+chmod -v u+w $LFS/usr/lib/libtcl8.6.so
 
 make install-private-headers
 
-ln -sfv tclsh8.6 /usr/bin/tclsh
+ln -sfv tclsh8.6 $LFS/usr/bin/tclsh
 
-mv /usr/share/man/man3/{Thread,Tcl_Thread}.3
+mv $LFS/usr/share/man/man3/{Thread,Tcl_Thread}.3
 
 cd ..
 tar -xf ../tcl8.6.14-html.tar.gz --strip-components=1
-mkdir -v -p /usr/share/doc/tcl-8.6.14
-cp -v -r  ./html/* /usr/share/doc/tcl-8.6.14
+mkdir -v -p $LFS/usr/share/doc/tcl-8.6.14
+cp -v -r  ./html/* $LFS/usr/share/doc/tcl-8.6.14
 
 # 8.17. Expect-5.45.4
 cd /mnt/lfs/sources/expect5.45.4
@@ -1020,19 +1022,19 @@ python3 -c 'from pty import spawn; spawn(["echo", "ok"])'
 
 patch -Np1 -i ../expect-5.45.4-gcc14-1.patch
 
-./configure --prefix=/usr           \
-            --with-tcl=/usr/lib     \
+./configure --prefix=$LFS/usr           \
+            --with-tcl=$LFS/usr/lib     \
             --enable-shared         \
             --disable-rpath         \
-            --mandir=/usr/share/man \
-            --with-tclinclude=/usr/include
+            --mandir=$LFS/usr/share/man \
+            --with-tclinclude=$LFS/usr/include
 
 make
 
 make test
 
 make install
-ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib
+ln -svf expect5.45.4/libexpect5.45.4.so $LFS/usr/lib
 
 # 8.18. DejaGNU-1.6.3
 cd /mnt/lfs/sources/dejagnu-1.6.3
@@ -1040,29 +1042,29 @@ cd /mnt/lfs/sources/dejagnu-1.6.3
 mkdir -v build
 cd       build
 
-../configure --prefix=/usr
+../configure --prefix=$LFS/usr
 makeinfo --html --no-split -o doc/dejagnu.html ../doc/dejagnu.texi
 makeinfo --plaintext       -o doc/dejagnu.txt  ../doc/dejagnu.texi
 
 make check
 
 make install
-install -v -dm755  /usr/share/doc/dejagnu-1.6.3
-install -v -m644   doc/dejagnu.{html,txt} /usr/share/doc/dejagnu-1.6.3
+install -v -dm755  $LFS/usr/share/doc/dejagnu-1.6.3
+install -v -m644   doc/dejagnu.{html,txt} $LFS/usr/share/doc/dejagnu-1.6.3
 
 # 8.19. Pkgconf-2.3.0
 cd /mnt/lfs/sources/pkgconf-2.3.0
 
-./configure --prefix=/usr              \
+./configure --prefix=$LFS/usr              \
             --disable-static           \
-            --docdir=/usr/share/doc/pkgconf-2.3.0
+            --docdir=$LFS/usr/share/doc/pkgconf-2.3.0
 
 make
 
 make install
 
-ln -sv pkgconf   /usr/bin/pkg-config
-ln -sv pkgconf.1 /usr/share/man/man1/pkg-config.1
+ln -sv pkgconf   $LFS/usr/bin/pkg-config
+ln -sv pkgconf.1 $LFS/usr/share/man/man1/pkg-config.1
 
 # 8.20. Binutils-2.43.1
 cd /mnt/lfs/sources/binutils-2.43.1
@@ -1070,8 +1072,8 @@ cd /mnt/lfs/sources/binutils-2.43.1
 mkdir -v build
 cd       build
 
-../configure --prefix=/usr       \
-             --sysconfdir=/etc   \
+../configure --prefix=$LFS/usr       \
+             --sysconfdir=$LFS/etc   \
              --enable-gold       \
              --enable-ld=default \
              --enable-plugins    \
@@ -1082,23 +1084,23 @@ cd       build
              --with-system-zlib  \
              --enable-default-hash-style=gnu
 
-make tooldir=/usr
+make tooldir=$LFS/usr
 
 make -k check
 
 grep '^FAIL:' $(find -name '*.log')
 
-make tooldir=/usr install
+make tooldir=$LFS/usr install
 
-rm -fv /usr/lib/lib{bfd,ctf,ctf-nobfd,gprofng,opcodes,sframe}.a
+rm -fv $LFS/usr/lib/lib{bfd,ctf,ctf-nobfd,gprofng,opcodes,sframe}.a
 
 # 8.21. GMP-6.30
 cd /mnt/lfs/sources/gmp-6.3.0
 
-./configure --prefix=/usr    \
+./configure --prefix=$LFS/usr    \
             --enable-cxx     \
             --disable-static \
-            --docdir=/usr/share/doc/gmp-6.3.0
+            --docdir=$LFS/usr/share/doc/gmp-6.3.0
 
 make
 make html
@@ -1113,10 +1115,10 @@ make install-html
 # 8.22. MPFR-4.2.1
 cd /mnt/lfs/sources/mpfr-4.2.1
 
-./configure --prefix=/usr        \
+./configure --prefix=$LFS/usr        \
             --disable-static     \
             --enable-thread-safe \
-            --docdir=/usr/share/doc/mpfr-4.2.1
+            --docdir=$LFS/usr/share/doc/mpfr-4.2.1
 
 make
 make html
@@ -1129,9 +1131,9 @@ make install-html
 # 8.23. MPC-1.3.1
 cd /mnt/lfs/sources/mpc-1.3.1
 
-./configure --prefix=/usr    \
+./configure --prefix=$LFS/usr    \
             --disable-static \
-            --docdir=/usr/share/doc/mpc-1.3.1
+            --docdir=$LFS/usr/share/doc/mpc-1.3.1
 
 make
 make html
@@ -1144,10 +1146,10 @@ make install-html
 # 8.24. Attr-2.5.2
 cd /mnt/lfs/sources/attr-2.5.2
 
-./configure --prefix=/usr     \
+./configure --prefix=$LFS/usr     \
             --disable-static  \
-            --sysconfdir=/etc \
-            --docdir=/usr/share/doc/attr-2.5.2
+            --sysconfdir=$LFS/etc \
+            --docdir=$LFS/usr/share/doc/attr-2.5.2
 
 make
 
@@ -1158,9 +1160,9 @@ make install
 # 8.25. Acl-2.3.2
 cd /mnt/lfs/sources/acl-2.3.2
 
-./configure --prefix=/usr         \
+./configure --prefix=$LFS/usr         \
             --disable-static      \
-            --docdir=/usr/share/doc/acl-2.3.2
+            --docdir=$LFS/usr/share/doc/acl-2.3.2
 
 make
 
@@ -1171,16 +1173,16 @@ cd /mnt/lfs/sources/libcap-2.70
 
 sed -i '/install -m.*STA/d' libcap/Makefile
 
-make prefix=/usr lib=lib
+make prefix=$LFS/usr lib=lib
 
 make test
 
-make prefix=/usr lib=lib install
+make prefix=$LFS/usr lib=lib install
 
 # 8.27. Libxcrypt-4.4.36
 cd /mnt/lfs/sources/libxcrypt-4.4.36
 
-./configure --prefix=/usr                \
+./configure --prefix=$LFS/usr                \
             --enable-hashes=strong,glibc \
             --enable-obsolete-api=no     \
             --disable-static             \
@@ -1205,8 +1207,8 @@ sed -e 's:#ENCRYPT_METHOD DES:ENCRYPT_METHOD YESCRYPT:' \
     -e '/PATH=/{s@/sbin:@@;s@/bin:@@}'                  \
     -i etc/login.defs
 
-touch /usr/bin/passwd
-./configure --sysconfdir=/etc   \
+touch $LFS/usr/bin/passwd
+./configure --sysconfdir=$LFS/etc   \
             --disable-static    \
             --with-{b,yes}crypt \
             --without-libbsd    \
@@ -1214,7 +1216,7 @@ touch /usr/bin/passwd
 
 make
 
-make exec_prefix=/usr install
+make exec_prefix=$LFS/usr install
 make -C man install-man
 
 # 8.28.2. Configuring Shadow
@@ -1225,7 +1227,7 @@ pwconv
 grpconv
 
 # 8.28.3. Setting the Root Password
-passwd root
+# passwd root
 
 # 8.29. GCC-14.2.0
 cd /mnt/lfs/sources/gcc-14.2.0
@@ -1240,7 +1242,7 @@ esac
 mkdir -v build
 cd       build
 
-../configure --prefix=/usr            \
+../configure --prefix=$LFS/usr            \
              LD=ld                    \
              --enable-languages=c,c++ \
              --enable-default-pie     \
@@ -1269,24 +1271,27 @@ su tester -c "PATH=$PATH make -k check"
 make install
 
 chown -v -R root:root \
-    /usr/lib/gcc/$(gcc -dumpmachine)/14.2.0/include{,-fixed}
+    $LFS/usr/lib/gcc/$(gcc -dumpmachine)/14.2.0/include{,-fixed}
 
-ln -svr /usr/bin/cpp /usr/lib
+ln -svr $LFS/usr/bin/cpp /usr/lib
 
-ln -sv gcc.1 /usr/share/man/man1/cc.1
+ln -sv gcc.1 $LFS/usr/share/man/man1/cc.1
 
 ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/14.2.0/liblto_plugin.so \
-        /usr/lib/bfd-plugins/
+        $LFS/usr/lib/bfd-plugins/
 
 echo 'int main(){}' > dummy.c
 cc dummy.c -v -Wl,--verbose &> dummy.log
 readelf -l a.out | grep ': /lib'
 
-grep -E -o '/usr/lib.*/S?crt[1in].*succeeded' dummy.log
+#grep -E -o '/usr/lib.*/S?crt[1in].*succeeded' dummy.log
+grep -E -o '/mnt/lfs/usr/lib.*/S?crt[1in].*succeeded' dummy.log
 
-grep -B4 '^ /usr/include' dummy.log
+#grep -B4 '^ /usr/include' dummy.log
+grep -B4 '^ /mnt/lfs/usr/include' dummy.log
 
-grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
+#grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
+grep '/mnt/lfs/SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
 
 grep "/lib.*/libc.so.6 " dummy.log
 
@@ -1294,14 +1299,15 @@ grep found dummy.log
 
 rm -v dummy.c a.out dummy.log
 
-mkdir -pv /usr/share/gdb/auto-load/usr/lib
-mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
+mkdir -pv $LFS/usr/share/gdb/auto-load/usr/lib
+#mv -v $LFS/usr/lib/*gdb.py $LFS/usr/share/gdb/auto-load/usr/lib
+mv -v /usr/lib/*gdb.py $LFS/usr/share/gdb/auto-load/usr/lib
 
 # 8.30. Ncurses-6.5
 cd /mnt/lfs/sources/ncurses-6.5
 
-./configure --prefix=/usr           \
-            --mandir=/usr/share/man \
+./configure --prefix=$LFS/usr           \
+            --mandir=$LFS/usr/share/man \
             --with-shared           \
             --without-debug         \
             --without-normal        \
@@ -1312,25 +1318,25 @@ cd /mnt/lfs/sources/ncurses-6.5
 make
 
 make DESTDIR=$PWD/dest install
-install -vm755 dest/usr/lib/libncursesw.so.6.5 /usr/lib
+install -vm755 dest/usr/lib/libncursesw.so.6.5 $LFS/usr/lib
 rm -v  dest/usr/lib/libncursesw.so.6.5
 sed -e 's/^#if.*XOPEN.*$/#if 1/' \
     -i dest/usr/include/curses.h
 cp -av dest/* /
 
 for lib in ncurses form panel menu ; do
-    ln -sfv lib${lib}w.so /usr/lib/lib${lib}.so
-    ln -sfv ${lib}w.pc    /usr/lib/pkgconfig/${lib}.pc
+    ln -sfv lib${lib}w.so $LFS/usr/lib/lib${lib}.so
+    ln -sfv ${lib}w.pc    $LFS/usr/lib/pkgconfig/${lib}.pc
 done
 
-ln -sfv libncursesw.so /usr/lib/libcurses.so
+ln -sfv libncursesw.so $LFS/usr/lib/libcurses.so
 
-cp -v -R doc -T /usr/share/doc/ncurses-6.5
+cp -v -R doc -T $LFS/usr/share/doc/ncurses-6.5
 
 # 8.31. Sed-4.9
 cd /mnt/lfs/sources/sed-4.9
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 make html
@@ -1339,13 +1345,13 @@ chown -R tester .
 su tester -c "PATH=$PATH make check"
 
 make install
-install -d -m755           /usr/share/doc/sed-4.9
-install -m644 doc/sed.html /usr/share/doc/sed-4.9
+install -d -m755           $LFS/usr/share/doc/sed-4.9
+install -m644 doc/sed.html $LFS/usr/share/doc/sed-4.9
 
 # 8.32. Psmisc-23.7
 cd /mnt/lfs/sources/psmisc-23.7
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1356,21 +1362,21 @@ make install
 # 8.33. Gettext-0.22.5
 cd /mnt/lfs/sources/gettext-0.22.5
 
-./configure --prefix=/usr    \
+./configure --prefix=$LFS/usr    \
             --disable-static \
-            --docdir=/usr/share/doc/gettext-0.22.5
+            --docdir=$LFS/usr/share/doc/gettext-0.22.5
 
 make
 
 make check
 
 make install
-chmod -v 0755 /usr/lib/preloadable_libintl.so
+chmod -v 0755 $LFS/usr/lib/preloadable_libintl.so
 
 # 8.34. Bison-3.8.2
 cd /mnt/lfs/sources/bison-3.8.2
 
-./configure --prefix=/usr --docdir=/usr/share/doc/bison-3.8.2
+./configure --prefix=$LFS/usr --docdir=$LFS/usr/share/doc/bison-3.8.2
 
 make
 
@@ -1383,7 +1389,7 @@ cd /mnt/lfs/sources/grep-3.11
 
 sed -i "s/echo/#echo/" src/egrep.sh
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1394,11 +1400,11 @@ make install
 # 8.36. Bash-5.2.32
 cd /mnt/lfs/sources/bash-5.2.32
 
-./configure --prefix=/usr             \
+./configure --prefix=$LFS/usr             \
             --without-bash-malloc     \
             --with-installed-readline \
             bash_cv_strtold_broken=no \
-            --docdir=/usr/share/doc/bash-5.2.32
+            --docdir=$LFS/usr/share/doc/bash-5.2.32
 
 make
 
@@ -1414,12 +1420,12 @@ EOF
 
 make install
 
-exec /usr/bin/bash --login
+exec $LFS/usr/bin/bash --login
 
 # 8.37. Libtool-2.4.7
 cd /mnt/lfs/sources/libtool-2.4.7
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1427,12 +1433,12 @@ make -k check
 
 make install
 
-rm -fv /usr/lib/libltdl.a
+rm -fv $LFS/usr/lib/libltdl.a
 
 # 8.38. GDBM-1.24
 cd /mnt/lfs/sources/gdbm-1.24
 
-./configure --prefix=/usr    \
+./configure --prefix=$LFS/usr    \
             --disable-static \
             --enable-libgdbm-compat
 
@@ -1445,7 +1451,7 @@ make install
 # 8.39. Gperf-3.1
 cd /mnt/lfs/sources/gperf-3.1
 
-./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1
+./configure --prefix=$LFS/usr --docdir=$LFS/usr/share/doc/gperf-3.1
 
 make
 
@@ -1456,9 +1462,9 @@ make install
 # 8.40. Expat-2.6.2
 cd /mnt/lfs/sources/expat-2.6.2
 
-./configure --prefix=/usr    \
+./configure --prefix=$LFS/usr    \
             --disable-static \
-            --docdir=/usr/share/doc/expat-2.6.2
+            --docdir=$LFS/usr/share/doc/expat-2.6.2
 
 make
 
@@ -1466,16 +1472,16 @@ make check
 
 make install
 
-install -v -m644 doc/*.{html,css} /usr/share/doc/expat-2.6.2
+install -v -m644 doc/*.{html,css} $LFS/usr/share/doc/expat-2.6.2
 
 # 8.41. Inetutils-2.5
 cd /mnt/lfs/sources/inetutils-2.5
 
 sed -i 's/def HAVE_TERMCAP_TGETENT/ 1/' telnet/telnet.c
 
-./configure --prefix=/usr        \
-            --bindir=/usr/bin    \
-            --localstatedir=/var \
+./configure --prefix=$LFS/usr        \
+            --bindir=$LFS/usr/bin    \
+            --localstatedir=$LFS/var \
             --disable-logger     \
             --disable-whois      \
             --disable-rcp        \
@@ -1490,12 +1496,12 @@ make check
 
 make install
 
-mv -v /usr/{,s}bin/ifconfig
+mv -v $LFS/usr/{,s}bin/ifconfig
 
 # 8.42. Less-661
 cd /mnt/lfs/sources/less-661
 
-./configure --prefix=/usr --sysconfdir=/etc
+./configure --prefix=$LFS/usr --sysconfdir=$LFS/etc
 
 make
 
@@ -1510,17 +1516,17 @@ export BUILD_ZLIB=False
 export BUILD_BZIP2=0
 
 sh Configure -des                                          \
-             -D prefix=/usr                                \
-             -D vendorprefix=/usr                          \
-             -D privlib=/usr/lib/perl5/5.40/core_perl      \
-             -D archlib=/usr/lib/perl5/5.40/core_perl      \
-             -D sitelib=/usr/lib/perl5/5.40/site_perl      \
-             -D sitearch=/usr/lib/perl5/5.40/site_perl     \
-             -D vendorlib=/usr/lib/perl5/5.40/vendor_perl  \
-             -D vendorarch=/usr/lib/perl5/5.40/vendor_perl \
-             -D man1dir=/usr/share/man/man1                \
-             -D man3dir=/usr/share/man/man3                \
-             -D pager="/usr/bin/less -isR"                 \
+             -D prefix=$LFS/usr                                \
+             -D vendorprefix=$LFS/usr                          \
+             -D privlib=$LFS/usr/lib/perl5/5.40/core_perl      \
+             -D archlib=$LFS/usr/lib/perl5/5.40/core_perl      \
+             -D sitelib=$LFS/usr/lib/perl5/5.40/site_perl      \
+             -D sitearch=$LFS/usr/lib/perl5/5.40/site_perl     \
+             -D vendorlib=$LFS/usr/lib/perl5/5.40/vendor_perl  \
+             -D vendorarch=$LFS/usr/lib/perl5/5.40/vendor_perl \
+             -D man1dir=$LFS/usr/share/man/man1                \
+             -D man3dir=$LFS/usr/share/man/man3                \
+             -D pager="$LFS/usr/bin/less -isR"                 \
              -D useshrplib                                 \
              -D usethreads
 
@@ -1547,19 +1553,19 @@ cd /mnt/lfs/sources/intltool-0.51.0
 
 sed -i 's:\\\${:\\\$\\{:' intltool-update.in
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
 make check
 
 make install
-install -v -Dm644 doc/I18N-HOWTO /usr/share/doc/intltool-0.51.0/I18N-HOWTO
+install -v -Dm644 doc/I18N-HOWTO $LFS/usr/share/doc/intltool-0.51.0/I18N-HOWTO
 
 # 8.46. Autoconf-2.72
 cd /mnt/lfs/sources/autoconf-2.72
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1570,7 +1576,7 @@ make install
 # 8.47. Automake-1.17
 cd /mnt/lfs/sources/automake-1.17
 
-./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.17
+./configure --prefix=$LFS/usr --docdir=$LFS/usr/share/doc/automake-1.17
 
 make
 
@@ -1581,8 +1587,8 @@ make install
 # 8.48. OpenSSL-3.3.1
 cd /mnt/lfs/sources/openssl-3.3.1
 
-./config --prefix=/usr         \
-         --openssldir=/etc/ssl \
+./config --prefix=$LFS/usr         \
+         --openssldir=$LFS/etc/ssl \
          --libdir=lib          \
          shared                \
          zlib-dynamic
@@ -1594,15 +1600,15 @@ HARNESS_JOBS=$(nproc) make test
 sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile
 make MANSUFFIX=ssl install
 
-mv -v /usr/share/doc/openssl /usr/share/doc/openssl-3.3.1
+mv -v $LFS/usr/share/doc/openssl $LFS/usr/share/doc/openssl-3.3.1
 
-cp -vfr doc/* /usr/share/doc/openssl-3.3.1
+cp -vfr doc/* $LFS/usr/share/doc/openssl-3.3.1
 
 # 8.49. Kmod-33
 cd /mnt/lfs/sources/kmod-33
 
-./configure --prefix=/usr     \
-            --sysconfdir=/etc \
+./configure --prefix=$LFS/usr     \
+            --sysconfdir=$LFS/etc \
             --with-openssl    \
             --with-xz         \
             --with-zstd       \
@@ -1614,14 +1620,14 @@ make
 make install
 
 for target in depmod insmod modinfo modprobe rmmod; do
-  ln -sfv ../bin/kmod /usr/sbin/$target
-  rm -fv /usr/bin/$target
+  ln -sfv ../bin/kmod $LFS/usr/sbin/$target
+  rm -fv $LFS/usr/bin/$target
 done
 
 # 8.50. Libelf from Elfutils-0.191
 cd /mnt/lfs/sources/elfutils-0.191
 
-./configure --prefix=/usr                \
+./configure --prefix=$LFS/usr                \
             --disable-debuginfod         \
             --enable-libdebuginfod=dummy
 
@@ -1636,7 +1642,7 @@ rm /usr/lib/libelf.a
 # 8.51. Libffi-3.4.6
 cd /mnt/lfs/sources/libffi-3.4.6
 
-./configure --prefix=/usr          \
+./configure --prefix=$LFS/usr          \
             --disable-static       \
             --with-gcc-arch=native
 
@@ -1649,7 +1655,7 @@ make install
 # 8.52. Python-3.12.5
 cd /mnt/lfs/sources/Python-3.12.5
 
-./configure --prefix=/usr        \
+./configure --prefix=$LFS/usr        \
             --enable-shared      \
             --with-system-expat  \
             --enable-optimizations
@@ -1660,18 +1666,18 @@ make test TESTOPTS="--timeout 120"
 
 make install
 
-cat > /etc/pip.conf << EOF
+cat > $LFS/etc/pip.conf << EOF
 [global]
 root-user-action = ignore
 disable-pip-version-check = true
 EOF
 
-install -v -dm755 /usr/share/doc/python-3.12.5/html
+install -v -dm755 $LFS/usr/share/doc/python-3.12.5/html
 
 tar --no-same-owner \
     -xvf ../python-3.12.5-docs-html.tar.bz2
 cp -R --no-preserve=mode python-3.12.5-docs-html/* \
-    /usr/share/doc/python-3.12.5/html
+    $LFS/usr/share/doc/python-3.12.5/html
 
 # 8.53. Flit-Core-3.9.0
 cd /mnt/lfs/sources/flit_core-3.9.0
@@ -1709,8 +1715,8 @@ sed -i '/int Guess/a \
 python3 configure.py --bootstrap
 
 install -vm755 ninja /usr/bin/
-install -vDm644 misc/bash-completion /usr/share/bash-completion/completions/ninja
-install -vDm644 misc/zsh-completion  /usr/share/zsh/site-functions/_ninja
+install -vDm644 misc/bash-completion $LFS/usr/share/bash-completion/completions/ninja
+install -vDm644 misc/zsh-completion  $LFS/usr/share/zsh/site-functions/_ninja
 
 # 8.57. Meson-1.5.1
 cd /mnt/lfs/sources/meson-1.5.1
@@ -1718,8 +1724,8 @@ cd /mnt/lfs/sources/meson-1.5.1
 pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
 
 pip3 install --no-index --find-links dist meson
-install -vDm644 data/shell-completions/bash/meson /usr/share/bash-completion/completions/meson
-install -vDm644 data/shell-completions/zsh/_meson /usr/share/zsh/site-functions/_meson
+install -vDm644 data/shell-completions/bash/meson $LFS/usr/share/bash-completion/completions/meson
+install -vDm644 data/shell-completions/zsh/_meson $LFS/usr/share/zsh/site-functions/_meson
 
 # 8.58. Coreutils-9.5
 cd /mnt/lfs/sources/coreutils-9.5
@@ -1728,7 +1734,7 @@ patch -Np1 -i ../coreutils-9.5-i18n-2.patch
 
 autoreconf -fiv
 FORCE_UNSAFE_CONFIGURE=1 ./configure \
-            --prefix=/usr            \
+            --prefix=$LFS/usr            \
             --enable-no-install-program=kill,uptime
 
 make
@@ -1746,25 +1752,25 @@ groupdel dummy
 
 make install
 
-mv -v /usr/bin/chroot /usr/sbin
-mv -v /usr/share/man/man1/chroot.1 /usr/share/man/man8/chroot.8
-sed -i 's/"1"/"8"/' /usr/share/man/man8/chroot.8
+mv -v $LFS/usr/bin/chroot $LFS/usr/sbin
+mv -v $LFS/usr/share/man/man1/chroot.1 $LFS/usr/share/man/man8/chroot.8
+sed -i 's/"1"/"8"/' $LFS/usr/share/man/man8/chroot.8
 
 # 8.59. Check-0.15.2
 cd /mnt/lfs/sources/check-0.15.2
 
-./configure --prefix=/usr --disable-static
+./configure --prefix=$LFS/usr --disable-static
 
 make
 
 make check
 
-make docdir=/usr/share/doc/check-0.15.2 install
+make docdir=$LFS/usr/share/doc/check-0.15.2 install
 
 # 8.60. Diffutils-3.10
 cd /mnt/lfs/sources/diffutils-3.10
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1777,25 +1783,25 @@ cd /mnt/lfs/sources/gawk-5.3.0
 
 sed -i 's/extras//' Makefile.in
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
 chown -R tester .
 su tester -c "PATH=$PATH make check"
 
-rm -f /usr/bin/gawk-5.3.0
+rm -f $LFS/usr/bin/gawk-5.3.0
 make install
 
-ln -sv gawk.1 /usr/share/man/man1/awk.1
+ln -sv gawk.1 $LFS/usr/share/man/man1/awk.1
 
-mkdir -pv                                   /usr/share/doc/gawk-5.3.0
-cp    -v doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-5.3.0
+mkdir -pv                                   $LFS/usr/share/doc/gawk-5.3.0
+cp    -v doc/{awkforai.txt,*.{eps,pdf,jpg}} $LFS/usr/share/doc/gawk-5.3.0
 
 # 8.62. Findutils-4.10.0
 cd /mnt/lfs/sources/findutils-4.10.0
 
-./configure --prefix=/usr --localstatedir=/var/lib/locate
+./configure --prefix=$LFS/usr --localstatedir=$LFS/var/lib/locate
 
 make
 
@@ -1807,7 +1813,7 @@ make install
 # 8.63. Groff-1.23.0
 cd /mnt/lfs/sources/groff-1.23.0
 
-PAGE="A4" ./configure --prefix=/usr
+PAGE="A4" ./configure --prefix=$LFS/usr
 
 make
 
@@ -1822,8 +1828,8 @@ unset {C,CPP,CXX,LD}FLAGS
 
 echo depends bli part_gpt > grub-core/extra_deps.lst
 
-./configure --prefix=/usr          \
-            --sysconfdir=/etc      \
+./configure --prefix=$LFS/usr          \
+            --sysconfdir=$LFS/etc      \
             --disable-efiemu       \
             --disable-werror
 
@@ -1835,7 +1841,7 @@ mv -v /etc/bash_completion.d/grub /usr/share/bash-completion/completions
 # 8.65. Gzip-1.13
 cd /mnt/lfs/sources/gzip-1.13
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1849,12 +1855,12 @@ cd /mnt/lfs/sources/iproute2-6.10.0
 sed -i /ARPD/d Makefile
 rm -fv man/man8/arpd.8
 
-make NETNS_RUN_DIR=/run/netns
+make NETNS_RUN_DIR=$LFS/run/netns
 
-make SBINDIR=/usr/sbin install
+make SBINDIR=$LFS/usr/sbin install
 
-mkdir -pv             /usr/share/doc/iproute2-6.10.0
-cp -v COPYING README* /usr/share/doc/iproute2-6.10.0
+mkdir -pv             $LFS/usr/share/doc/iproute2-6.10.0
+cp -v COPYING README* $LFS/usr/share/doc/iproute2-6.10.0
 
 # 8.67. Kbd-2.6.4
 cd /mnt/lfs/sources/kbd-2.6.4
@@ -1864,7 +1870,7 @@ patch -Np1 -i ../kbd-2.6.4-backspace-1.patch
 sed -i '/RESIZECONS_PROGS=/s/yes/no/' configure
 sed -i 's/resizecons.8 //' docs/man/man8/Makefile.in
 
-./configure --prefix=/usr --disable-vlock
+./configure --prefix=$LFS/usr --disable-vlock
 
 make
 
@@ -1872,12 +1878,12 @@ make check
 
 make install
 
-cp -R -v docs/doc -T /usr/share/doc/kbd-2.6.4
+cp -R -v docs/doc -T $LFS/usr/share/doc/kbd-2.6.4
 
 # 8.68. Libpipeline-1.5.7
 cd /mnt/lfs/sources/libpipeline-1.5.7
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1888,7 +1894,7 @@ make install
 # 8.69. Make-4.4.1
 cd /mnt/lfs/sources/make-4.4.1
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1900,7 +1906,7 @@ make install
 # 8.70. Patch-2.7.6
 cd /mnt/lfs/sources/patch-2.7.6
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1912,7 +1918,7 @@ make install
 cd /mnt/lfs/sources/tar-1.35
 
 FORCE_UNSAFE_CONFIGURE=1  \
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1924,7 +1930,7 @@ make -C doc install-html docdir=/usr/share/doc/tar-1.35
 # 8.72. Texinfo-7.1
 cd /mnt/lfs/sources/texinfo-7.1
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1932,9 +1938,9 @@ make check
 
 make install
 
-make TEXMF=/usr/share/texmf install-tex
+make TEXMF=$LFS/usr/share/texmf install-tex
 
-pushd /usr/share/info
+pushd $LFS/usr/share/info
   rm -v dir
   for f in *
     do install-info $f dir 2>/dev/null
@@ -1944,9 +1950,9 @@ popd
 # 8.73. Vim-9.1.0660
 cd /mnt/lfs/sources/vim-9.1.0660
 
-echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
+echo '#define SYS_VIMRC_FILE "$LFS/etc/vimrc"' >> src/feature.h
 
-./configure --prefix=/usr
+./configure --prefix=$LFS/usr
 
 make
 
@@ -1957,14 +1963,14 @@ su tester -c "TERM=xterm-256color LANG=en_US.UTF-8 make -j1 test" \
 
 make install
 
-ln -sv vim /usr/bin/vi
-for L in  /usr/share/man/{,*/}man1/vim.1; do
+ln -sv vim $LFS/usr/bin/vi
+for L in  $LFS/usr/share/man/{,*/}man1/vim.1; do
     ln -sv vim.1 $(dirname $L)/vi.1
 done
 
-ln -sv ../vim/vim91/doc /usr/share/doc/vim-9.1.0660
+ln -sv ../vim/vim91/doc $LFS/usr/share/doc/vim-9.1.0660
 
-cat > /etc/vimrc << "EOF"
+cat > $LFS/etc/vimrc << "EOF"
 " Begin /etc/vimrc
 
 " Ensure defaults are set before customizing settings, not after
@@ -2010,7 +2016,7 @@ mkdir -p build
 cd       build
 
 meson setup ..                  \
-      --prefix=/usr             \
+      --prefix=$LFS/usr         \
       --buildtype=release       \
       -D mode=release           \
       -D dev-kvm-mode=0660      \
@@ -2026,22 +2032,22 @@ ninja udevadm systemd-hwdb                                           \
       $(realpath libudev.so --relative-to .)                         \
       $udev_helpers
 
-install -vm755 -d {/usr/lib,/etc}/udev/{hwdb.d,rules.d,network}
-install -vm755 -d /usr/{lib,share}/pkgconfig
-install -vm755 udevadm                             /usr/bin/
-install -vm755 systemd-hwdb                        /usr/bin/udev-hwdb
-ln      -svfn  ../bin/udevadm                      /usr/sbin/udevd
-cp      -av    libudev.so{,*[0-9]}                 /usr/lib/
-install -vm644 ../src/libudev/libudev.h            /usr/include/
-install -vm644 src/libudev/*.pc                    /usr/lib/pkgconfig/
-install -vm644 src/udev/*.pc                       /usr/share/pkgconfig/
-install -vm644 ../src/udev/udev.conf               /etc/udev/
-install -vm644 rules.d/* ../rules.d/README         /usr/lib/udev/rules.d/
+install -vm755 -d {$LFS/usr/lib,$LFS/etc}/udev/{hwdb.d,rules.d,network}
+install -vm755 -d $LFS/usr/{lib,share}/pkgconfig
+install -vm755 udevadm                             $LFS/usr/bin/
+install -vm755 systemd-hwdb                        $LFS/usr/bin/udev-hwdb
+ln      -svfn  ../bin/udevadm                      $LFS/usr/sbin/udevd
+cp      -av    libudev.so{,*[0-9]}                 $LFS/usr/lib/
+install -vm644 ../src/libudev/libudev.h            $LFS/usr/include/
+install -vm644 src/libudev/*.pc                    $LFS/usr/lib/pkgconfig/
+install -vm644 src/udev/*.pc                       $LFS/usr/share/pkgconfig/
+install -vm644 ../src/udev/udev.conf               $LFS/etc/udev/
+install -vm644 rules.d/* ../rules.d/README         $LFS/usr/lib/udev/rules.d/
 install -vm644 $(find ../rules.d/*.rules \
-                      -not -name '*power-switch*') /usr/lib/udev/rules.d/
-install -vm644 hwdb.d/*  ../hwdb.d/{*.hwdb,README} /usr/lib/udev/hwdb.d/
-install -vm755 $udev_helpers                       /usr/lib/udev
-install -vm644 ../network/99-default.link          /usr/lib/udev/network
+                      -not -name '*power-switch*') $LFS/usr/lib/udev/rules.d/
+install -vm644 hwdb.d/*  ../hwdb.d/{*.hwdb,README} $LFS/usr/lib/udev/hwdb.d/
+install -vm755 $udev_helpers                       $LFS/usr/lib/udev
+install -vm644 ../network/99-default.link          $LFS/usr/lib/udev/network
 
 tar -xvf ../../udev-lfs-20230818.tar.xz
 make -f udev-lfs-20230818/Makefile.lfs install
@@ -2053,17 +2059,17 @@ tar -xf ../../systemd-man-pages-256.4.tar.xz                            \
                                   '*/systemd-'{hwdb,udevd.service}.8
 
 sed 's|systemd/network|udev/network|'                                 \
-    /usr/share/man/man5/systemd.link.5                                \
-  > /usr/share/man/man5/udev.link.5
+    $LFS/usr/share/man/man5/systemd.link.5                                \
+  > $LFS/usr/share/man/man5/udev.link.5
 
-sed 's/systemd\(\\\?-\)/udev\1/' /usr/share/man/man8/systemd-hwdb.8   \
-                               > /usr/share/man/man8/udev-hwdb.8
+sed 's/systemd\(\\\?-\)/udev\1/' $LFS/usr/share/man/man8/systemd-hwdb.8   \
+                               > $LFS/usr/share/man/man8/udev-hwdb.8
 
 sed 's|lib.*udevd|sbin/udevd|'                                        \
-    /usr/share/man/man8/systemd-udevd.service.8                       \
-  > /usr/share/man/man8/udevd.8
+    $LFS/usr/share/man/man8/systemd-udevd.service.8                       \
+  > $LFSS/usr/share/man/man8/udevd.8
 
-rm /usr/share/man/man*/systemd*
+rm $LFS/usr/share/man/man*/systemd*
 
 unset udev_helpers
 
@@ -2072,14 +2078,14 @@ udev-hwdb update
 # 8.77. Man-DB-2.12.1
 cd /mnt/lfs/sources/man-db-2.12.1
 
-./configure --prefix=/usr                         \
-            --docdir=/usr/share/doc/man-db-2.12.1 \
-            --sysconfdir=/etc                     \
+./configure --prefix=$LFS/usr                         \
+            --docdir=$LFS/usr/share/doc/man-db-2.12.1 \
+            --sysconfdir=$LFS/etc                     \
             --disable-setuid                      \
             --enable-cache-owner=bin              \
-            --with-browser=/usr/bin/lynx          \
-            --with-vgrind=/usr/bin/vgrind         \
-            --with-grap=/usr/bin/grap             \
+            --with-browser=$LFS/usr/bin/lynx          \
+            --with-vgrind=$LFS/usr/bin/vgrind         \
+            --with-grap=$LFS/usr/bin/grap             \
             --with-systemdtmpfilesdir=            \
             --with-systemdsystemunitdir=
 
@@ -2092,8 +2098,8 @@ make install
 # 8.78. Procps-ng-4.0.4
 cd /mnt/lfs/sources/procps-ng-4.0.4
 
-./configure --prefix=/usr                           \
-            --docdir=/usr/share/doc/procps-ng-4.0.4 \
+./configure --prefix=$LFS/usr                           \
+            --docdir=$LFS/usr/share/doc/procps-ng-4.0.4 \
             --disable-static                        \
             --disable-kill
 
@@ -2107,10 +2113,10 @@ make install
 # 8.79. Util-linux-2.40.2
 cd /mnt/lfs/sources/util-linux-2.40.2
 
-./configure --bindir=/usr/bin     \
-            --libdir=/usr/lib     \
-            --runstatedir=/run    \
-            --sbindir=/usr/sbin   \
+./configure --bindir=$LFS/usr/bin     \
+            --libdir=$LFS/usr/lib     \
+            --runstatedir=$LFS/run    \
+            --sbindir=$LFS/usr/sbin   \
             --disable-chfn-chsh   \
             --disable-login       \
             --disable-nologin     \
@@ -2123,14 +2129,14 @@ cd /mnt/lfs/sources/util-linux-2.40.2
             --without-python      \
             --without-systemd     \
             --without-systemdsystemunitdir        \
-            ADJTIME_PATH=/var/lib/hwclock/adjtime \
-            --docdir=/usr/share/doc/util-linux-2.40.2
+            ADJTIME_PATH=$LFS/var/lib/hwclock/adjtime \
+            --docdir=$LFS/usr/share/doc/util-linux-2.40.2
 
 make 
 
 bash tests/run.sh --srcdir=$PWD --builddir=$PWD
 
-touch /etc/fstab
+touch $LFS/etc/fstab
 chown -R tester .
 su tester -c "make -k check"
 
@@ -2142,8 +2148,8 @@ cd /mnt/lfs/sources/e2fsprogs-1.47.1
 mkdir -v build
 cd       build
 
-../configure --prefix=/usr           \
-             --sysconfdir=/etc       \
+../configure --prefix=$LFS/usr           \
+             --sysconfdir=$LFS/etc       \
              --enable-elf-shlibs     \
              --disable-libblkid      \
              --disable-libuuid       \
@@ -2156,38 +2162,38 @@ make check
 
 make install
 
-rm -fv /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
+rm -fv $LFS/usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
 
-gunzip -v /usr/share/info/libext2fs.info.gz
-install-info --dir-file=/usr/share/info/dir /usr/share/info/libext2fs.info
+gunzip -v $LFS/usr/share/info/libext2fs.info.gz
+install-info --dir-file=$LFS/usr/share/info/dir $LFS/usr/share/info/libext2fs.info
 
 makeinfo -o      doc/com_err.info ../lib/et/com_err.texinfo
-install -v -m644 doc/com_err.info /usr/share/info
-install-info --dir-file=/usr/share/info/dir /usr/share/info/com_err.info
+install -v -m644 doc/com_err.info $LFS/usr/share/info
+install-info --dir-file=$LFS/usr/share/info/dir $LFS/usr/share/info/com_err.info
 
-sed 's/metadata_csum_seed,//' -i /etc/mke2fs.conf
+sed 's/metadata_csum_seed,//' -i $LFS/etc/mke2fs.conf
 
 # 8.81. Sysklogd-2.6.1
 cd /mnt/lfs/sources/sysklogd-2.6.1
 
-./configure --prefix=/usr      \
-            --sysconfdir=/etc  \
-            --runstatedir=/run \
+./configure --prefix=$LFS/usr      \
+            --sysconfdir=$LFS/etc  \
+            --runstatedir=$LFS/run \
             --without-logger
 
 make
 
 make install
 
-cat > /etc/syslog.conf << "EOF"
+cat > $LFS/etc/syslog.conf << "EOF"
 # Begin /etc/syslog.conf
 
-auth,authpriv.* -/var/log/auth.log
-*.*;auth,authpriv.none -/var/log/sys.log
-daemon.* -/var/log/daemon.log
-kern.* -/var/log/kern.log
-mail.* -/var/log/mail.log
-user.* -/var/log/user.log
+auth,authpriv.* -/mnt/lfs/var/log/auth.log
+*.*;auth,authpriv.none -/mnt/lfs/var/log/sys.log
+daemon.* -/mnt/lfs/var/log/daemon.log
+kern.* -/mnt/lfs/var/log/kern.log
+mail.* -/mnt/lfs/var/log/mail.log
+user.* -/mnt/lfs/var/log/user.log
 *.emerg *
 
 # Do not open any internet ports.
@@ -2197,7 +2203,7 @@ secure_mode 2
 EOF
 
 # 8.82. SysVinit-3.10
-cd /mnt/lfs/sources/sysvinit-3.10$
+cd /mnt/lfs/sources/sysvinit-3.10
 
 patch -Np1 -i ../sysvinit-3.10-consolidated-1.patch
 
@@ -2206,9 +2212,9 @@ make
 make install
 
 # 8.85. Cleaning Up
-rm -rf /tmp/{*,.*}
-find /usr/lib /usr/libexec -name \*.la -delete
-find /usr -depth -name $(uname -m)-lfs-linux-gnu\* | xargs rm -rf
+rm -rf $LFS/tmp/{*,.*}
+find $LFS/usr/lib $LFS/usr/libexec -name \*.la -delete
+find $LFS/usr -depth -name $(uname -m)-lfs-linux-gnu\* | xargs rm -rf
 userdel -r tester
 
 # ===========================================================================
@@ -2221,7 +2227,7 @@ make install
 
 # 9.5.1. Creating Network Interface Configuration Files
 # The following command creates a sample file for the eth0 device with a static IP address:
-cd /etc/sysconfig/
+cd $LFS/etc/sysconfig/
 cat > ifconfig.eth0 << "EOF"
 ONBOOT=yes
 IFACE=eth0
@@ -2233,7 +2239,7 @@ BROADCAST=192.168.1.255
 EOF
 
 # 9.5.2. Creating the /etc/resolv.conf File
-cat > /etc/resolv.conf << "EOF"
+cat > $LFS/etc/resolv.conf << "EOF"
 # Begin /etc/resolv.conf
 
 # End /etc/resolv.conf
@@ -2242,11 +2248,11 @@ EOF
 # 9.5.3. Configuring the System Hostname
 # Create the /etc/hostname file and enter a hostname by running:
 # Prompt hostname here
-echo "lfs" > /etc/hostname
+echo "lfs" > $LFS/etc/hostname
 
 # 9.5.4. Customizing the /etc/hosts File
 # Prompt localdomains over here
-cat > /etc/hosts << "EOF"
+cat > $LFS/etc/hosts << "EOF"
 # Begin /etc/hosts
 
 127.0.0.1 localhost.localdomain localhost
@@ -2260,7 +2266,7 @@ EOF
 
 # 9.6 System V Bootscript Usage and Configuration
 # 9.6.2. Configuring SysVinit
-cat > /etc/inittab << "EOF"
+cat > $LFS/etc/inittab << "EOF"
 # Begin /etc/inittab
 
 id:3:initdefault:
@@ -2291,7 +2297,7 @@ s1:1:respawn:/sbin/sulogin
 EOF
 
 # 9.6.4. Configuring the System Clock
-cat > /etc/sysconfig/clock << "EOF"
+cat > $LFS/etc/sysconfig/clock << "EOF"
 # Begin /etc/sysconfig/clock
 
 UTC=1
@@ -2304,7 +2310,7 @@ CLOCKPARAMS=
 EOF
 
 # 9.6.5. Configuring the Linux Console
-cat > /etc/sysconfig/console << "EOF"
+cat > $LFS/etc/sysconfig/console << "EOF"
 # Begin /etc/sysconfig/console
 
 UNICODE="1"
@@ -2411,7 +2417,7 @@ EOF
 locale -a
 
 # Charmaps can have a number of aliases, e.g. ISO-8859-1 is also referred to as iso8859-1 and iso88591. Some applications cannot handle the various synonyms correctly (e.g., require that UTF-8 is written as UTF-8, not utf8), so it is the safest in most cases to choose the canonical name for a particular locale. To determine the canonical name, run the following command, where <locale name> is the output given by locale a for your preferred locale (en_GB.iso88591 in our example).
-LC_ALL=en_GB.iso88591 locale charmap
+LC_ALL="en_GB.iso88591" locale charmap
 
 # For the en_GB.iso88591 locale, the above command will print:
 # ISO-8859-1
@@ -2423,7 +2429,7 @@ LC_ALL="en_GB.iso88591" locale int_curr_symbol
 LC_ALL="en_GB.iso88591" locale int_prefix
 
 # Create the /etc/profile once the proper locale settings have been determined to set the desired locale, but set the C.UTF-8 locale instead if running in the Linux console (to prevent programs from outputting characterss that the Linux console is unable to render):
-cat > /etc/profile << "EOF"
+cat > $LFS/etc/profile << "EOF"
 # Begin /etc/profile
 
 for i in $(locale); do
@@ -2440,7 +2446,7 @@ fi
 EOF
 
 # 9.8. Creating the /etc/inputrc File
-cat > /etc/inputrc << "EOF"
+cat > $LFS/etc/inputrc << "EOF"
 # Begin /etc/inputrc
 # Modified by Chris Lynn <roryo@roryo.dynup.net>
 
@@ -2486,7 +2492,7 @@ EOF
 
 # 9.9. Creating the /etc/shells File
 # It is a requirement for application such as GDM which does not populate the face browser if it can't find /etc/shells, or FTP daemons which traditionally disallow access to users with shells not included in this file.
-cat > /etc/shells << "EOF"
+cat > $LFS/etc/shells << "EOF"
 # Begin /etc/shells
 
 /bin/sh
@@ -2499,14 +2505,14 @@ EOF
 # Chapter 10. Making the LFS System Bootable
 # ===========================================================================
 # The /etc/fstab file is used by some programs to determine where file systems are to be mounted by default, in which order, and which must be checked (for integrity errors) prior to mounting. Create a new file systems table like this:
-cat > /etc/fstab << "EOF"
+cat > $LFS/etc/fstab << "EOF"
 # Begin /etc/fstab
 
 # file system  mount-point    type     options             dump  fsck
 #                                                                order
 
-/dev/<xxx>     /              <fff>    defaults            1     1
-/dev/<yyy>     swap           swap     pri=1               0     0
+/dev/sda1      /              ext4     defaults            1     1
+/dev/sd2       swap           swap     pri=1               0     0
 proc           /proc          proc     nosuid,noexec,nodev 0     0
 sysfs          /sys           sysfs    nosuid,noexec,nodev 0     0
 devpts         /dev/pts       devpts   gid=5,mode=620      0     0
@@ -2529,24 +2535,31 @@ make
 
 make modules_install
 
-mount /boot
+mount $LFS/boot
+
+# Have a look at this part over here
 
 # The following command assumes an x86 architecture
-cp -iv arch/x86/boot/bzImage /boot/vmlinuz-6.10.5-lfs-12.2
+#cp -iv arch/x86/boot/bzImage /boot/vmlinuz-6.10.5-lfs-12.2
+cp -iv arch/x86/boot/bzImage $LFS/boot/vmlinuz-6.10.5-lfs-12.2
 
 # System.map is a symbol file for the kernel. It maps the function entry points of every function in the kernel API, as well as the addresses of the kernel data structures for the running kernel. It is used as a resource when investigating kernel problems. Issue the following command to install the map file:
-cp -iv System.map /boot/System.map-6.10.5
+#cp -iv System.map /boot/System.map-6.10.5
+cp -iv System.map $LFS/boot/System.map-6.10.5
 
 # The kernel configuration file .config produced by the make menuconfig step above contains all the configuration selections for the kernel that was just compiled. It is a good idea to keep this file for future reference:
-cp -iv .config /boot/config-6.10.5
+#cp -iv .config /boot/config-6.10.5
+cp -iv .config $LFS/boot/config-6.10.5
 
 # Install the documentation for the Linux kernel:
-cp -r Documentation -T /usr/share/doc/linux-6.10.5
+#cp -r Documentation -T /usr/share/doc/linux-6.10.5
+cp -r Documentation -T $LFS/usr/share/doc/linux-6.10.5
 
 # 10.3.2. Configuring Linux Module Load Order
 # Create a new file /etc/modprobe.d/usb.conf by running the following:
-install -v -m755 -d /etc/modprobe.d
-cat > /etc/modprobe.d/usb.conf << "EOF"
+# install -v -m755 -d /etc/modprobe.d
+install -v -m755 -d $LFS/etc/modprobe.d
+cat > $LFS/etc/modprobe.d/usb.conf << "EOF"
 # Begin /etc/modprobe.d/usb.conf
 
 install ohci_hcd /sbin/modprobe ehci_hcd ; /sbin/modprobe -i ohci_hcd ; true
@@ -2557,17 +2570,17 @@ EOF
 
 # 10.4. Using GRUB to Set Up the Boot Process
 # 10.4.1. Introduction
-cd /tmp
-grub-mkrescue --output=grub-img.iso
-xorriso -as cdrecord -v dev=/dev/cdrw blank=as_needed grub-img.iso
+#cd /tmp
+#grub-mkrescue --output=grub-img.iso
+#xorriso -as cdrecord -v dev=/dev/cdrw blank=as_needed grub-img.iso
 
 # 10.4.3. Setting Up the Configuration
 # Install the GRUB files into /boot/grub and set up the boot track:
-grub-install /dev/sda
+grub-install $LFS/dev/sda
 
 # 10.4.4. Creating the GRUB Configuration File
 # Generate /boot/grub/grub.cfg:
-cat > /boot/grub/grub.cfg << "EOF"
+cat > $LFS/boot/grub/grub.cfg << "EOF"
 # Begin /boot/grub/grub.cfg
 set default=0
 set timeout=5
@@ -2586,11 +2599,11 @@ EOF
 # ===========================================================================
 
 # It may be a good idea to create an /etc/lfs-release file. By having this file, it is very easy for you to find out which LFS version is installedo n the system. Create this file by running:
-echo 12.2 > /etc/lfs-release
+echo 12.2 > $LFS/etc/lfs-release
 
 # Two files describing the installed system may be used by packages that can be installed on the system later; either in binary form or by building them
 # The first one shows the status of your new system with respect to the Linux Standards Base (LSB). To create this file, run:
-cat > /etc/lsb-release << "EOF"
+cat > $LFS/etc/lsb-release << "EOF"
 DISTRIB_ID="Linux From Scratch"
 DISTRIB_RELEASE="12.2"
 DISTRIB_CODENAME="Version"
@@ -2598,7 +2611,7 @@ DISTRIB_DESCRIPTION="Linux From Scratch"
 EOF
 
 # The second one contains roughly the same information, and is used by systemd and some graphical desktop environments. To create this file, run:
-cat > /etc/os-release << "EOF"
+cat > $LFS/etc/os-release << "EOF"
 NAME="Linux From Scratch"
 VERSION="12.2"
 ID=lfs
