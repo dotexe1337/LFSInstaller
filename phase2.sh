@@ -37,6 +37,15 @@ export LFS_TGT=$(uname -m)-lfs-linux-gnu
 export PATH=$LFS/tools/bin:/usr/bin:/bin
 export CONFIG_SITE=$LFS/usr/share/config.site
 
+export PATH=$LFS/tools/bin:$PATH
+export LC_ALL=POSIX
+export LFS_TGT=$(uname -m)-lfs-linux-gnu
+export CONFIG_SITE=$LFS/usr/share/config.site
+export CFLAGS="-I$LFS/tools/include"
+export LDFLAGS="-L$LFS/tools/lib"
+export CC=$LFS_TGT-gcc
+export CXX=$LFS_TGT-g++
+
 # ===========================================================================
 # Chapter 5. Compiling a Cross-Toolchain
 # ===========================================================================
