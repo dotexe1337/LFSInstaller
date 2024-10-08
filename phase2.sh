@@ -131,10 +131,11 @@ patch -Np1 -i ../glibc-2.40-fhs-1.patch
 mkdir -v build
 cd       build
 
-echo "rootsbindir=/usr/sbin" > configparms
+# echo "rootsbindir=/usr/sbin" > configparms
+echo "rootsbindir=$LFS/usr/sbin" > configparms
 
 ../configure                             \
-      --prefix=/usr                      \
+      --prefix=$LFS/usr                  \
       --host=$LFS_TGT                    \
       --build=$(../scripts/config.guess) \
       --enable-kernel=4.19               \
@@ -162,7 +163,7 @@ cd       build
 ../libstdc++-v3/configure           \
     --host=$LFS_TGT                 \
     --build=$(../config.guess)      \
-    --prefix=/usr                   \
+    --prefix=$LFS/usr               \
     --disable-multilib              \
     --disable-nls                   \
     --disable-libstdcxx-pch         \
@@ -177,7 +178,7 @@ rm -v $LFS/usr/lib/lib{stdc++{,exp,fs},supc++}.la
 # ===========================================================================
 # 6.2. M4-1.4.19
 cd /mnt/lfs/sources/m4-1.4.19
-./configure --prefix=/usr   \
+./configure --prefix=$LFS/usr   \
             --host=$LFS_TGT \
             --build=$(build-aux/config.guess)
 make
@@ -195,7 +196,7 @@ pushd build
   make -C progs tic
 popd
 
-./configure --prefix=/usr                \
+./configure --prefix=$LFS/usr            \
             --host=$LFS_TGT              \
             --build=$(./config.guess)    \
             --mandir=/usr/share/man      \
@@ -217,7 +218,7 @@ sed -e 's/^#if.*XOPEN.*$/#if 1/' \
 # 6.4. Bash-5.2.32
 cd /mnt/lfs/sources/bash-5.2.32
 
-./configure --prefix=/usr                      \
+./configure --prefix=$LFS/usr                  \
             --build=$(sh support/config.guess) \
             --host=$LFS_TGT                    \
             --without-bash-malloc              \
@@ -230,7 +231,7 @@ ln -sv bash $LFS/bin/sh
 # 6.5. Coreutils-9.5
 cd /mnt/lfs/sources/coreutils-9.5
 
-./configure --prefix=/usr                     \
+./configure --prefix=$LFS/usr                 \
             --host=$LFS_TGT                   \
             --build=$(build-aux/config.guess) \
             --enable-install-program=hostname \
@@ -248,7 +249,7 @@ sed -i 's/"1"/"8"/'                    $LFS/usr/share/man/man8/chroot.8
 # 6.6. Diffutils-3.10
 cd /mnt/lfs/sources/diffutils-3.10
 
-./configure --prefix=/usr   \
+./configure --prefix=$LFS/usr \
             --host=$LFS_TGT \
             --build=$(./build-aux/config.guess)
 
@@ -268,7 +269,7 @@ pushd build
   make
 popd
 
-./configure --prefix=/usr --host=$LFS_TGT --build=$(./config.guess)
+./configure --prefix=$LFS/usr --host=$LFS_TGT --build=$(./config.guess)
 
 make FILE_COMPILE=$(pwd)/build/src/file
 
@@ -279,7 +280,7 @@ rm -v $LFS/usr/lib/libmagic.la
 # 6.8. Findutils-4.10.0
 cd /mnt/lfs/sources/findutils-4.10.0
 
-./configure --prefix=/usr                   \
+./configure --prefix=$LFS/usr                   \
             --localstatedir=/var/lib/locate \
             --host=$LFS_TGT                 \
             --build=$(build-aux/config.guess)
@@ -293,7 +294,7 @@ cd /mnt/lfs/sources/gawk-5.3.0
 
 sed -i 's/extras//' Makefile.in
 
-./configure --prefix=/usr   \
+./configure --prefix=$LFS/usr   \
             --host=$LFS_TGT \
             --build=$(build-aux/config.guess)
 
@@ -304,7 +305,7 @@ make DESTDIR=$LFS install
 # 6.10. Grep-3.11
 cd /mnt/lfs/sources/grep-3.11
 
-./configure --prefix=/usr   \
+./configure --prefix=$LFS/usr   \
             --host=$LFS_TGT \
             --build=$(./build-aux/config.guess)
 
@@ -315,7 +316,7 @@ make DESTDIR=$LFS install
 # 6.11. Gzip-1.13
 cd /mnt/lfs/sources/gzip-1.13
 
-./configure --prefix=/usr --host=$LFS_TGT
+./configure --prefix=$LFS/usr --host=$LFS_TGT
 
 make
 
@@ -324,7 +325,7 @@ make DESTDIR=$LFS install
 # 6.12. Make-4.4.1
 cd /mnt/lfs/sources/make-4.4.1
 
-./configure --prefix=/usr   \
+./configure --prefix=$LFS/usr   \
             --without-guile \
             --host=$LFS_TGT \
             --build=$(build-aux/config.guess)
@@ -336,7 +337,7 @@ make DESTDIR=$LFS install
 # 6.13. Patch-2.7.6
 cd /mnt/lfs/sources/patch-2.7.6
 
-./configure --prefix=/usr   \
+./configure --prefix=$LFS/usr   \
             --host=$LFS_TGT \
             --build=$(build-aux/config.guess)
 
@@ -347,7 +348,7 @@ make DESTDIR=$LFS install
 # 6.14. Sed-4.9
 cd /mnt/lfs/sources/sed-4.9
 
-./configure --prefix=/usr   \
+./configure --prefix=$LFS/usr   \
             --host=$LFS_TGT \
             --build=$(./build-aux/config.guess)
 
@@ -358,7 +359,7 @@ make DESTDIR=$LFS install
 # 6.15. Tar-1.35
 cd /mnt/lfs/sources/tar-1.35
 
-./configure --prefix=/usr                     \
+./configure --prefix=$LFS/usr                     \
             --host=$LFS_TGT                   \
             --build=$(build-aux/config.guess)
 
@@ -369,11 +370,11 @@ make DESTDIR=$LFS install
 # 6.16. Xz-5.6.2
 cd /mnt/lfs/sources/xz-5.6.2
 
-./configure --prefix=/usr                     \
+./configure --prefix=$LFS/usr                     \
             --host=$LFS_TGT                   \
             --build=$(build-aux/config.guess) \
             --disable-static                  \
-            --docdir=/usr/share/doc/xz-5.6.2
+            --docdir=$LFS/usr/share/doc/xz-5.6.2
 
 make
 
@@ -435,7 +436,7 @@ cd       build
     --host=$LFS_TGT                                \
     --target=$LFS_TGT                              \
     LDFLAGS_FOR_TARGET=-L$PWD/$LFS_TGT/libgcc      \
-    --prefix=/usr                                  \
+    --prefix=$LFS/usr                              \
     --with-build-sysroot=$LFS                      \
     --enable-default-pie                           \
     --enable-default-ssp                           \
@@ -489,50 +490,50 @@ fi
 
 # 7.4. Entering the Chroot Environment
 # The chroot environment will be used to install the final system and finish installing the temporary tools. As user root, run the following command to enter the environment that is, at the moment, populated with nothing but temporary tools:
-chroot "$LFS" /usr/bin/env -i   \
-    HOME=/root                  \
-    TERM="$TERM"                \
-    PS1='(lfs chroot) \u:\w\$ ' \
-    PATH=/usr/bin:/usr/sbin     \
-    MAKEFLAGS="-j$(nproc)"      \
-    TESTSUITEFLAGS="-j$(nproc)" \
-    /bin/bash --login
+#chroot "$LFS" /usr/bin/env -i   \
+#    HOME=/root                  \
+#    TERM="$TERM"                \
+#    PS1='(lfs chroot) \u:\w\$ ' \
+#    PATH=/usr/bin:/usr/sbin     \
+#    MAKEFLAGS="-j$(nproc)"      \
+#    TESTSUITEFLAGS="-j$(nproc)" \
+#    /bin/bash --login
 
 # 7.5. Creating Directories
 # Create some root-level directories thatre not in the limited set required in the previous chapters by issuing the following command:
-mkdir -pv /{boot,home,mnt,opt,srv}
+mkdir -pv $LFS/{boot,home,mnt,opt,srv}
 
 # Create the required set of subdirectories below the root-level by issuing the following commands:
-mkdir -pv /etc/{opt,sysconfig}
-mkdir -pv /lib/firmware
-mkdir -pv /media/{floppy,cdrom}
-mkdir -pv /usr/{,local/}{include,src}
-mkdir -pv /usr/lib/locale
-mkdir -pv /usr/local/{bin,lib,sbin}
-mkdir -pv /usr/{,local/}share/{color,dict,doc,info,locale,man}
-mkdir -pv /usr/{,local/}share/{misc,terminfo,zoneinfo}
-mkdir -pv /usr/{,local/}share/man/man{1..8}
-mkdir -pv /var/{cache,local,log,mail,opt,spool}
-mkdir -pv /var/lib/{color,misc,locate}
+mkdir -pv $LFS/etc/{opt,sysconfig}
+mkdir -pv $LFS/lib/firmware
+mkdir -pv $LFS/media/{floppy,cdrom}
+mkdir -pv $LFS/usr/{,local/}{include,src}
+mkdir -pv $LFS/usr/lib/locale
+mkdir -pv $LFS/usr/local/{bin,lib,sbin}
+mkdir -pv $LFS/usr/{,local/}share/{color,dict,doc,info,locale,man}
+mkdir -pv $LFS/usr/{,local/}share/{misc,terminfo,zoneinfo}
+mkdir -pv $LFS/usr/{,local/}share/man/man{1..8}
+mkdir -pv $LFS/var/{cache,local,log,mail,opt,spool}
+mkdir -pv $LFS/var/lib/{color,misc,locate}
 
-ln -sfv /run /var/run
-ln -sfv /run/lock /var/lock
+ln -sfv $LFS/run $LFS/var/run
+ln -sfv $LFS/run/lock $LFS/var/lock
 
-install -dv -m 0750 /root
-install -dv -m 1777 /tmp /var/tmp
+install -dv -m 0750 $LFS/root
+install -dv -m 1777 $LFS/tmp $LFS/var/tmp
 
 # 7.6. Creating Essential Files and Symlinks
 # Historically, Lonux maintained a list of the mounted file systems in the file /etc/mtab. Modern kernels maintain this list internally and expose it to the user via the /proc filesystem. To satisfy utilities that expect to find /etc/mtab, create the following symbolic link:
-ln -sv /proc/self/mounts /etc/mtab
+ln -sv $LFS/proc/self/mounts $LFS/etc/mtab
 
 # Create a basic /etc/hosts file to be references in some test suites, and in one of the Perl's configuration files as well:
-cat > /etc/hosts << EOF
+cat > $LFs/etc/hosts << EOF
 127.0.0.1  localhost $(hostname)
 ::1        localhost
 EOF
 
 # In order for user root to be able to login and for the name "root" to be recognized, there must be relevant entries in the /etc/passwd and /etc/group files. Create the /etc/passwd file by running the following command:
-cat > /etc/passwd << "EOF"
+cat > $LFS/etc/passwd << "EOF"
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/usr/bin/false
 daemon:x:6:6:Daemon User:/dev/null:/usr/bin/false
@@ -543,7 +544,7 @@ EOF
 
 # The actual password for root will be set later.
 # Create the /etc/group file by running the following command: 
-cat > /etc/group << "EOF"
+cat > $LFS/etc/group << "EOF"
 root:x:0:
 bin:x:1:daemon
 sys:x:2:
@@ -574,18 +575,18 @@ EOF
 localedef -i C -f UTF-8 C.UTF-8
 
 # Some tests in Chapter 8 need a regular user. We aadd this user here and delete this account at the end of that chapter.
-echo "tester:x:101:101::/home/tester:/bin/bash" >> /etc/passwd
-echo "tester:x:101:" >> /etc/group
+echo "tester:x:101:101::/home/tester:/bin/bash" >> $LFS/etc/passwd
+echo "tester:x:101:" >> $LFs/etc/group
 install -o tester -d /home/tester
 
 # To remove the "I have no name!" prompt, start a new shell. Since the /etc/passwd and /etc/group files have been created, user name and group name resolution will now work:
 exec /usr/bin/bash --login
 
 # The login, agetty and init programs (and others) use a number of log files to record information such as who was logged into the system and when. However, these programs will not wrie to the log files if they do not already exist. Initialize the log files and give them proper permissions:
-touch /var/log/{btmp,lastlog,faillog,wtmp}
-chgrp -v utmp /var/log/lastlog
-chmod -v 664  /var/log/lastlog
-chmod -v 600  /var/log/btmp
+touch $LFS/var/log/{btmp,lastlog,faillog,wtmp}
+chgrp -v utmp $LFS/var/log/lastlog
+chmod -v 664  $LFS/var/log/lastlog
+chmod -v 600  $LFS/var/log/btmp
 
 # The /var/log/wtmp file records all logins and logouts.
 # The /var/log/lastlog file records when each user laast logged in.
@@ -599,13 +600,13 @@ cd /mnt/lfs/sources/gettext-0.22.5
 
 make
 
-cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /usr/bin
+cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} $LFS/usr/bin
 
 # 7.8. Bison-3.8.2
 cd /mnt/lfs/sources/bison-3.8.2
 
-./configure --prefix=/usr \
-            --docdir=/usr/share/doc/bison-3.8.2
+./configure --prefix=$LFS/usr \
+            --docdir=$LFS/usr/share/doc/bison-3.8.2
 
 make
 
@@ -615,11 +616,11 @@ make install
 cd /mnt/lfs/sources/perl-5.40.0
 
 sh Configure -des                                         \
-             -D prefix=/usr                               \
-             -D vendorprefix=/usr                         \
+             -D prefix=$LFS/usr                           \
+             -D vendorprefix=$LFS/usr                     \
              -D useshrplib                                \
-             -D privlib=/usr/lib/perl5/5.40/core_perl     \
-             -D archlib=/usr/lib/perl5/5.40/core_perl     \
+             -D privlib=$LFS/usr/lib/perl5/5.40/core_perl \
+             -D archlib=$LFS/usr/lib/perl5/5.40/core_perl \
              -D sitelib=/usr/lib/perl5/5.40/site_perl     \
              -D sitearch=/usr/lib/perl5/5.40/site_perl    \
              -D vendorlib=/usr/lib/perl5/5.40/vendor_perl \
