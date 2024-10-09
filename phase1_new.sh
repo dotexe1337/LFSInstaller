@@ -104,10 +104,10 @@ EOF
 
 bash version-check.sh
 
-sudo apt-get install bison
-sudo apt-get install gawk
-sudo apt-get install m4
-sudo apt-get install texinfo
+sudo apt-get install -y bison
+sudo apt-get install -y gawk
+sudo apt-get install -y m4
+sudo apt-get install -y texinfo
 
 sudo rm /bin/sh
 sudo ln -s /bin/bash /bin/sh
