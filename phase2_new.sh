@@ -12,9 +12,6 @@ useradd -s /bin/bash -g lfs -m -k /dev/null lfs
 # As the root user, run the following to clear lfs user's environment
 [ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 
-# If you want to log in as lfs or switch to lfs from a non-root user (as opposed to switching to user lfs when logged in as root, which does not require the lfs user to have a password), you need to set a password for lfs. Issue the following command as the root user to set the password:
-# passwd lfs
-
 # Grant lfs full access to all the directories under $LFS by making lfs the owner:
 chown -v lfs $LFS/{usr{,/*},lib,var,etc,bin,sbin,tools}
 case $(uname -m) in
@@ -25,6 +22,9 @@ esac
 
 # Start a shell running as user lfs. This can be done by logging in as lfs on a virtual console or with the following substitute/switch user command:
 su - lfs <<EOF
+cd /mnt/lfs/sources
+for file in /mnt/lfs/sources/*.{xz,gz,bz2}; do tar -xf "$file" -C /mnt/lfs/sources; done
+
 cat > ~/.bash_profile << "END"
 exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
 END
