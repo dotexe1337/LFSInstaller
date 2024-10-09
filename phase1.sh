@@ -160,12 +160,12 @@ chmod -v a+wt $LFS/sources
 wget --input-file=wget-list-sysv --continue --directory-prefix=$LFS/sources
 
 # Additionally, starting with LFS-7.0, there is a separate file, md5sums, which can be used to verify that all the correct packages are available before proceeding. Place that file in $LFS/sources and run:
-pushd $LFS/sources
-  md5sum -c md5sums
-popd
+#pushd $LFS/sources
+ # md5sum -c md5sums
+#popd
 
 # If the packages and patches are downloaded as a non-root user, these files will be owned by the user. If you won't assign the same UID for your user in the LFS system, change the owners of these files to root now to avoid this issue:
-chown root:root $LFS/sources/*
+# chown root:root $LFS/sources/*
 
 # Extract all files to /mnt/lfs/osurces
 for file in /mnt/lfs/sources/*.{xz,gz,bz2}; do tar -xf "$file" -C /mnt/lfs/sources; done
