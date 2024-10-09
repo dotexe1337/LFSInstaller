@@ -18,8 +18,6 @@ case $(uname -m) in
   x86_64) chown -v lfs $LFS/lib64 ;;
 esac
 
-# chown lfs:lfs $LFS/sources/*
-
 # Start a shell running as user lfs. This can be done by logging in as lfs on a virtual console or with the following substitute/switch user command:
 su - lfs <<EOF
 cd /mnt/lfs/sources
