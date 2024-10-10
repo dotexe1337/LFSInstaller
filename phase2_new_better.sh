@@ -24,9 +24,12 @@ for file in /mnt/lfs/sources/*.{xz,gz,bz2}; do tar -xf "$file" -C /mnt/lfs/sourc
 
 mkdir -pv $LFS/tools
 
-chown -v lfs:lfs $LFS
-chown -v lfs:lfs $LFS/tools
-chown -v lfs:lfs $LFS/sources/*
+#chown -v lfs:lfs $LFS
+#chown -v lfs:lfs $LFS/tools
+#chown -v lfs:lfs $LFS/sources/*
+
+chown -vR lfs:lfs $LFS
+chmod -vR u+rwx $LFS
 
 # Start a shell running as user lfs. This can be done by logging in as lfs on a virtual console or with the following substitute/switch user command:
 su - lfs << "EOF"
