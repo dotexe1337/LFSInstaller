@@ -300,7 +300,7 @@ cd       build
 echo "rootsbindir=/usr/sbin" > configparms
 
 ../configure                             \
-      --prefix=$LFS/usr                  \
+      --prefix=/usr                      \
       --host=$LFS_TGT                    \
       --build=$(../scripts/config.guess) \
       --enable-kernel=4.19               \
@@ -339,14 +339,16 @@ cd       build
 ../libstdc++-v3/configure           \
     --host=$LFS_TGT                 \
     --build=$(../config.guess)      \
-    --prefix=/usr               \
+    --prefix=/usr                   \
     --disable-multilib              \
     --disable-nls                   \
     --disable-libstdcxx-pch         \
     --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/14.2.0
 
 make
+
 make DESTDIR=$LFS install
+
 rm -v $LFS/usr/lib/lib{stdc++{,exp,fs},supc++}.la
 
 echo ''
@@ -399,7 +401,7 @@ sed -e 's/^#if.*XOPEN.*$/#if 1/' \
 
 cd /mnt/lfs/sources/bash-5.2.32
 
-./configure --prefix=/usr                  \
+./configure --prefix=/usr                      \
             --build=$(sh support/config.guess) \
             --host=$LFS_TGT                    \
             --without-bash-malloc              \
@@ -428,7 +430,7 @@ sed -i 's/"1"/"8"/'                    $LFS/usr/share/man/man8/chroot.8
 
 cd /mnt/lfs/sources/diffutils-3.10
 
-./configure --prefix=/usr \
+./configure --prefix=/usr   \
             --host=$LFS_TGT \
             --build=$(./build-aux/config.guess)
 
@@ -543,7 +545,7 @@ cd /mnt/lfs/sources/xz-5.6.2
             --host=$LFS_TGT                   \
             --build=$(build-aux/config.guess) \
             --disable-static                  \
-            --docdir=$LFS/usr/share/doc/xz-5.6.2
+            --docdir=/usr/share/doc/xz-5.6.2
 
 make
 
