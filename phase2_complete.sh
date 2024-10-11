@@ -39,8 +39,7 @@ umask 022
 export LFS=/mnt/lfs
 export LC_ALL=POSIX
 export LFS_TGT=$(uname -m)-lfs-linux-gnu
-export PATH=/usr/bin
-export PATH=$LFS/tools/bin:$PATH
+export PATH=$LFS/tools/bin:/usr/bin
 export CONFIG_SITE=$LFS/usr/share/config.site
 
 cd /mnt/lfs/sources/binutils-2.43.1
