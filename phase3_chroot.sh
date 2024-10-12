@@ -12,6 +12,9 @@ mount -v -t ext4 /dev/sda1 $LFS/home
 # ===========================================================================
 # 7.2. Changing Ownership
 # To address this issue, change the ownership of the $LFS/& directories to user root by running the following command:
+sudo groupadd lfs
+sudo useradd -s /bin/bash -g lfs -m -k /dev/null lfs
+
 chown --from lfs -R root:root $LFS/{usr,lib,var,etc,bin,sbin,tools}
 case $(uname -m) in
   x86_64) chown --from lfs -R root:root $LFS/lib64 ;;
