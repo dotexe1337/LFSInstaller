@@ -183,8 +183,8 @@ export CONFIG_SITE=$LFS/usr/share/config.site
 
 # 4.3. Adding the LFS User
 # As root, issue the following commands to add the new user:
-groupadd lfs
-useradd -s /bin/bash -g lfs -m -k /dev/null lfs
+sudo groupadd lfs
+sudo useradd -s /bin/bash -g lfs -m -k /dev/null lfs
 
 # As the root user, run the following to clear lfs user's environment
 [ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
