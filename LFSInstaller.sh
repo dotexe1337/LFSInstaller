@@ -219,7 +219,6 @@ usage() {
 	exit 0
 }
 
-
 #================================================================
 # FUNCTION: mount
 # DESCRIPTION:
@@ -303,7 +302,7 @@ unmount() {
 #     None
 #================================================================
 chroot() {
-
+	echo "test"
 }
 
 #================================================================
@@ -316,7 +315,7 @@ chroot() {
 #     None
 #================================================================
 version() {
-
+	echo "test"
 }
 
 #================================================================
@@ -329,7 +328,8 @@ version() {
 #     None
 #================================================================
 install() {
-
+	echo "Installing LFS Release Build Version 12.2"
+	bash phase_exec.sh
 }
 
 #================================================================
@@ -358,9 +358,10 @@ VARIABLE=""
 VERBOSE=false
  
 while [[ "$#" -gt 0 ]]; do
-	case  in
+	case $1 in
 		-u|--usage) usage ;;
 		-h|--help) help ;;
+		-i|--install) install ;;
 		-v|--variable) VARIABLE="$2"; shift ;;
 		--verbose) VERBOSE=true ;;
 		*) error "Unknown parameter passed: "; exit 1 ;;
