@@ -14,6 +14,7 @@ LFSInstaller is compatible with the the following standard host machines for pac
 - **Debian**
 - **Arch Linux**
 - **Gentoo Linux**
+- **Linux Mint**
 
 Install Git and clone LFSInstaller GitHub repository on your preferred location.
 ```
