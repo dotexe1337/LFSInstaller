@@ -329,7 +329,7 @@ version() {
 #================================================================
 install() {
 	echo "Installing LFS Release Build Version 12.2"
-	bash phase_exec.sh
+	sudo ./phase_exec.sh
 }
 
 #================================================================
