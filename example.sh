@@ -333,6 +333,7 @@ rm -v a.out
 
 cd /mnt/lfs/sources/gcc-14.2.0
 
+rm -r build
 mkdir -v build
 cd       build
 
@@ -557,6 +558,7 @@ cd /mnt/lfs/sources/binutils-2.43.1
 
 sed '6009s/$add_dir//' -i ltmain.sh
 
+rm -r build
 mkdir -v build
 cd       build
 
@@ -597,6 +599,7 @@ esac
 sed '/thread_header =/s/@.*@/gthr-posix.h/' \
     -i libgcc/Makefile.in libstdc++-v3/include/Makefile.in
 
+rm -r build
 mkdir -v build
 cd       build
 
@@ -735,8 +738,6 @@ localedef -i C -f UTF-8 C.UTF-8
 echo "tester:x:101:101::/home/tester:/bin/bash" >> /etc/passwd
 echo "tester:x:101:" >> /etc/group
 install -o tester -d /home/tester
-
-exec /usr/bin/bash --login
 
 touch /var/log/{btmp,lastlog,faillog,wtmp}
 chgrp -v utmp /var/log/lastlog
@@ -1224,6 +1225,7 @@ ln -sv pkgconf.1 /usr/share/man/man1/pkg-config.1
 
 cd /mnt/lfs/sources/binutils-2.43.1
 
+rm -r build
 mkdir -v build
 cd       build
 
@@ -1253,7 +1255,7 @@ rm -fv /usr/lib/lib{bfd,ctf,ctf-nobfd,gprofng,opcodes,sframe}.a
 
 cd /mnt/lfs/sources/gmp-6.3.0
 
-./configure --prefix=$LFS/usr \
+./configure --prefix=/usr \
             --enable-cxx     \
             --disable-static \
             --docdir=$LFS/usr/share/doc/gmp-6.3.0
@@ -1401,6 +1403,7 @@ case $(uname -m) in
   ;;
 esac
 
+rm -r build
 mkdir -v build
 cd       build
 
@@ -1585,10 +1588,6 @@ exit $value
 EOF
 
 make install
-
-exec /usr/bin/bash --login
-
-
 
 
 cd /mnt/lfs/sources/libtool-2.4.7
