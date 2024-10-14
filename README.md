@@ -1,4 +1,4 @@
-# LFSInstaller - Complete Linux From Scratch Installer
+# LFSInstaller - Linux From Scratch Script Installer
 
 ![new_video-ezgif com-crop](https://github.com/user-attachments/assets/72c916b2-268c-49a4-a3c7-a00c1f8a1659)
 
