@@ -153,7 +153,13 @@ mkdir -v $LFS/sources
 chmod -v a+wt $LFS/sources
 
 # To download all of the packages and patches by using wget-list-sysv as an input to the wget command, use:
-wget --input-file=wget-list-sysv --continue --directory-prefix=$LFS/sources
+# wget --input-file=wget-list-sysv --continue --directory-prefix=$LFS/sources
+
+sudo cp packages/ /mnt/lfs/sources/
+
+wget https://www.kernel.org/pub/linux/kernel/v6.x/linux-6.10.5.tar.xz
+mv linux-6.10.5.tar.xz /mnt/lfs/sources/
+
 
 # ===========================================================================
 # Chapter 4. Final Preparations
