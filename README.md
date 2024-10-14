@@ -7,7 +7,7 @@ LFS installer from LFS book (_LinuxFromScratch.org_) for Linux enthusiasts and/o
 ----------------------------------------------------------------------------------------------------------------------------
 
 ## Description
-Following the instruction manual for building Linux From Scratch, even for experienced developers, can be a tedious reptitive task if they hate reimplementing it manually for maintenance. This is also with addition of fixing errors after compiling specific packages that fail to perform compilation. LFSInstaller aims to mitigate theses problems automatically through previous bug errors when building LFS.
+Following the instruction manual for building Linux From Scratch, even for experienced developers, can be a tedious repetitive task if they hate reimplementing it manually for maintenance. This is also with addition of fixing errors after compiling specific packages that fail to perform compilation. LFSInstaller aims to mitigate theses problems automatically through previous bug errors when building LFS.
 
 # Getting LFSInstaller
 LFSInstaller is compatible with the the following standard host machines for package installation:
