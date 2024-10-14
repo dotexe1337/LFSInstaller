@@ -557,6 +557,7 @@ cd /mnt/lfs/sources/binutils-2.43.1
 
 sed '6009s/$add_dir//' -i ltmain.sh
 
+rm -r build
 mkdir -v build
 cd       build
 
@@ -597,6 +598,7 @@ esac
 sed '/thread_header =/s/@.*@/gthr-posix.h/' \
     -i libgcc/Makefile.in libstdc++-v3/include/Makefile.in
 
+rm -r build
 mkdir -v build
 cd       build
 
@@ -1224,6 +1226,7 @@ ln -sv pkgconf.1 /usr/share/man/man1/pkg-config.1
 
 cd /mnt/lfs/sources/binutils-2.43.1
 
+rm -r build
 mkdir -v build
 cd       build
 
@@ -1401,6 +1404,7 @@ case $(uname -m) in
   ;;
 esac
 
+rm -r build
 mkdir -v build
 cd       build
 
