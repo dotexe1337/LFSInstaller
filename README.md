@@ -36,27 +36,6 @@ With LFSInstaller, it will scan the list of Disk Management softwares that is in
 use to proceed with the partitioning. If you do not want to use the disk partition, you can proceed with either using automatic with prompt provided to you or use 
 manual for maintenance operation of implementing partition
 
-### Logging
-While performing installation, the logs of the operation will be logged into its specific directory, with the purpose of resuming a paused or interrupted installation with its
-log intact. This ensures that when returning to its state, the script will scan for the following directory where log file is installed and check the state of completion
-of LFS installation and compared to its installation script for resuming completion.
-
-### Resolves Patching Effectively
-It is a common problem for experienced developers to perform maintenance with source packages if it fails to compile, which maybe due to missing packages that are not installed
-or that are incompatible with Makefile that does not meet the requirement of such installation. With LFSInstaller, if a problem is resolved previously by other users,
-the typical solutions will be displayed if a compilation error for a specific source package will be displayed for you to decide how to solve such problem.
-
-# Custom Logging Message
-You can decide the type of logging messages, depending on your background as an experienced linux developer. 
-You can choose the type by its style of 'Init' systems of the following: 
-- **OpenRC**
-- **SystemD**
-- **SysV**
-- **s6**
-- **runit**
-
-The default message type will be in SystemD if you do not select the type before-hand.
-
 ## Help
 ```
 <insert help box over here>
