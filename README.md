@@ -10,19 +10,21 @@ LFS installer from LFS book (_LinuxFromScratch.org_) for Linux enthusiasts and/o
 Following the instruction manual for building Linux From Scratch, even for experienced developers, can be a tedious repetitive task if they hate reimplementing it manually for maintenance. This is also with addition of fixing errors after compiling specific packages that fail to perform compilation. LFSInstaller aims to mitigate theses problems automatically through previous bug errors when building LFS.
 
 # Getting LFSInstaller
-LFSInstaller is compatible with the the following standard host machines for package installation:
-- **Debian**
-- **Arch Linux**
-- **Gentoo Linux**
-- **Linux Mint**
-- **Slackware**
-
-Install Git and clone LFSInstaller GitHub repository on your preferred location.
+Clone LFSInstaller repository to a suitable directory.
 ```
 git clone https://github.com/eliaz5536/lfsinstaller.git
 ```
 
-LFSInstaller can either be installed from online website (using wget / curl) or offline (existing HTML pages which are extracted using XMLint to convert HTML to XML pages).
+Go into the repository directory and add execute permission to LFSInstaller.sh.
+```
+cd /LFSInstaller
+chmod +x LFSInstaller.sh
+```
+
+Execute the shell script (It is recommended that you execute as a root user).
+```
+sudo ./LFSInstaller.sh
+```
 
 ### Backward Compatibility
 You can select specific version through backward compatibility if the kernel or host machine does not support latest versions of source packages. Therefore, you can 
