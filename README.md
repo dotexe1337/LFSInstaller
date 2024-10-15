@@ -38,12 +38,27 @@ manual for maintenance operation of implementing partition
 
 ## Help
 ```
-<insert help box over here>
+LFSInstaller
+ 
+LFS Script Installer by which the user can decide how they want to customize their own package.
+
+Usage: ./LFSInstaller.sh [options]
+It is recommended to run this as a root user
+
+Options:
+  --usage						            Show usage information
+  -h, --help						        Show help message
+  -v, --version						      Specifies LFS Release Build Version
+  --swap						            Specifies SWAP partition
+  -p, --partition						    Specifies main partition
+  --create-partition						Specifies new device blocks of partition
+  -c, --create						      Generates installation script
+  -i, --install						      Initializes LFS Installation
 ```
 
 ## Usage
 ```
-<insert usage over here>
+Usage: ./LFSInstaller.sh [options]
 ```
 
 ## License
