@@ -22,8 +22,6 @@ Install Git and clone LFSInstaller GitHub repository on your preferred location.
 git clone https://github.com/eliaz5536/lfsinstaller.git
 ```
 
-## Features
-### Online & Offline Installer
 LFSInstaller can either be installed from online website (using wget / curl) or offline (existing HTML pages which are extracted using XMLint to convert HTML to XML pages).
 
 ### Backward Compatibility
