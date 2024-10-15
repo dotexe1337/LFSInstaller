@@ -694,6 +694,12 @@ create_script() {
 		esac
 	done
 
+
+	./script_generator $PARTITION $SWAP_PARTITION $DISTRIB_CODENAME $VERSION_CODENAME $INSTALL_TYPE $VERSION $NEOFETCH $SWAP
+
+
+
+
 	# Success
 	#echo "Your script has been successfully created."
 	#echo "Before starting your installation, it is essential that you view your installation script to display how it installs your system"
