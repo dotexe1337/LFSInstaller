@@ -83,46 +83,43 @@ max_match_length=0
 DIRECTORY=""
 
 if [[ "$MAJOR_VERSION" == "9" ]]; then
-	cd $(pwd)/releases/$VERSION/chapter06
-	DIRECTORY="$(pwd)/releases/$VERSION/chapter06"
+	DIRECTORY="$(pwd)/$VERSION/chapter06/"
 else
-	cd $(pwd)/releases/$VERSION/chapter08
-	DIRECTORY="$(pwd)/releases/$VERSION/chapter08"
+	DIRECTORY="$(pwd)/$VERSION/chapter08/"
 fi
 
-echo "$DIRECTORY"
-
-for opt in "${selected_softwares[@]}"; do
-	for file in "$directory"*.html; do
+for file in "$DIRECTORY"*.html; do
+	if [[ -f "$file" ]]; then
 		# Get the base name without the extension
 		base_name=$(basename "$file" .html)
-		echo "Base name: $base_name"	
-		echo "Selected software: $opt"	
 
-		# Check if the base name contains the option string (case-insensitive)
-		match=$(echo "$base_name" | grep -oi "$opt")
+		# Reset variables for the next iteration
+		closest_match=""
+		max_match_length=0
 
-		if [[ -n "$match" ]]; then
-			# Calculate the length of the matching part
-			match_length=${#match}
+		for opt in "${selected_softwares[@]}"; do
+			# Convert both base name and option to lowercase for case-insensitive comparison
+			base_name_lower=$(echo "$base_name" | tr '[:upper:]' '[:lower:]')
+			opt_lower=$(echo "$opt" | tr '[:upper:]' '[:lower:]')
 
-			# If the current match is longer (i.e., closer) than the previous best match
-			if [[ $match_length -gt $max_match_length ]]; then
-				closest_match="$file"
-				max_match_length=$match_length
+			if [[ "$opt_lower" == *"$base_name_lower"* ]]; then
+				# Calculate the length of the matching part
+				match_length=${#base_name_lower}
+
+				# If the current match is longer (i.e., closer) than the previous best match
+				if [[ $match_length -gt $max_match_length ]]; then
+					closest_match="$opt"
+					max_match_length=$match_length
+				fi
 			fi
-		fi
-	done
-	
-	# Output the closest match if found
-	if [[ -n "$closest_match" ]]; then
-		echo "Closest matching file: $closest_match"
+		done
 
-		# Generate section of the script that 
-		echo "Extract file over here"
-		echo "We will generate script over here"
-	else 
-		echo "No matching file found."
+		# Output the closest match if found
+		if [[ -n "$closest_match" ]]; then
+			# echo "Closest matching file for $opt: $closest_match"
+		    	echo "Performing actions for $closest_match and file $file"
+		fi
 	fi
 done
+
 # --------------------------------------------------------------------------------------------------------
