@@ -122,4 +122,16 @@ for file in "$DIRECTORY"*.html; do
 	fi
 done
 
+# Single or Phases
+if [[ "$INSTALL_TYPE" == "SINGLE" ]]; then
+	touch install.sh
+else 
+	mkdir $(pwd)/phase_installation
+
+	touch phase_installation/build_preparation.sh
+	touch phase_installation/cross_toolchain.sh
+	touch phase_installation/chroot.sh
+	touch phase_installation/system_configuration.sh
+fi
+
 # --------------------------------------------------------------------------------------------------------
