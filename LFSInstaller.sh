@@ -105,7 +105,6 @@ ITALIC="\e[3m"
 
 ENDCOLOR="\e[0m"
 
-
 #================================================================
 # FUNCTION: info
 # DESCRIPTION:
@@ -441,7 +440,7 @@ create_script() {
 	# Specify the partition (e.g., /dev/sda1 or /dev/sda) if it is not selected
 	if [ -z "$PARTITION" ]; then
 		while true; do
-			read -p "Specify the partition" PARTITION
+			read -p "Specify the partition: " PARTITION
 		
 			if [[ -z "$PARTITION" ]]; then
 				error "The partition is not selected. Please specify the partition."
@@ -454,7 +453,7 @@ create_script() {
 
 	while true; do
 		# Prompt the user
-		read -p "Do you want to use SWAP partition during LFS installation (Y/n):" answer
+		read -p "Do you want to use SWAP partition during LFS installation (Y/n): " answer
 	
 		# Convert the answer to lowercase for easier comparison
 		case "$answer" in 
@@ -474,9 +473,10 @@ create_script() {
 		esac
 	done
 
-	if [ -z "$SWAP_PARTITION" ]; then
+	# if [ -z "$SWAP_PARTITION" ]; then
+	if [ "$SWAP" = true ]; then
 		while true; do
-			read -p "Specify the swap partition" SWAP_PARTITION
+			read -p "Specify the swap partition: " SWAP_PARTITION
 		
 			if [[ -z "$SWAP_PARTITION" ]]; then
 				error "The swap partition is not selected. Please specify the swap partition."
@@ -515,10 +515,9 @@ create_script() {
 
 		while true; do
 			# Prompt the user
-			read -p "Enter the number corresponding to your choice (1-23): " answer
-		
+			read -p "Enter the number corresponding to your choice (1-23): " -a answer
 			# Convert the answer to lowercase for easier comparison
-			case "$choice" in 
+			case "$answer" in 
 				1 )
 					VERSION="9.0-rc1"
 					break
@@ -616,9 +615,9 @@ create_script() {
 					break
 					;;
 			esac
-
-			info "LFS Release Build Version: $VERSION"
 		done
+
+		info "LFS Release Build Version: $VERSION"
 	fi
 
 	while true; do
@@ -632,16 +631,16 @@ create_script() {
 		echo "		2.4 - System Configuration & Making the LFS System Bootable"
 
 		# Prompt the user
-		read -p "Would you like your script to be generated as a single file or in phases with multiple script (s/p):" answer
+		read -p "Would you like your script to be generated as a single file or in phases with multiple script (s/p): " answer
 	
 		# Convert the answer to lowercase for easier comparison
 		case "$answer" in 
-			[Yy]* )
+			[Ss]* )
 				info "Install script will be generated as a single file"
 				INSTALL_TYPE="SINGLE"
 				break
 				;;
-			[Nn]* )
+			[Pp]* )
 				info "Install script will be generated in phases"
 				INSTALL_TYPE="PHASES"
 				break
@@ -653,7 +652,7 @@ create_script() {
 	done
 
 	while true; do
-		read -p "Enter the name of the DISTRIB CODENAME" DISTRIB_CODENAME
+		read -p "Enter the name of the DISTRIB CODENAME: " DISTRIB_CODENAME
 	
 		if [[ -z "$DISTRIB_CODENAME" ]]; then
 			error "The DISTRIB CODENAME is empty. Please try again."
@@ -664,7 +663,7 @@ create_script() {
 	done
 
 	while true; do
-		read -p "Enter the name of the VERSION CODENAME" VERSION_CODENAME
+		read -p "Enter the name of the VERSION CODENAME: " VERSION_CODENAME
 	
 		if [[ -z "$VERSION_CODENAME" ]]; then
 			error "The VERSION CODENAME is empty. Please try again."
@@ -676,7 +675,7 @@ create_script() {
 
 	while true; do
 		# Prompt the user
-		read -p "Would you like to download and compile Neofetch at the end of the Installation? (Y/n):" answer
+		read -p "Would you like to download and compile Neofetch at the end of the Installation? (Y/n): " answer
 	
 		# Convert the answer to lowercase for easier comparison
 		case "$answer" in 
@@ -694,11 +693,23 @@ create_script() {
 		esac
 	done
 
+	./script_generator.sh 		\
+		"$PARTITION" 		\
+		"$SWAP_PARTITION" 	\
+		"$DISTRIB_CODENAME" 	\
+		"$VERSION_CODENAME" 	\
+		"$INSTALL_TYPE" 	\
+		"$VERSION" 		\
+		"$NEOFETCH" 		\
+		"$SWAP"			\
 
-	./script_generator $PARTITION $SWAP_PARTITION $DISTRIB_CODENAME $VERSION_CODENAME $INSTALL_TYPE $VERSION $NEOFETCH $SWAP
-
-
-
+	if [[ -z "install.sh" ]]; then
+		error "install.sh does not appear to be generated in your directory"
+		exit 1	
+	else 
+		success "install.sh is generated in your directory"
+		exit 0
+	fi
 
 	# Success
 	#echo "Your script has been successfully created."
