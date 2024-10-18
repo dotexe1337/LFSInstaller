@@ -4,7 +4,7 @@ VERSION="$1"
 PACKAGES="$2" # Retrieve array
 
 # ---- EXTRACTION PHASE ----
-# ---- Single installation script ----
+# ---- phases installation script ----
 
 # --- Extract point ---
 mkdir scripts
@@ -129,4 +129,14 @@ xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter10/theend.htm
 
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter11/reboot.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/reboot.sh
 
-# -- IMPLEMENTATION PHASE --
+# --- IMPLEMENTATION PHASE ---
+
+mkdir $(pwd)/phase_installation
+
+touch phase_installation/build_preparation.sh
+touch phase_installation/cross_toolchain.sh
+touch phase_installation/chroot.sh
+touch phase_installation/system_configuration.sh
+
+
+

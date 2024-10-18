@@ -1,12 +1,18 @@
 #!/bin/bash
 
 VERSION="$1"
-PACKAGES="$2" # Retrieve array
+PACKAGES="$2"
 
-# ---- EXTRACTION PHASE ----
-# ---- Single installation script ----
+compile_package() {
+	local PACKAGES="$1"
 
-# --- Extract point ---
+	for i in "${!PACKAGES[@]}"; do
+		echo "- $i"
+		# Check LFS Release Build Version for specifying HTML page to extract
+		# With addition of creating Shell Script 	
+	done
+}
+
 mkdir scripts
 
 # Build Preparation
@@ -98,8 +104,7 @@ xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter07/util-linux
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter07/cleanup.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/cleanup.sh
 
 # --- Select basic system package (Building the LFS System)
-# <Insert the following name of the system itself>
-
+compile_packages "$PACKAGES"
 
 # System Configuration
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter09/bootscripts.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/bootscripts.sh
@@ -114,19 +119,14 @@ xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter09/inputrc.ht
 
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter09/etcshells.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/etcshells.sh
 
-xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter09/etcshells.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/etcshells.sh
-
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter10/fstab.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/fstab.sh
 
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter10/kernel.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/kernel.sh
 
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter10/grub.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/grub.sh
 
-# --- THE END
-xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter10/theend.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/theend.sh
-
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter10/theend.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/theend.sh
 
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter11/reboot.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/reboot.sh
 
-# -- IMPLEMENTATION PHASE --
+echo "All files have been extracted"
