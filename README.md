@@ -26,6 +26,16 @@ Execute the shell script (It is recommended that you execute as a root user).
 sudo ./LFSInstaller.sh
 ```
 
+To create your first LFS installation script to start your installation, perform the following command:
+```
+sudo ./LFSInstaller.sh -c
+```
+
+If you want to immediately create LFS Installation script without the use of manually entering the properties from scratch, you can perform the following that would skip certain instructions:
+```
+sudo ./LFSInstaller.sh -c -v <VERSION> -p <PARTITION_HERE>
+```
+
 ### Backward Compatibility
 You can select specific version through backward compatibility if the kernel or host machine does not support latest versions of source packages. Therefore, you can 
 select by using '--version' or '-v' to specify the build version of LFS to install specific packages for your hardware needs on any machine.
