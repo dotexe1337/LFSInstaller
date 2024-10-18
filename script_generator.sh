@@ -48,9 +48,7 @@ display_menu() {
 	echo -n "Enter the number corresponding to your choice: "
 }
 
-# Define an array to store selected system software
 selected_softwares=()
-
 while true; do
 	display_menu
 	read -r choice
@@ -76,7 +74,8 @@ for opt in "${selected_softwares[@]}"; do
 	echo "- $opt"
 done
 
-# --------------------------------------------------------------------------------------------------------
+
+
 # Extract Software Package From Page
 closest_match=""
 max_match_length=0
@@ -116,22 +115,17 @@ for file in "$DIRECTORY"*.html; do
 
 		# Output the closest match if found
 		if [[ -n "$closest_match" ]]; then
-			# echo "Closest matching file for $opt: $closest_match"
 		    	echo "Performing actions for $closest_match and file $file"
 		fi
 	fi
 done
 
+echo "Selected softwares: ${selected_softwares[@]}"
+
 # Single or Phases
 if [[ "$INSTALL_TYPE" == "SINGLE" ]]; then
-	touch install.sh
+	./single_install_extract_html.sh "$VERSION" "$MAJOR_VERSION" "$DIRECTORY" "${selected_softwares[@]}"
 else 
-	mkdir $(pwd)/phase_installation
-
-	touch phase_installation/build_preparation.sh
-	touch phase_installation/cross_toolchain.sh
-	touch phase_installation/chroot.sh
-	touch phase_installation/system_configuration.sh
+	./phases_install_extract_html.sh "$VERSION" "$MAJOR_VERSION" "$DIRECTORY" "${selected_softwares[@]}"
 fi
-
 # --------------------------------------------------------------------------------------------------------
