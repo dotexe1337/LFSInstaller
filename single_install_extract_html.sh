@@ -68,6 +68,9 @@ xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter04/addinguser
 
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter04/settingenvironment.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/build_preparation/settingenvironment.sh
 
+grep -hv '^#' scripts/build_preparation/version.sh scripts/build_preparation/filesystem.sh scripts/build_preparation/aboutlfs.sh scripts/build_preparation/mounting.sh scripts/build_preparation/chapter3-introduction.sh scripts/build_preparation/creatingminlayout.sh scripts/build_preparation/addinguser.sh scripts/build_preparation/settingenvironment.sh > install.sh
+
+
 # Cross Toolchain
 mkdir scripts/cross_toolchain
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter05/binutils-pass1.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/cross_toolchain/binutils-pass1.sh
