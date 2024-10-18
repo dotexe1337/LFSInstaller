@@ -143,7 +143,6 @@ xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter07/util-linux
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter07/cleanup.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/chroot/cleanup.sh
 
 for package in "${selected_softwares[@]}"; do
-	echo "Downloading $package with $DIRECTORY..."
 	compile_package "$DIRECTORY" "$package"
 done
 
