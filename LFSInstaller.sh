@@ -203,88 +203,238 @@ bold_error() {
 }
 
 #================================================================
-# FUNCTION: usage
+# FUNCTION: check_mount_point
 # DESCRIPTION:
-#     Prints default usage information.
+#     Scans if the following mount point '/mnt/lfs' is mounted to the host machine.
 # PARAMETERS:
 #     None
 # RETURNS:
+#     0 - True
+#     1 - False
+#================================================================
+check_mount_point() {
+	MOUNT_POINT="/mnt/lfs"
+	info "Verifying mount point for $MOUNT_POINT..."
+	if grep -qs /mnt/lfs /proc/mounts; then
+		DEVICE=$(grep "$MOUNT_POINT" /proc/mounts | awk '{print $1}')
+		success "$MOUNT_POINT is mounted on $DEVICE."
+		return 0
+	else
+		error "$MOUNT_POINT is not mounted."
+		return 1
+	fi
+}
+
+
+#================================================================
+# FUNCTION: check_partition
+# DESCRIPTION:
+#     Checks if partition exists which searches the partition name in /proc/partitions
+# PARAMETERS:
+#     $1 - Partition Device
+# RETURNS:
 #     None
 #================================================================
-usage() {
-	echo "Linux-From-Scratch Installer"
-  	echo " "
-	echo "Usage: ./LFSInstaller.sh [options]"
-	exit 0
+check_partition() {
+	local PARTITION=$1
+	if grep -q "$(basename "$PARTITION")" /proc/partitions; then
+		success "Partition $PARTITION exists on host machine"
+		return 0 
+	else 
+		error "Partition $PARTITION is either unavailable or does not exist on host machine"
+		return 1
+	fi
+}
+
+#================================================================
+# FUNCTION: select_partition
+# DESCRIPTION:
+#     Selects the partition drive from block device of the host machine.
+# PARAMETERS:
+#     $1 - Partition Device
+# RETURNS:
+#     None
+#================================================================
+select_partition() {
+	# Check if /dev/sda exists and is a valid block device.	
+	BLOCK_DEVICE="/dev/sda"
+	if lsblk | grep -q "^sda"; then
+		info "$BLOCK_DEVICE exists and is a valid block device"
+	else 
+		error "$BLOCK_DEVICE does not exist and is not a valid block device"
+		exit 1
+	fi
+
+	local PARTITION=$1
+
+	if [ -z "$PARTITION" ]; then
+		while true; do
+			read -p "Specify the partition: " PARTITION
+
+			if [[ -z "$PARTITION" ]]; then
+				error "The partition is not selected. Please specify the partition."
+			else 
+				AVAILABLE_PARTITION=$(check_partition)		
+				if [[ "$AVAILABLE_PARTITION" == 0 ]]; then
+					info "Partition: $PARTITION"
+					break
+				else
+					error "The partition you have provided is not available or does not exist on your host machine. Specify the partition that is available on your host machine."
+				fi
+			fi
+		done
+	fi
+
+	return $PARTITION
+}
+
+#================================================================
+# FUNCTION: select_swap_partition
+# DESCRIPTION:
+#     Selects the partition drive from block device of the host machine.
+# PARAMETERS:
+#     $1 - SWAP Partition Device
+# RETURNS:
+#     None
+#================================================================
+select_swap_partition() {
+	local SWAP=$1
+	while true; do
+		read -p "Do you want to use SWAP partition during LFS installation (Y/n): " answer
+		case "$answer" in 
+			[Yy]* )
+				info "Enabling SWAP partition."
+				SWAP=true
+				break
+				;;
+			[Nn]* )
+				info "Disabling SWAP partition."
+				SWAP=false
+				break
+				;;
+			* )
+				error "Please answer Y or n."
+				;;
+		esac
+	done
+	if [ -z "$SWAP_PARTITION" ]; then
+		while true; do
+			read -p "Specify the swap partition: " SWAP_PARTITION
+		
+			if [[ -z "$SWAP_PARTITION" ]]; then
+				error "The swap partition is not selected. Please specify the swap partition."
+			else 
+				info "SWAP PARTITION: $SWAP_PARTITION"
+				break
+			fi
+		done
+	fi
 }
 
 #================================================================
 # FUNCTION: mount
 # DESCRIPTION:
-#     Mounts LFS drive
+#     Mounts LFS drive to a partition
 # PARAMETERS:
-#     None
+#     $1 - Partition that it is mounted to.
 # RETURNS:
 #     None
 #================================================================
 mount() {
-	if grep -qs /mnt/lfs /proc/mounts; then
-		echo "Mounted /dev/sda1 to $LFS"
-	else
-		echo "Currently not mounted."
-		echo "Proceeding to mount /dev/sda1 to $LFS."
+	local PARTITION=$1
+	MOUNT_POINT_BOOLEAN=$(check_mount_point)
+
+	if [[ "$MOUNT_POINT_BOOLEAN" == "1" ]]; then
+		if [[ -n $PARTITION ]]; then
+			PARTITION=$(select_partition)
+		fi
+
+		info "Proceeding to mount $PARTITION to $LFS..."
+	
+		info "Creating $LFS directory..."	
 		mkdir -pv $LFS
-		mount -v -t ext4 /dev/sda1 $LFS
+		info "Mounting $LFS to $PARTITION ext4 partiion..."	
+		mount -v -t ext4 $PARTITION $LFS
+		info "Creating $LFS/home directory..."
 		mkdir -v $LFS/home
-		mount -v -t ext4 /dev/sda1 $LFS/home
-		echo "Mounted /dev/sda1 to $LFS."
+		info "Mounting $LFS/home directory to $PARTITION ext4 partiion..."	
+		mount -v -t ext4 $PARTITION $LFS/home
+		
+		info "Verifying if the partition $PARTITION is mounted to $LFS..."
+		MOUNT_POINT="/mnt/lfs"
+		if grep -qs "$MOUNT_POINT" /proc/mounts; then
+			if grep -qs "$PARTITION $MOUNT_POINT" /proc/mounts; then
+				success "Partition $PARTITION is mounted on $MOUNT_POINT."
+				exit 0
+			else 
+				error "Partition $PARTITION is not mounted on $MOUNT_POINT."
+				exit 1
+			fi	
+		fi
 	fi
 }
 
 #================================================================
 # FUNCTION: unmount
 # DESCRIPTION:
-#     Unmounts LFS drive
+#     Unmounts LFS mount point from a partition of the host machine
 # PARAMETERS:
-#     None
+#     $1 - Unmount flag argument
 # RETURNS:
 #     None
 #================================================================
 unmount() {
-	bold_info "Unmounting the virtual file systems"	
-	umount -v $LFS/dev/pts
-	mountpoint -q $LFS/dev/shm && umount -v $LFS/dev/shm
-	umount -v $LFS/dev
-	umount -v $LFS/run
-	umount -v $LFS/proc
-	umount -v $LFS/sys
+	FLAG=""
+	for arg in "$0"
+	do
+		case $arg in
+			-f|--force) FLAG="-f"; shift ;;
+			-l|--lazy) FLAG="-l"; shift ;;
+			*) error "Unknown umount parameter passed: "; exit 1 ;;
+		esac
+		shift
+	done
 
-	bold_info "Unmounting the LFS file system"	
-	umount -v $LFS/home
-	umount -v $LFS
-}
+	UNMOUNT_COMMAND="umount $FLAG"	
+	if [[ -n "$FLAG" ]]; then
+		FLAG="-v"
+	fi
 
-#================================================================
-# FUNCTION: force_unmount
-# DESCRIPTION:
-#     Unmount by force of all LFS drives
-# PARAMETERS:
-#     None
-# RETURNS:
-#     None
-#================================================================
-unmount() {
-	bold_info "Force Unmounting the virtual file systems"	
-	umount -f $LFS/dev/pts
-	mountpoint -q $LFS/dev/shm && umount -f $LFS/dev/shm
-	umount -f $LFS/dev
-	umount -f $LFS/run
-	umount -f $LFS/proc
-	umount -f $LFS/sys
+	MOUNT_POINT_BOOLEAN=$(check_mount_point)
+	if [[ "$MOUNT_POINT_BOOLEAN" == "0" ]]; then
+		bold_info "Unmounting the virtual file systems"	
+		info "Unmounting $LFS/dev/pts..."
+		eval $UNMOUNT_COMMAND $LFS/dev/pts
+		info "Unmounting $LFS/dev/shm..."
+		eval mountpoint -q $LFS/dev/shm && $UNMOUNT_COMMAND -v $LFS/dev/shm
+		info "Unmounting $LFS/dev..."
+		eval $UNMOUNT_COMMAND $LFS/dev
+		info "Unmounting $LFS/run..."
+		eval $UNMOUNT_COMMAND $LFS/run
+		info "Unmounting $LFS/proc..."
+		eval $UNMOUNT_COMMAND $LFS/proc
+		info "Unmounting $LFS/sys..."
+		eval $UNMOUNT_COMMAND $LFS/sys
 
-	bold_info "Force Unmounting the LFS file system"	
-	umount -f $LFS/home
-	umount -f $LFS
+		bold_info "Unmounting the LFS file system"	
+		info "Unmounting $LFS/home..."
+		eval $UNMOUNT_COMMAND $LFS/home
+		info "Unmounting $LFS..."
+		eval $UNMOUNT_COMMAND $LFS
+
+		MOUNT_POINT=/mnt/lfs
+		if [ ! grep -qs "$MOUNT_POINT" /proc/mounts ]; then
+			success "The mount point $MOUNT_POINT is unmounted from partition"
+		else 
+			error "The mount point $MOUNT_POINT is currently still mounted from partition"
+			exit 1
+		fi
+	else
+		error "The mount point $MOUNT_POINT is not available on your host machine."
+		exit 1
+	fi
+
+	exit 0
 }
 
 #================================================================
@@ -297,8 +447,12 @@ unmount() {
 #     None
 #================================================================
 chroot() {
-	export LFS=/mnt/lfs
+	MOUNT_POINT_BOOLEAN=$(check_mount_point)
+	if [[ "$MOUNT_POINT_BOOLEAN" = "1" ]]; then
+		exit 1
+	fi
 
+	export LFS=/mnt/lfs
 	chroot "$LFS" /usr/bin/env -i   \
 	    HOME=/root                  \
 	    TERM="$TERM"                \
@@ -310,16 +464,38 @@ chroot() {
 }
 
 #================================================================
-# FUNCTION: version
+# FUNCTION: version_list
 # DESCRIPTION:
-#     Selects LFS Release Build version before installation
+#     Prints a list of LFS Release Build Version
 # PARAMETERS:
-#     None
+#     $1 - Version
 # RETURNS:
 #     None
 #================================================================
-version() {
-	echo "test"
+version_list() {
+	echo "1. 9.0-rc1"
+	echo "2. 9.0"
+	echo "3. 9.1-rc1"
+	echo "4. 9.1"
+	echo "5. 10.0-rc1"
+	echo "6. 10.0"
+	echo "7. 10.1-rc1"
+	echo "8. 10.1"
+	echo "9. 11.0-rc1"
+	echo "10. 11.0-rc2"
+	echo "11. 11.0-rc3"
+	echo "12. 11.0"
+	echo "13. 11.1-rc1"
+	echo "14. 11.1"
+	echo "15. 11.2-rc1"
+	echo "16. 11.3-rc1"
+	echo "17. 11.3"
+	echo "18. 12.0-rc1"
+	echo "19. 12.0"
+	echo "20. 12.1-rc1"
+	echo "21. 12.1"
+	echo "22. 12.2-rc1"
+	echo "23. 12.2"
 }
 
 #================================================================
@@ -428,270 +604,205 @@ create_partition() {
 #     None
 #================================================================
 create_script() {
-	# Check if /dev/sda exists and is a valid block device.	
-	BLOCK_DEVICE="/dev/sda"
-	if lsblk | grep -q "^sda"; then
-		info "$BLOCK_DEVICE exists and is a valid block device"
-	else 
-		error "$BLOCK_DEVICE exists and is a valid block device"
-		exit 1
-	fi
-
-	# Specify the partition (e.g., /dev/sda1 or /dev/sda) if it is not selected
 	if [ -z "$PARTITION" ]; then
-		while true; do
-			read -p "Specify the partition: " PARTITION
-		
-			if [[ -z "$PARTITION" ]]; then
-				error "The partition is not selected. Please specify the partition."
-			else 
-				info "PARTITION: $PARTITION"
-				break
-			fi
-		done
+		PARTITION=$(select_partition)
 	fi
 
-	while true; do
-		# Prompt the user
-		read -p "Do you want to use SWAP partition during LFS installation (Y/n): " answer
-	
-		# Convert the answer to lowercase for easier comparison
-		case "$answer" in 
-			[Yy]* )
-				info "Enabling SWAP partition."
-				SWAP=true
-				break
-				;;
-			[Nn]* )
-				info "Disabling SWAP partition."
-				SWAP=false
-				break
-				;;
-			* )
-				error "Please answer Y or n."
-				;;
-		esac
-	done
-
-	# if [ -z "$SWAP_PARTITION" ]; then
-	if [ "$SWAP" = true ]; then
-		while true; do
-			read -p "Specify the swap partition: " SWAP_PARTITION
-		
-			if [[ -z "$SWAP_PARTITION" ]]; then
-				error "The swap partition is not selected. Please specify the swap partition."
-			else 
-				info "SWAP PARTITION: $SWAP_PARTITION"
-				break
-			fi
-		done
+	if [ -z "$SWAP_PARTITION" ]; then
+		if [ "$SWAP" = "true" ]; then
+			SWAP_PARTITION=$(select_swap_partition)
+		fi
 	fi
 
 	if [ -z "$VERSION" ]; then
-		echo "Please select the LFS Release Build Version: "
-		echo "1. LFS 9.0-rc1 Release"
-		echo "2. LFS Stable Version 9.0 Release"
-		echo "3. LFS 9.1-rc1 Release"
-		echo "4. LFS Stable Version 9.1 Release"
-		echo "5. LFS-10.0-rc1 Release"
-		echo "6. LFS Stable Version 10.0 Release"
-		echo "7. LFS-10.1-rc1 Release"
-		echo "8. LFS Stable Version 10.1 Release"
-		echo "9. LFS-11.0-rc1 Release"
-		echo "10. LFS-11.0-rc2 Release"
-		echo "11. LFS-11.0-rc3 Release"
-		echo "12. LFS-11.0 Release"
-		echo "13. LFS-11.1-rc1 Release"
-		echo "14. LFS Stable Version 11.1 Release"
-		echo "15. LFS-11.2-rc1 Release"
-		echo "16. LFS-11.3-rc1 Release"
-		echo "17. LFS-11.3 Release"
-		echo "18. LFS-12.0-rc1 Release"
-		echo "19. LFS-12.0 Release"
-		echo "20. LFS-12.1-rc1 Release"
-		echo "21. LFS-12.1 Release"
-		echo "22. LFS-12.2-rc1 Release"
-		echo "23. LFS-12.2 Release"
+		VERSION_ARRAY=("9.0-rc1" "9.0" "9.1-rc1" "9.1" "10.0-rc1" "10.0" "10.1-rc1" "10.1" "11.0-rc1"
+			"11.0-rc2" "11.0-rc3" "11.0" "11.1-rc1" "11.2-rc1" "11.3-rc1" "12.0-rc1" "12.0" "12.1-rc1" 
+			"12.1" "12.2-rc1" "12.2")
 
-		while true; do
-			# Prompt the user
-			read -p "Enter the number corresponding to your choice (1-23): " -a answer
-			# Convert the answer to lowercase for easier comparison
-			case "$answer" in 
-				1 )
-					VERSION="9.0-rc1"
-					break
-					;;
-				2 )
-					VERSION="9.0"
-					break
-					;;
-				3 )
-					VERSION="9.1-rc1"
-					break
-					;;
-				4 )
-					VERSION="9.1"
-					break
-					;;
-				5 )
-					VERSION="10.0-rc1"
-					break
-					;;
-				6 )
-					VERSION="10.0"
-					break
-					;;
-				7 )
-					VERSION="10.1-rc1"
-					break
-					;;
-				8 )
-					VERSION="10.1"
-					break
-					;;
-				9 )
-					VERSION="11.0-rc1"
-					break
-					;;
-				10 )
-					VERSION="11.0-rc2"
-					break
-					;;
-				11 )
-					VERSION="11.0-rc3"
-					break
-					;;
-				12 )
-					VERSION="11.0"
-					break
-					;;
-				13 )
-					VERSION="11.1-rc1"
-					break
-					;;
-				14 )
-					VERSION="11.1"
-					break
-					;;
-				15 )
-					VERSION="11.2-rc1"
-					break
-					;;
-				16 )
-					VERSION="11.3-rc1"
-					break
-					;;
-				17 )
-					VERSION="11.3"
-					break
-					;;
-				18 )
-					VERSION="12.0-rc1"
-					break
-					;;
-				19 )
-					VERSION="12.0"
-					break
-					;;
-				20 )
-					VERSION="12.1-rc1"
-					break
-					;;
-				21 )
-					VERSION="12.1"
-					break
-					;;
-				22 )
-					VERSION="12.2-rc1"
-					break
-					;;
-				23 )
-					VERSION="12.2"
-					break
-					;;
-				* )
-					error "You must select the version"
-					break
-					;;
-			esac
+		match_found=0
+		for ver in "${VERSION_ARRAY[@]}"; do
+			if [ "$VERSION" = "$ver" ]; then
+				match_found=1
+				break
+			fi
 		done
 
-		info "LFS Release Build Version: $VERSION"
+		if [ "$match_found" -eq 0 ]; then
+			version_list
+			while true; do
+				read -p "Enter the number corresponding to your choice (1-23): " -a answer
+				case "$answer" in 
+					1 )
+						VERSION="9.0-rc1"
+						break
+						;;
+					2 )
+						VERSION="9.0"
+						break
+						;;
+					3 )
+						VERSION="9.1-rc1"
+						break
+						;;
+					4 )
+						VERSION="9.1"
+						break
+						;;
+					5 )
+						VERSION="10.0-rc1"
+						break
+						;;
+					6 )
+						VERSION="10.0"
+						break
+						;;
+					7 )
+						VERSION="10.1-rc1"
+						break
+						;;
+					8 )
+						VERSION="10.1"
+						break
+						;;
+					9 )
+						VERSION="11.0-rc1"
+						break
+						;;
+					10 )
+						VERSION="11.0-rc2"
+						break
+						;;
+					11 )
+						VERSION="11.0-rc3"
+						break
+						;;
+					12 )
+						VERSION="11.0"
+						break
+						;;
+					13 )
+						VERSION="11.1-rc1"
+						break
+						;;
+					14 )
+						VERSION="11.1"
+						break
+						;;
+					15 )
+						VERSION="11.2-rc1"
+						break
+						;;
+					16 )
+						VERSION="11.3-rc1"
+						break
+						;;
+					17 )
+						VERSION="11.3"
+						break
+						;;
+					18 )
+						VERSION="12.0-rc1"
+						break
+						;;
+					19 )
+						VERSION="12.0"
+						break
+						;;
+					20 )
+						VERSION="12.1-rc1"
+						break
+						;;
+					21 )
+						VERSION="12.1"
+						break
+						;;
+					22 )
+						VERSION="12.2-rc1"
+						break
+						;;
+					23 )
+						VERSION="12.2"
+						break
+						;;
+					* )
+						error "You must select the version"
+						break
+						;;
+				esac
+			done
+			info "LFS Release Build Version: $VERSION"
+		fi
 	fi
 
-	while true; do
-		echo "The LFS Installation script can be generated in two ways:"
-		echo "1) Single file "
-		echo "OR"
-		echo "2) Phases (Multiple phases)"
-		echo "		2.1 - Preparing the Build"
-		echo "		2.2 - Building the LFS Cross Toolchain and Temporary Tools"
-		echo "		2.3 - Building the LFS System (Package Installation)"
-		echo "		2.4 - System Configuration & Making the LFS System Bootable"
-
-		# Prompt the user
-		read -p "Would you like your script to be generated as a single file or in phases with multiple script (s/p): " answer
-	
-		# Convert the answer to lowercase for easier comparison
-		case "$answer" in 
-			[Ss]* )
-				info "Install script will be generated as a single file"
-				INSTALL_TYPE="SINGLE"
+	if [ -z "$INSTALL_TYPE" ]; then
+		INSTALL_VALUES=("SINGLE" "PHASES")
+		match_found=0
+		for install in "${INSTALL_VALUES[@]}"; do
+			if [ "$INSTALL_TYPE" = "$install" ]; then
+				match_found=1
 				break
-				;;
-			[Pp]* )
-				info "Install script will be generated in phases"
-				INSTALL_TYPE="PHASES"
-				break
-				;;
-			* )
-				error "You must select one of the following options"
-				;;
-		esac
-	done
+			fi
+		done
 
-	while true; do
-		read -p "Enter the name of the DISTRIB CODENAME: " DISTRIB_CODENAME
-	
-		if [[ -z "$DISTRIB_CODENAME" ]]; then
-			error "The DISTRIB CODENAME is empty. Please try again."
-		else 
-			info "DISTRIB_CODENAME: $DISTRIB_CODENAME"
-			break
+		if [ "$match_found" -eq 0 ]; then
+			while true; do
+				echo "The LFS Installation script can be generated in two ways:"
+				echo "1) Single file "
+				echo "OR"
+				echo "2) Phases (Multiple phases) by which will be made in four different shell scripts"
+				echo "		2.1 - Preparing the Build"
+				echo "		2.2 - Building the LFS Cross Toolchain and Temporary Tools"
+				echo "		2.3 - Building the LFS System (Package Installation)"
+				echo "		2.4 - System Configuration & Making the LFS System Bootable"
+
+				# Prompt the user
+				read -p "Would you like your script to be generated as a single file or in phases with multiple script (s/p): " answer
+			
+				# Convert the answer to lowercase for easier comparison
+				case "$answer" in 
+					[Ss]* )
+						info "Install script will be generated as a single file"
+						INSTALL_TYPE="SINGLE"
+						break
+						;;
+					[Pp]* )
+						info "Install script will be generated in phases"
+						INSTALL_TYPE="PHASES"
+						break
+						;;
+					* )
+						error "You must select one of the following options"
+						;;
+				esac
+			done
 		fi
-	done
+	fi
 
-	while true; do
-		read -p "Enter the name of the VERSION CODENAME: " VERSION_CODENAME
-	
-		if [[ -z "$VERSION_CODENAME" ]]; then
-			error "The VERSION CODENAME is empty. Please try again."
-		else 
-			info "VERSION_CODENAME: $VERSION_CODENAME"
-			break
-		fi
-	done
+	if [ -z "$DISTRIB_CODENAME" ]; then
+		while true; do
+			read -p "Enter the name of the DISTRIB CODENAME: " DISTRIB_CODENAME
+		
+			if [[ -z "$DISTRIB_CODENAME" ]]; then
+				error "The DISTRIB CODENAME is empty. Please try again."
+			else 
+				info "DISTRIB_CODENAME: $DISTRIB_CODENAME"
+				break
+			fi
+		done
+	fi
 
-	while true; do
-		# Prompt the user
-		read -p "Would you like to download and compile Neofetch at the end of the Installation? (Y/n): " answer
-	
-		# Convert the answer to lowercase for easier comparison
-		case "$answer" in 
-			[Yy]* )
-				NEOFETCH=true
+	if [ -z "$VERSION_CODENAME" ]; then
+		while true; do
+			read -p "Enter the name of the VERSION CODENAME: " VERSION_CODENAME
+		
+			if [[ -z "$VERSION_CODENAME" ]]; then
+				error "The VERSION CODENAME is empty. Please try again."
+			else 
+				info "VERSION_CODENAME: $VERSION_CODENAME"
 				break
-				;;
-			[Nn]* )
-				NEOFETCH=false
-				break
-				;;
-			* )
-				error "You must select one of the following options"
-				;;
-		esac
-	done
+			fi
+		done
+	fi
 
 	./script_generator.sh 		\
 		"$PARTITION" 		\
@@ -710,16 +821,23 @@ create_script() {
 		success "install.sh is generated in your directory"
 		exit 0
 	fi
+}
 
-	# Success
-	#echo "Your script has been successfully created."
-	#echo "Before starting your installation, it is essential that you view your installation script to display how it installs your system"
-	#echo "If you are satisfied with the current script, you can initialize by typing ./LFSInstaller --install or go to the directory and type the following"
-	#echo "It is important you must become root in order to perform tasks as a super user"
-	#echo ""
-	#echo "sudo su"
-	#echo "sudo chmod +x install.sh"
-	#echo "./install.sh"
+#================================================================
+# FUNCTION: usage
+# DESCRIPTION:
+#     Prints default usage information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
+usage() {
+	echo "LFSInstaller - Linux From Scratch Shell Script Installer"
+  	echo " "
+	echo "Usage: ./LFSInstaller.sh [modes] [options] [others]"
+	echo "It is recommended to execute this script as a root user !."
+	exit 0
 }
 
 #================================================================
@@ -735,39 +853,57 @@ help() {
 	echo "LFSInstaller"
 	echo " "
 	echo "LFS Script Installer by which the user can decide how they want to customize their own package."
+	echo "This is designed to be a template starter for Linux enthusiasts who want to "
 	echo ""
-	echo "Usage: ./LFSInstaller.sh [options]"
-	echo "It is recommended to run this as a root user"
+	echo "Usage: ./LFSInstaller.sh [modes] [options] [others]"
+	echo "It is recommended to execute this script as a root user."
+	echo ""
+	echo "Modes: "
+	printf "  ${BOLD}-c, --create${ENDCOLOR}									Generates LFS installation script\n"
+	printf "  ${BOLD}-i, --install${ENDCOLOR}									Starts LFS Installation script\n"
+	printf "  ${BOLD}-it, --install-type${ENDCOLOR}								Specifies installation type\n"
+	printf "  ${BOLD}--create-partition${ENDCOLOR}								Specifies new device blocks of partition\n"
 	echo ""
 	echo "Options:"
-  	printf "  ${BOLD}--usage${ENDCOLOR}						Show usage information\n"
-	printf "  ${BOLD}-h, --help${ENDCOLOR}						Show help message\n"
-	printf "  ${BOLD}-v, --version${ENDCOLOR}						Specifies LFS Release Build Version\n"
-	printf "  ${BOLD}--swap${ENDCOLOR}						Specifies SWAP partition\n"
-	printf "  ${BOLD}-p, --partition${ENDCOLOR}						Specifies main partition\n"
-	printf "  ${BOLD}--create-partition${ENDCOLOR}						Specifies new device blocks of partition\n"
-	printf "  ${BOLD}-c, --create${ENDCOLOR}						Generates installation script\n"
-	printf "  ${BOLD}-i, --install${ENDCOLOR}						Initializes LFS Installation\n"
+	printf "  ${BOLD}-v, --version${ENDCOLOR}									Specifies LFS Release Build Version\n"
+	printf "  ${BOLD}-p, --partition${ENDCOLOR}								Specifies partition\n"
+	printf "  ${BOLD}-s, --swap${ENDCOLOR}									Enables SWAP partition\n"
+	printf "  ${BOLD}-sp, --swap-partition${ENDCOLOR}								Specifies SWAP partition\n"
+	printf "  ${BOLD}-vc, --version-codename${ENDCOLOR}							Specifies version codename\n"
+	printf "  ${BOLD}-dc, --distrib-codename${ENDCOLOR}							Specifies distrib codename\n"
 	echo " "
+	echo "Others:"
+	printf "  ${BOLD}-h, --help${ENDCOLOR}									Show help message\n"
+  	printf "  ${BOLD}-u, --usage${ENDCOLOR}									Show usage information\n"
+  	printf "  ${BOLD}--version-list${ENDCOLOR}								Show list of LFS Release Builds\n"
+	echo " "
+	echo "Examples:"
+  	printf "  ${BOLD}./LFSInstaller -c${ENDCOLOR}								Creates standard installation script in interactive mode\n"
+  	printf "  ${BOLD}./LFSInstaller -c --partition='/dev/sda1' --install-type='PHASES'${ENDCOLOR}		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.\n"
+  	printf "  ${BOLD}./LFSInstaller -c --version='9.0'${ENDCOLOR}						Creates installation script that uses the release build version '9.0'\n"
 	exit 0
 }
 
 PARTITION=""
+SWAP=false
 SWAP_PARTITION=""
-DISTRIB_CODENAME=""
 VERSION_CODENAME=""
+DISTRIB_CODENAME=""
 INSTALL_TYPE=""
 VERSION=""
-NEOFETCH=false
-SWAP=false
 
 while [[ "$#" -gt 0 ]]; do
 	case $1 in
 		-u|--usage) usage ;;
 		-h|--help) help ;;
+		--version-list) version_list ;;
 		-v|--version) VERSION="$2" shift ;;
-		--swap) SWAP_PARTITION="$2" shift ;;
 		-p|--partition) PARTITION="$2" shift ;;
+		-s|--swap) SWAP=true shift ;;
+		-sp|--swap-partition) SWAP_PARTITION="$2" shift ;;
+		-it|--install-type) INSTALL_TYPE="$2" shift ;;
+		-vc|--version-codename) VERSION_CODENAME="$2" shift ;;
+		-dc|--distrib-codename) DISTRIB_CODENAME="$2" shift ;;
 		--create-partition) create_partition ;;
 		-c|--create) create_script ;;
 		-i|--install) install ;;
