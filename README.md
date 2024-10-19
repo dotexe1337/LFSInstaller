@@ -51,24 +51,42 @@ manual for maintenance operation of implementing partition
 LFSInstaller
  
 LFS Script Installer by which the user can decide how they want to customize their own package.
+This is designed to be a template starter for Linux enthusiasts who want to 
 
-Usage: ./LFSInstaller.sh [options]
-It is recommended to run this as a root user
+Usage: ./LFSInstaller.sh [modes] [options] [others]
+It is recommended to execute this script as a root user.
+
+Modes: 
+  -c, --create									Generates LFS installation script
+  -i, --install									Starts LFS Installation script
+  -it, --install-type								Specifies installation type
+  --create-partition								Specifies new device blocks of partition
 
 Options:
-  --usage						            Show usage information
-  -h, --help						        Show help message
-  -v, --version						      Specifies LFS Release Build Version
-  --swap						            Specifies SWAP partition
-  -p, --partition						    Specifies main partition
-  --create-partition						Specifies new device blocks of partition
-  -c, --create						      Generates installation script
-  -i, --install						      Initializes LFS Installation
+  -v, --version									Specifies LFS Release Build Version
+  -p, --partition								Specifies partition
+  -s, --swap									Enables SWAP partition
+  -sp, --swap-partition								Specifies SWAP partition
+  -vc, --version-codename							Specifies version codename
+  -dc, --distrib-codename							Specifies distrib codename
+ 
+Others:
+  -h, --help									Show help message
+  -u, --usage									Show usage information
+  --version-list								Show list of LFS Release Builds
+ 
+Examples:
+  ./LFSInstaller -c								Creates standard installation script in interactive mode
+  ./LFSInstaller -c --partition='/dev/sda1' --install-type='PHASES'		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.
+  ./LFSInstaller -c --version='9.0'						Creates installation script that uses the release build version '9.0'
 ```
 
 ## Usage
 ```
-Usage: ./LFSInstaller.sh [options]
+LFSInstaller - Linux From Scratch Shell Script Installer
+ 
+Usage: ./LFSInstaller.sh [modes] [options] [others]
+It is recommended to execute this script as a root user !.
 ```
 
 ## License
