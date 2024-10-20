@@ -237,11 +237,11 @@ check_mount_point() {
 #================================================================
 check_partition() {
 	local PARTITION=$1
-	if grep -q "$(basename "$PARTITION")" /proc/partitions; then
-		success "Partition $PARTITION exists on host machine"
+	local PARTITION_NAME=$(basename "$PARTITION")
+
+	if grep -wq "$PARTITION_NAME" /proc/partitions; then
 		return 0 
 	else 
-		error "Partition $PARTITION is either unavailable or does not exist on host machine"
 		return 1
 	fi
 }
@@ -257,18 +257,13 @@ check_partition() {
 #================================================================
 select_partition() {
 	read -p "Specify the partition: " PARTITION
-
-	#if [[ -n "$PARTITION" ]]; then
-	#	error "The partition is not selected. Please specify the partition."
-	#else 
 	
-	AVAILABLE_PARTITION=$(check_partition)		
-	if [[ "$AVAILABLE_PARTITION" == 0 ]]; then
-		info "Partition: $PARTITION"
+	AVAILABLE_PARTITION=$(check_partition "$PARTITION")
+	if [ $? -eq 0 ]; then
 		echo "$PARTITION"
+		return 0
 	else
-		error "The partition you input does not exist on your host machine."
-		exit 1
+		return 1
 	fi
 }
 
@@ -590,6 +585,12 @@ create_partition() {
 create_script() {
 	if [ -z "$PARTITION" ]; then
 		PARTITION=$(select_partition)
+		if [ $? -eq 0 ]; then
+			info "Partition: $PARTITION"
+		else
+			error "Partition not selected"
+			exit 1
+		fi
 	fi
 
 	if [ -z "$SWAP_PARTITION" ]; then
@@ -597,6 +598,11 @@ create_script() {
 			SWAP_PARTITION=$(select_swap_partition)
 		fi
 	fi
+
+
+
+
+
 
 	if [ -z "$VERSION" ]; then
 		VERSION_ARRAY=("9.0-rc1" "9.0" "9.1-rc1" "9.1" "10.0-rc1" "10.0" "10.1-rc1" "10.1" "11.0-rc1"
@@ -718,6 +724,8 @@ create_script() {
 		fi
 	fi
 
+	exit 0
+
 	if [ -z "$INSTALL_TYPE" ]; then
 		INSTALL_VALUES=("SINGLE" "PHASES")
 		match_found=0
@@ -730,32 +738,40 @@ create_script() {
 
 		if [ "$match_found" -eq 0 ]; then
 			while true; do
-				echo "The LFS Installation script can be generated in two ways:"
-				echo "1) Single file "
-				echo "OR"
-				echo "2) Phases (Multiple phases) by which will be made in four different shell scripts"
-				echo "		2.1 - Preparing the Build"
-				echo "		2.2 - Building the LFS Cross Toolchain and Temporary Tools"
-				echo "		2.3 - Building the LFS System (Package Installation)"
-				echo "		2.4 - System Configuration & Making the LFS System Bootable"
+				echo "The LFS Installation allows you to choose two types of installation:"
+				echo ""
+				echo "1. Single Script Installation"
+				echo "The script will merge all scripts, with addition of dependencies but it requires overviewing"
+				echo "of how your script can be installed."
+				echo ""
+				echo "2. Phases Script Installation"
+				echo "The following installation will be broken down into phases, allowing more control over the process"
+				echo "and allowing your to install components manually."
+				echo ""
+				echo "The following phases follow as such"
+				echo "		1 - Build Preparation"
+				echo "		2 - Cross Toolchain"
+				echo "		3 - Chroot"
+				echo "		4 - System Configuration"
+				echo ""
 
 				# Prompt the user
-				read -p "Would you like your script to be generated as a single file or in phases with multiple script (s/p): " answer
+				read -p "Enter your choice (1 or 2): " answer
 			
 				# Convert the answer to lowercase for easier comparison
 				case "$answer" in 
-					[Ss]* )
-						info "Install script will be generated as a single file"
+					1)
+						info "Installation Type: Single Script Installation"
 						INSTALL_TYPE="SINGLE"
 						break
 						;;
-					[Pp]* )
-						info "Install script will be generated in phases"
+					2 )
+						info "Installation Type: Phase-by-Phase Installation"
 						INSTALL_TYPE="PHASES"
 						break
 						;;
 					* )
-						error "You must select one of the following options"
+						error "Invalid option. Please run the script again and choose 1 or 2."
 						;;
 				esac
 			done
@@ -763,26 +779,38 @@ create_script() {
 	fi
 
 	if [ -z "$DISTRIB_CODENAME" ]; then
+		echo "DISTRIB CODENAME"
+		echo ""
+		echo "The codename refers to the specific release of the Linux distribution."
+		echo ""
+		echo "It is usually found in system files like /etc/lsb-release."
+		echo ""
 		while true; do
-			read -p "Enter the name of the DISTRIB CODENAME: " DISTRIB_CODENAME
+			read -p "Enter the name of your specific release: " distrib_codename
 		
-			if [[ -z "$DISTRIB_CODENAME" ]]; then
+			if [[ -z "$distrib_codename" ]]; then
 				error "The DISTRIB CODENAME is empty. Please try again."
 			else 
-				info "DISTRIB_CODENAME: $DISTRIB_CODENAME"
+				info "DISTRIB_CODENAME: $distrib_codename"
+				DISTRIB_CODENAME="$distrib_codename"
 				break
 			fi
 		done
 	fi
 
 	if [ -z "$VERSION_CODENAME" ]; then
+		echo "VERSION CODENAME"
+		echo ""
+		echo "This is term represent the codename of the distributed version, which can be found in files like /etc/os-release."
+		echo ""
 		while true; do
-			read -p "Enter the name of the VERSION CODENAME: " VERSION_CODENAME
+			read -p "Enter the name of your codename of the distributed version: " version_codename
 		
-			if [[ -z "$VERSION_CODENAME" ]]; then
+			if [[ -z "$version_codename" ]]; then
 				error "The VERSION CODENAME is empty. Please try again."
 			else 
-				info "VERSION_CODENAME: $VERSION_CODENAME"
+				info "VERSION_CODENAME: $version_codename"
+				VERSION_CODENAME="$version_codename"
 				break
 			fi
 		done
@@ -795,14 +823,13 @@ create_script() {
 		"$VERSION_CODENAME" 	\
 		"$INSTALL_TYPE" 	\
 		"$VERSION" 		\
-		"$NEOFETCH" 		\
 		"$SWAP"			\
 
 	if [[ -z "install.sh" ]]; then
-		error "install.sh does not appear to be generated in your directory"
+		error "install.sh is not generated in your directory"
 		exit 1	
 	else 
-		success "install.sh is generated in your directory"
+		success "install.sh is successfully generated in your directory"
 		exit 0
 	fi
 }

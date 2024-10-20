@@ -6,8 +6,7 @@ DISTRIB_CODENAME=$3
 VERSION_CODENAME=$4
 INSTALL_TYPE=$5
 VERSION=$6
-NEOFETCH=$7
-SWAP=$8
+SWAP=$7
 
 echo "Partition: $PARTITION"
 echo "Swap Partition: $SWAP_PARTITION"
@@ -15,7 +14,8 @@ echo "Distribution Codename: $DISTRIB_CODENAME"
 echo "Version Codename: $VERSION_CODENAME"
 echo "Install Type: $INSTALL_TYPE"
 echo "Version: $VERSION"
-echo "Neofetch: $NEOFETCH"
+echo "Swap: $SWAP"
+echo ""
 
 echo "Initializing the script generation..."
 
