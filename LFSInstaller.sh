@@ -251,41 +251,25 @@ check_partition() {
 # DESCRIPTION:
 #     Selects the partition drive from block device of the host machine.
 # PARAMETERS:
-#     $1 - Partition Device
+#     None
 # RETURNS:
 #     None
 #================================================================
 select_partition() {
-	# Check if /dev/sda exists and is a valid block device.	
-	BLOCK_DEVICE="/dev/sda"
-	if lsblk | grep -q "^sda"; then
-		info "$BLOCK_DEVICE exists and is a valid block device"
-	else 
-		error "$BLOCK_DEVICE does not exist and is not a valid block device"
+	read -p "Specify the partition: " PARTITION
+
+	#if [[ -n "$PARTITION" ]]; then
+	#	error "The partition is not selected. Please specify the partition."
+	#else 
+	
+	AVAILABLE_PARTITION=$(check_partition)		
+	if [[ "$AVAILABLE_PARTITION" == 0 ]]; then
+		info "Partition: $PARTITION"
+		echo "$PARTITION"
+	else
+		error "The partition you input does not exist on your host machine."
 		exit 1
 	fi
-
-	local PARTITION=$1
-
-	if [ -z "$PARTITION" ]; then
-		while true; do
-			read -p "Specify the partition: " PARTITION
-
-			if [[ -z "$PARTITION" ]]; then
-				error "The partition is not selected. Please specify the partition."
-			else 
-				AVAILABLE_PARTITION=$(check_partition)		
-				if [[ "$AVAILABLE_PARTITION" == 0 ]]; then
-					info "Partition: $PARTITION"
-					break
-				else
-					error "The partition you have provided is not available or does not exist on your host machine. Specify the partition that is available on your host machine."
-				fi
-			fi
-		done
-	fi
-
-	return $PARTITION
 }
 
 #================================================================

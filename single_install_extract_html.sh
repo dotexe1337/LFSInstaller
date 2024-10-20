@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# How can I do this for different versions of LFS release build
+
 echo "SINGLE-INSTALLATION-SCRIPT"
 
 VERSION="$1"
@@ -164,7 +166,7 @@ cat scripts/chroot/chroot.sh >> install.sh
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter07/creatingdirs.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/chroot/creatingdirs.sh
 cat scripts/chroot/creatingdirs.sh >> install.sh
 
-xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter07/createfiles.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/chroot/createfiles.sh
+xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter07/createfiles.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/chroot/creatingfiles.sh
 cat scripts/chroot/creatingfiles.sh >> install.sh
 
 xmllint --html --xpath '//pre[@class="userinput"]' $VERSION/chapter07/gettext.html 2>/dev/null | sed 's/<[^>]*>//g' > scripts/chroot/gettext.sh
