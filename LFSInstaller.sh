@@ -33,6 +33,15 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #================================================================
 
+# Capture the current time
+current_time=$(date +"%T")
+
+# Capture the current date
+current_date=$(date +"%Y-%m-%d")
+
+# Capture the current year
+current_year=$(date +"%Y")
+
 #################################################################
 # ANSI Color Code Escape Sequences			        #
 #################################################################
@@ -102,7 +111,6 @@ ITALIC_WHITE="\e[3;97m"
 # Styles
 BOLD="\e[1m"
 ITALIC="\e[3m"
-
 ENDCOLOR="\e[0m"
 
 #================================================================
@@ -115,8 +123,8 @@ ENDCOLOR="\e[0m"
 #     None
 #================================================================
 info() {
-	local message=$1
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+        local message=$1
+        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 }
 
 #================================================================
@@ -129,8 +137,8 @@ info() {
 #     None
 #================================================================
 bold_info() {
-	local message=$1
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+        local message=$1
+        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 }
 
 #================================================================
@@ -142,8 +150,8 @@ bold_info() {
 #     None
 #================================================================
 success() {
-	local message=$1
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}SUCCESS${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+        local message=$1
+        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}SUCCESS${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 }
 
 #================================================================
@@ -156,8 +164,8 @@ success() {
 #     None
 #================================================================
 warning() {
-	local message=$1
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+        local message=$1
+        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 }
 
 #================================================================
@@ -170,8 +178,8 @@ warning() {
 #     None
 #================================================================
 bold_warning() {
-	local message=$1
- 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+        local message=$1
+        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 }
 
 #================================================================
@@ -184,8 +192,8 @@ bold_warning() {
 #     None
 #================================================================
 error() {
-	local message=$1
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+        local message=$1
+        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 }
 
 #================================================================
@@ -198,8 +206,8 @@ error() {
 #     None
 #================================================================
 bold_error() {
-	local message=$1
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+        local message=$1
+        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 }
 
 #================================================================
@@ -264,49 +272,6 @@ select_partition() {
 		return 0
 	else
 		return 1
-	fi
-}
-
-#================================================================
-# FUNCTION: select_swap_partition
-# DESCRIPTION:
-#     Selects the partition drive from block device of the host machine.
-# PARAMETERS:
-#     $1 - SWAP Partition Device
-# RETURNS:
-#     None
-#================================================================
-select_swap_partition() {
-	local SWAP=$1
-	while true; do
-		read -p "Do you want to use SWAP partition during LFS installation (Y/n): " answer
-		case "$answer" in 
-			[Yy]* )
-				info "Enabling SWAP partition."
-				SWAP=true
-				break
-				;;
-			[Nn]* )
-				info "Disabling SWAP partition."
-				SWAP=false
-				break
-				;;
-			* )
-				error "Please answer Y or n."
-				;;
-		esac
-	done
-	if [ -z "$SWAP_PARTITION" ]; then
-		while true; do
-			read -p "Specify the swap partition: " SWAP_PARTITION
-		
-			if [[ -z "$SWAP_PARTITION" ]]; then
-				error "The swap partition is not selected. Please specify the swap partition."
-			else 
-				info "SWAP PARTITION: $SWAP_PARTITION"
-				break
-			fi
-		done
 	fi
 }
 
@@ -452,29 +417,9 @@ chroot() {
 #     None
 #================================================================
 version_list() {
-	echo "1. 9.0-rc1"
-	echo "2. 9.0"
-	echo "3. 9.1-rc1"
-	echo "4. 9.1"
-	echo "5. 10.0-rc1"
-	echo "6. 10.0"
-	echo "7. 10.1-rc1"
-	echo "8. 10.1"
-	echo "9. 11.0-rc1"
-	echo "10. 11.0-rc2"
-	echo "11. 11.0-rc3"
-	echo "12. 11.0"
-	echo "13. 11.1-rc1"
-	echo "14. 11.1"
-	echo "15. 11.2-rc1"
-	echo "16. 11.3-rc1"
-	echo "17. 11.3"
-	echo "18. 12.0-rc1"
-	echo "19. 12.0"
-	echo "20. 12.1-rc1"
-	echo "21. 12.1"
-	echo "22. 12.2-rc1"
-	echo "23. 12.2"
+	for i in "${!VERSION_LIST[@]}"; do
+	        echo "$((i + 1)). ${VERSION_LIST[i]}"
+	done
 }
 
 #================================================================
@@ -594,23 +539,39 @@ create_script() {
 	fi
 
 	if [ -z "$SWAP_PARTITION" ]; then
+		while true; do
+			read -p "Do you want to use swap partition during LFS installation (Y/n): " answer
+			case "$answer" in 
+				[Yy]* )
+					info "Enabled swap partition."
+					SWAP=true
+					break
+					;;
+				[Nn]* )
+					info "Disabled swap partition."
+					SWAP=false
+					break
+					;;
+				* )
+					error "Please answer Y or n."
+					;;
+			esac
+		done
+
 		if [ "$SWAP" = "true" ]; then
-			SWAP_PARTITION=$(select_swap_partition)
+			SWAP_PARTITION=$(select_partition)
+			if [ $? -eq 0 ]; then
+				info "Swap Partition: $SWAP_PARTITION"
+			else
+				error "Swap partition not selected"
+				exit 1
+			fi
 		fi
 	fi
 
-
-
-
-
-
 	if [ -z "$VERSION" ]; then
-		VERSION_ARRAY=("9.0-rc1" "9.0" "9.1-rc1" "9.1" "10.0-rc1" "10.0" "10.1-rc1" "10.1" "11.0-rc1"
-			"11.0-rc2" "11.0-rc3" "11.0" "11.1-rc1" "11.2-rc1" "11.3-rc1" "12.0-rc1" "12.0" "12.1-rc1" 
-			"12.1" "12.2-rc1" "12.2")
-
 		match_found=0
-		for ver in "${VERSION_ARRAY[@]}"; do
+		for ver in "${VERSION_LIST[@]}"; do
 			if [ "$VERSION" = "$ver" ]; then
 				match_found=1
 				break
@@ -724,8 +685,6 @@ create_script() {
 		fi
 	fi
 
-	exit 0
-
 	if [ -z "$INSTALL_TYPE" ]; then
 		INSTALL_VALUES=("SINGLE" "PHASES")
 		match_found=0
@@ -823,7 +782,6 @@ create_script() {
 		"$VERSION_CODENAME" 	\
 		"$INSTALL_TYPE" 	\
 		"$VERSION" 		\
-		"$SWAP"			\
 
 	if [[ -z "install.sh" ]]; then
 		error "install.sh is not generated in your directory"
@@ -894,6 +852,10 @@ help() {
   	printf "  ${BOLD}./LFSInstaller -c --version='9.0'${ENDCOLOR}						Creates installation script that uses the release build version '9.0'\n"
 	exit 0
 }
+
+VERSION_LIST=("9.0-rc1" "9.0" "9.1-rc1" "9.1" "10.0-rc1" "10.0" "10.1-rc1" "10.1" "11.0-rc1"
+	"11.0-rc2" "11.0-rc3" "11.0" "11.1-rc1" "11.1" "11.2-rc1" "11.3-rc1" "11.3" "12.0-rc1" "12.0" "12.1-rc1" 
+	"12.1" "12.2-rc1" "12.2")
 
 PARTITION=""
 SWAP=false
