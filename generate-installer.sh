@@ -676,16 +676,16 @@ bold_info "Version Codename: $VERSION_CODENAME"
 bold_info "Install Type: $INSTALL_TYPE"
 bold_info "Version: $VERSION"
 
-echo "Generating $INSTALL_TYPE LFS installation..."
+echo "Generating $INSTALL_TYPE LFS installation script(s)..."
 
 CHAPTER_DIRS=$(find "$(pwd)/$VERSION" -type d -regex '.*chapter[0-9][0-9].*' | sort)
 TOTAL_CHAPTER_DIRS=$(echo "$CHAPTER_DIRS" | wc -l)
 
 case $INSTALL_TYPE in
-	"single")
+	"SINGLE")
 		single_installation
 		;;
-	"phase")
+	"PHASE")
 		phase_installation
 		;;
 esac

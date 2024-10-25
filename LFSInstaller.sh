@@ -411,7 +411,7 @@ chroot() {
 }
 
 #================================================================
-# FUNCTION: version_list
+# FUNCTION: display_version_list
 # DESCRIPTION:
 #     Prints LFS Release Build Version list
 # PARAMETERS:
@@ -419,7 +419,7 @@ chroot() {
 # RETURNS:
 #     None
 #================================================================
-version_list() {
+display_version_list() {
 	for i in "${!VERSION_LIST[@]}"; do
 	        echo "$((i + 1)). ${VERSION_LIST[i]}"
 	done
@@ -572,100 +572,101 @@ create_script() {
 		done
 
 		if [ "$match_found" -eq 0 ]; then
-			version_list
+			display_version_list
 			while true; do
 				read -p "Enter the number corresponding to your choice (1-23): " -a answer
 				case "$answer" in 
 					1 )
-						VERSION="9.0-rc1"
+						# VERSION="9.0-rc1"
+						VERSION="${VERSION_LIST[0]}"
 						break
 						;;
 					2 )
-						VERSION="9.0"
+						VERSION="${VERSION_LIST[1]}"
 						break
 						;;
 					3 )
-						VERSION="9.1-rc1"
+						VERSION="${VERSION_LIST[2]}"
 						break
 						;;
 					4 )
-						VERSION="9.1"
+						VERSION="${VERSION_LIST[3]}"
 						break
 						;;
 					5 )
-						VERSION="10.0-rc1"
+						VERSION="${VERSION_LIST[4]}"
 						break
 						;;
 					6 )
-						VERSION="10.0"
+						VERSION="${VERSION_LIST[5]}"
 						break
 						;;
 					7 )
-						VERSION="10.1-rc1"
+						VERSION="${VERSION_LIST[6]}"
 						break
 						;;
 					8 )
-						VERSION="10.1"
+						VERSION="${VERSION_LIST[7]}"
 						break
 						;;
 					9 )
-						VERSION="11.0-rc1"
+						VERSION="${VERSION_LIST[8]}"
 						break
 						;;
 					10 )
-						VERSION="11.0-rc2"
+						VERSION="${VERSION_LIST[9]}"
 						break
 						;;
 					11 )
-						VERSION="11.0-rc3"
+						VERSION="${VERSION_LIST[10]}"
 						break
 						;;
 					12 )
-						VERSION="11.0"
+						VERSION="${VERSION_LIST[11]}"
 						break
 						;;
 					13 )
-						VERSION="11.1-rc1"
+						VERSION="${VERSION_LIST[12]}"
 						break
 						;;
 					14 )
-						VERSION="11.1"
+						VERSION="${VERSION_LIST[13]}"
 						break
 						;;
 					15 )
-						VERSION="11.2-rc1"
+						VERSION="${VERSION_LIST[14]}"
 						break
 						;;
 					16 )
-						VERSION="11.3-rc1"
+						VERSION="${VERSION_LIST[15]}"
 						break
 						;;
 					17 )
-						VERSION="11.3"
+						VERSION="${VERSION_LIST[16]}"
 						break
 						;;
 					18 )
-						VERSION="12.0-rc1"
+						VERSION="${VERSION_LIST[17]}"
 						break
 						;;
 					19 )
-						VERSION="12.0"
+						VERSION="${VERSION_LIST[18]}"
 						break
 						;;
 					20 )
-						VERSION="12.1-rc1"
+						VERSION="${VERSION_LIST[19]}"
 						break
 						;;
 					21 )
-						VERSION="12.1"
+						VERSION="${VERSION_LIST[20]}"
 						break
 						;;
 					22 )
-						VERSION="12.2-rc1"
+						VERSION="${VERSION_LIST[21]}"
 						break
 						;;
 					23 )
-						VERSION="12.2"
+						VERSION="${VERSION_LIST[22]}"
 						break
 						;;
 					* )
@@ -833,8 +834,8 @@ help() {
 	echo " "
 	echo "Examples:"
   	printf "  ${BOLD}./LFSInstaller -c${ENDCOLOR}								Creates standard installation script in interactive mode\n"
-  	printf "  ${BOLD}./LFSInstaller -c --partition='/dev/sda1' --install-type='PHASES'${ENDCOLOR}		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.\n"
-  	printf "  ${BOLD}./LFSInstaller -c --version='9.0'${ENDCOLOR}						Creates installation script that uses the release build version '9.0'\n"
+  	printf "  ${BOLD}./LFSInstaller --partition='/dev/sda1' --install-type='PHASES' -c${ENDCOLOR}		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.\n"
+  	printf "  ${BOLD}./LFSInstaller --version='9.0' -c${ENDCOLOR}						Creates installation script that uses the release build version '9.0'\n"
 	exit 0
 }
 
@@ -854,7 +855,7 @@ while [[ "$#" -gt 0 ]]; do
 	case $1 in
 		-u|--usage) usage ;;
 		-h|--help) help ;;
-		--version-list) version_list ;;
+		--version-list) display_version_list ;;
 		-v|--version) VERSION="$2" shift ;;
 		-p|--partition) PARTITION="$2" shift ;;
 		-s|--swap) SWAP=true shift ;;
