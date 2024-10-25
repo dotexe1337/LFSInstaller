@@ -769,13 +769,13 @@ create_script() {
 		done
 	fi
 
- 	./script_generator.sh 		\
+ 	./generate-installer.sh 	\
 		"$PARTITION" 		\
 		"$SWAP_PARTITION" 	\
 		"$DISTRIB_CODENAME" 	\
 		"$VERSION_CODENAME" 	\
 		"$INSTALL_TYPE" 	\
-		"$VERSION" 		\
+		"$VERSION" 		
 }
 
 #================================================================
@@ -834,7 +834,7 @@ help() {
 	echo " "
 	echo "Examples:"
   	printf "  ${BOLD}./LFSInstaller -c${ENDCOLOR}								Creates standard installation script in interactive mode\n"
-  	printf "  ${BOLD}./LFSInstaller --partition='/dev/sda1' --install-type='PHASES' -c${ENDCOLOR}		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.\n"
+  	printf "  ${BOLD}./LFSInstaller --partition='/dev/sda1' --install-type='PHASE' -c${ENDCOLOR}		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.\n"
   	printf "  ${BOLD}./LFSInstaller --version='9.0' -c${ENDCOLOR}						Creates installation script that uses the release build version '9.0'\n"
 	exit 0
 }
