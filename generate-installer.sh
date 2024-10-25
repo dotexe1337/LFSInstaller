@@ -2,12 +2,12 @@
 #================================================================
 # HEADER
 #================================================================
-# Script Name    : script_generator.sh
-# Description    : Generates installation script from user's preference
+# Script Name    : generate-installer.sh
+# Description    : Generates installation script(s) from user's preference
 # Author         : Eliaz Simon
 # Date           : 2024-10-13
 # Version        : 1.0
-# Usage          : ./LFSInstaller.sh
+# Usage          : 
 # Notes          :
 # Dependencies   :
 #================================================================
@@ -256,7 +256,8 @@ display_menu() {
 #================================================================
 # FUNCTION: append_install_script
 # DESCRIPTION:
-#     Appends the content from target script to the main script.
+#     Appends the content from target script to the main 
+#     installation script.
 # PARAMETERS:
 #     $1 - Target Installation script
 #     $2 - Target script
@@ -275,11 +276,15 @@ append_install_script() {
 #================================================================
 # FUNCTION: extract_html_to_shell
 # DESCRIPTION:
-#     Extracts HTML content to a target script, which appends to install script.
+#     Extracts HTML content to a target script, which appends to the 
+#     main target installation script.
 # PARAMETERS:
-#     None
+#     $1 - Target directory
+#     $2 - Target HTML page
+#     $3 - Target installation script
 # RETURNS:
-#     None
+#     void - Returns after completion of extracting package if HTML
+#     	     content matches with system packages.
 #================================================================
 extract_html_to_shell() {
 	local TARGET_DIRECTORY=$1
@@ -302,8 +307,9 @@ extract_html_to_shell() {
 #================================================================
 # FUNCTION: extract_package
 # DESCRIPTION:
-#     Extracts shell script commands from target HTML page to be 
-#     appended to the install script
+#     Extracts user input commands from pre element in class 
+#     "userinput" of the target HTML page that is to be appended 
+#     to the main target installation script.
 # PARAMETERS:
 #     $1 - Target HTML
 #     $2 - Target Installation Script
@@ -322,19 +328,22 @@ extract_package() {
 
 	 result_lower=$(echo "$RESULT" | tr '[:upper:]' '[:lower:]')
 
-         COMMAND="cd ../$result_lower"
-         sed -i "1i $COMMAND" "$TARGET_SCRIPT"
          if [[ "$RESULT" == *"Pass 2"* ]]; then
+		 RESULT=$(xmllint --html --xpath 'string(//h1[@class="sect1"])' $TARGET_HTML 2>/dev/null | sed 's/^[0-9. ]*//' | tr -s ' ' | sed 's/ - Pass 1//' | sed 's/ - Pass 2//' | xargs)
 		 sed -i '/^mkdir -v build/i rm -r build' $TARGET_SCRIPT
          fi
+
+         COMMAND="cd ../$result_lower"
+         sed -i "1i $COMMAND" "$TARGET_SCRIPT"
 
 	 append_install_script "$TARGET_INSTALLATION_SCRIPT" "$TARGET_SCRIPT"
 }
 
 #================================================================
-# FUNCTION: check_chroot
+# FUNCTION: install_selected_packages
 # DESCRIPTION:
-#     Extracts selected package by the user 
+#     Extracts package if the header matches with the name of 
+#     user's selected packages of the array.
 # PARAMETERS:
 #     $1 - Target Directory
 #     $2 - Target HTML
@@ -360,13 +369,15 @@ install_selected_packages() {
 #================================================================
 # FUNCTION: scan_package_name
 # DESCRIPTION:
-#     Extracts h1 element from target HTML page to check if it matches
-#     with any software packages
+#     Extracts header from target HTML page to perform string comparison 
+#     if header matches with any system packages of an LFS release
+#     build version.
 # PARAMETERS:
-#     $1 - Target HTML page
+#     $1 - Target directory
+#     $2 - Target HTML page
 # RETURNS:
-#     1 - Returns false if both header and package variable are not 
-#         close to match
+#     0 - Package name matches with the string of the header.
+#     1 - Package name does not match with the string of the header.
 #================================================================
 scan_package_name() {
 	local DIRECTORY="$1"
@@ -394,12 +405,15 @@ scan_package_name() {
 #================================================================
 # FUNCTION: scan_chapter
 # DESCRIPTION:
-#     Loops through each HTML page of all chapters in order to 
-#     evaluate its content.
+#     Performs loops from a chapter directory if a HTML page contains
+#     the class 'userinput' from pre element that contains user input
+#     commands.
 # PARAMETERS:
-#     $1 - Chapter Directory
+#     $1 - Target chapter directory
+#     $2 - Target installation script
 # RETURNS:
-#     None
+#     void - Exits function after completion of installing selected 
+#     	     package from user's preference.
 #================================================================
 scan_chapter() {
         local CHAPTER_DIR=$1
@@ -432,10 +446,10 @@ scan_chapter() {
 #================================================================
 # FUNCTION: progress
 # DESCRIPTION:
-#     Evaluates the progress state of the LFS installation.
+#     Calculates the state of progress during the creation of 
+#     LFS script installation.
 # PARAMETERS:
-#     $1 - Chapter Directory
-#     $2 - Total number of chapter directories
+#     $1 - Target chapter directory
 # RETURNS:
 #     None
 #================================================================
@@ -451,11 +465,11 @@ progress() {
 }
 
 #================================================================
-# FUNCTION: generate_bash_script
+# FUNCTION: generate_target_script
 # DESCRIPTION:
-#     Generates standard bash script 
+#     Generates standard bash script as a means of target script.
 # PARAMETERS:
-#     $1 - Target script
+#     $1 - Target script name
 # RETURNS:
 #     None
 #================================================================
@@ -469,9 +483,8 @@ generate_bash_script() {
 #================================================================
 # FUNCTION: filter_script
 # DESCRIPTION:
-#     Filters the script by manipulating the content of the script
-#     to replace characters that can be read before executing
-#     the script.
+#     Manipulates the content of the script by checking characters
+#     to replace.
 # PARAMETERS:
 #     $1 - Target script
 # RETURNS:
@@ -496,14 +509,13 @@ filter_script() {
 	sed -i "/ext4/s|/dev/<yyy>|$PARTITION|g" $TARGET_SCRIPT
 	sed -i "s|/dev/<yyy>|$PARTITION|g" $TARGET_SCRIPT
 	sed -i "s/<fff>/ext4/g" $TARGET_SCRIPT
-
 }
 
 #================================================================
 # FUNCTION: phase_script
 # DESCRIPTION:
 #     Returns the name of phase script based on the directory of LFS
-#     installation
+#     installation.
 # PARAMETERS:
 #     None 
 # RETURNS:
@@ -524,9 +536,32 @@ phase_script() {
 }
 
 #================================================================
-# FUNCTION: single
+# FUNCTION: verify_existing_file
 # DESCRIPTION:
-#     Generates single LFS installation script
+#     Checks if target installation script exists on host machine.
+# PARAMETERS:
+#     $1 - Target file
+# RETURNS:
+#     0 - Target installation script exists on host machine.
+#     1 - Target installation script does not exist on host machine.
+#================================================================
+verify_existing_file() {
+	local $TARGET_FILE=$1
+
+        if [[ -z $TARGET_FILE ]]; then
+                error "$TARGET_INSTALLATION_SCRIPT is not generated in your directory"
+                exit 1  
+        else 
+                success "$TARGET_INSTALLATION_SCRIPT is successfully generated in your directory"
+                exit 0
+        fi
+}
+
+#================================================================
+# FUNCTION: single_installation
+# DESCRIPTION:
+#     Initializes generating LFS installation script through
+#     "single" installation type.
 # PARAMETERS:
 #     None 
 # RETURNS:
@@ -542,12 +577,14 @@ single_installation() {
 	done
 
 	filter_script "$TARGET_INSTALLATION_SCRIPT"
+	verify_existing_file "$TARGET_INSTALLATION_SCRTIP"
 }
 
 #================================================================
-# FUNCTION: phase
+# FUNCTION: phase_installation
 # DESCRIPTION:
-#     Generates phase LFS installation scripts
+#     Initializes generating LFS installation script through
+#     "single" installation type.
 # PARAMETERS:
 #     None
 # RETURNS:
@@ -563,6 +600,11 @@ phase_installation() {
 			progress "$dir"
 			scan_chapter "$dir" "$TARGET_INSTALLATION_SCRIPT"
 		fi
+	done
+
+	PHASE_FILE_NAMES=("phase1.sh" "phase2.sh" "phase3.sh" "phase4.sh")
+	for phase_file in "${PHASE_FILE_NAMES[@]}"; do
+		verify_existing_file "$phase_file"
 	done
 }
 

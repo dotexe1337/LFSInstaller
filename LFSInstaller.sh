@@ -3,7 +3,7 @@
 # HEADER 
 #================================================================
 # Script Name    : LFSInstaller.sh
-# Description    : Complete LFS Installer
+# Description    : Interactive LFS Installer
 # Author         : Eliaz Simon
 # Date           : 2024-10-13
 # Version        : 1.0
@@ -211,18 +211,18 @@ bold_error() {
 }
 
 #================================================================
-# FUNCTION: check_mount_point
+# FUNCTION: verify_mount_point
 # DESCRIPTION:
-#     Scans if the following mount point '/mnt/lfs' is mounted to the host machine.
+#     Scans if "/mnt/lfs" is mounted to the host machine that is listed in /proc/mounts.
 # PARAMETERS:
 #     None
 # RETURNS:
-#     0 - True
-#     1 - False
+#     0 - Returns true if mount point is mounted on device
+#     1 - Returns false if mount point is not mounted
 #================================================================
-check_mount_point() {
+verify_mount_point() {
 	MOUNT_POINT="/mnt/lfs"
-	info "Verifying mount point for $MOUNT_POINT..."
+	info "Scanning mount point $MOUNT_POINT..."
 	if grep -qs /mnt/lfs /proc/mounts; then
 		DEVICE=$(grep "$MOUNT_POINT" /proc/mounts | awk '{print $1}')
 		success "$MOUNT_POINT is mounted on $DEVICE."
@@ -233,20 +233,19 @@ check_mount_point() {
 	fi
 }
 
-
 #================================================================
-# FUNCTION: check_partition
+# FUNCTION: verify_partition
 # DESCRIPTION:
-#     Checks if partition exists which searches the partition name in /proc/partitions
+#     Checks if partition exists which scans from /proc/partitions.
 # PARAMETERS:
-#     $1 - Partition Device
+#     $1 - Target partition
 # RETURNS:
-#     None
+#     0 - Returns true if target partition is listed on /proc/partitions.
+#     1 - Returns false if target partition is not listed on /proc/partition
 #================================================================
-check_partition() {
+verify_partition() {
 	local PARTITION=$1
 	local PARTITION_NAME=$(basename "$PARTITION")
-
 	if grep -wq "$PARTITION_NAME" /proc/partitions; then
 		return 0 
 	else 
@@ -257,16 +256,16 @@ check_partition() {
 #================================================================
 # FUNCTION: select_partition
 # DESCRIPTION:
-#     Selects the partition drive from block device of the host machine.
+#     Retrieves user input of an available target partition.
 # PARAMETERS:
 #     None
 # RETURNS:
-#     None
+#     0 - Returns true if such partition exist.
+#     1 - Returns false if such partition does not exist.
 #================================================================
 select_partition() {
 	read -p "Specify the partition: " PARTITION
-	
-	AVAILABLE_PARTITION=$(check_partition "$PARTITION")
+	AVAILABLE_PARTITION=$(verify_partition "$PARTITION")
 	if [ $? -eq 0 ]; then
 		echo "$PARTITION"
 		return 0
@@ -278,15 +277,16 @@ select_partition() {
 #================================================================
 # FUNCTION: mount
 # DESCRIPTION:
-#     Mounts LFS drive to a partition
+#     Mounts LFS drive to a target partition
 # PARAMETERS:
-#     $1 - Partition that it is mounted to.
+#     $1 - Target Partition
 # RETURNS:
-#     None
+#     0 - Target partition is mounted to LFS mount point.
+#     1 - Target partition is not mounted successfully to LFS mount point.
 #================================================================
 mount() {
 	local PARTITION=$1
-	MOUNT_POINT_BOOLEAN=$(check_mount_point)
+	MOUNT_POINT_BOOLEAN=$(verify_mount_point)
 
 	if [[ "$MOUNT_POINT_BOOLEAN" == "1" ]]; then
 		if [[ -n $PARTITION ]]; then
@@ -321,11 +321,14 @@ mount() {
 #================================================================
 # FUNCTION: unmount
 # DESCRIPTION:
-#     Unmounts LFS mount point from a partition of the host machine
+#     Unmounts LFS mount point from a partition.
 # PARAMETERS:
-#     $1 - Unmount flag argument
+#     $1 - Unmount flag arguments:
+#     		-f / --force - Force unmounting process
+#     		-l / --lazy  - Slow unmounting process
 # RETURNS:
-#     None
+#     0 - LFS mountpoint is unmounted from partition.
+#     1 - LFS mountpoint failed to be unmounted from partition.
 #================================================================
 unmount() {
 	FLAG=""
@@ -344,7 +347,7 @@ unmount() {
 		FLAG="-v"
 	fi
 
-	MOUNT_POINT_BOOLEAN=$(check_mount_point)
+	MOUNT_POINT_BOOLEAN=$(verify_mount_point)
 	if [[ "$MOUNT_POINT_BOOLEAN" == "0" ]]; then
 		bold_info "Unmounting the virtual file systems"	
 		info "Unmounting $LFS/dev/pts..."
@@ -388,10 +391,10 @@ unmount() {
 # PARAMETERS:
 #     None
 # RETURNS:
-#     None
+#     1 - LFS Mount point is not mounted to partition
 #================================================================
 chroot() {
-	MOUNT_POINT_BOOLEAN=$(check_mount_point)
+	MOUNT_POINT_BOOLEAN=$(verify_mount_point)
 	if [[ "$MOUNT_POINT_BOOLEAN" = "1" ]]; then
 		exit 1
 	fi
@@ -410,9 +413,9 @@ chroot() {
 #================================================================
 # FUNCTION: version_list
 # DESCRIPTION:
-#     Prints a list of LFS Release Build Version
+#     Prints LFS Release Build Version list
 # PARAMETERS:
-#     $1 - Version
+#     None
 # RETURNS:
 #     None
 #================================================================
@@ -425,11 +428,13 @@ version_list() {
 #================================================================
 # FUNCTION: install
 # DESCRIPTION:
-#     Installs LFS Release Build Version
+#     Performs LFS Installation that is generated from install script
+#     if user is currently root and that the installation script exists
+#     in order to perform installation.
 # PARAMETERS:
 #     None
 # RETURNS:
-#     None
+#     1 - User is not root to perform the following installation.
 #================================================================
 install() {
 	if [[ "$EUID" -ne 0 ]];  then
@@ -437,6 +442,7 @@ install() {
 		exit 1
 	fi
 
+	# Change the following
 	if [[ -e "install.sh" ]]; then
 		info "Installing LFS Release Build Version $VERSION"
 		sudo ./install.sh				
@@ -446,27 +452,14 @@ install() {
 }
 
 #================================================================
-# FUNCTION: usage
-# DESCRIPTION:
-#     Prints default help information.
-# PARAMETERS:
-#     None
-# RETURNS:
-#     None
-#================================================================
-usage() {
-	echo "Usage: ./LFSInstaller.sh [options]"
-	exit 1
-}
-
-#================================================================
 # FUNCTION: create_partition
 # DESCRIPTION:
-#     Creates partition for the following host system in order to install target system
+#     Scans disk management tools from host machine for the user to create 
+#     partition if no partition is available on host machine.
 # PARAMETERS:
 #     None
 # RETURNS:
-#     None
+#     1 - Disk management tools is not available on the host machine.
 #================================================================
 create_partition() {
 	disk_tools=("cfdisk" "fdisk" "parted" "lsblk" "gparted" "gdisk" "df" "mount" "umount" "blkid")
@@ -512,7 +505,7 @@ create_partition() {
 		echo "- $tool"
 	done
 
-	# Review this section over here
+	# Executes selected tool to perform operation
 	bash -c "sudo $tool; exec bash" &
 
 	echo "Scan completed."
@@ -521,7 +514,7 @@ create_partition() {
 #================================================================
 # FUNCTION: create_script
 # DESCRIPTION:
-#     Creates LFS installation script from user's preference
+#     Creates LFS installation script from user's input
 # PARAMETERS:
 #     None
 # RETURNS:
@@ -708,10 +701,10 @@ create_script() {
 				echo "and allowing your to install components manually."
 				echo ""
 				echo "The following phases follow as such"
-				echo "		1 - Build Preparation"
-				echo "		2 - Cross Toolchain"
-				echo "		3 - Chroot"
-				echo "		4 - System Configuration"
+				echo "		Phase 1 - Build Preparation"
+				echo "		Phase 2 - Cross Toolchain"
+				echo "		Phase 3 - Chroot"
+				echo "		Phase 4 - System Configuration"
 				echo ""
 
 				# Prompt the user
@@ -775,21 +768,13 @@ create_script() {
 		done
 	fi
 
-	./script_generator.sh 		\
+ 	./script_generator.sh 		\
 		"$PARTITION" 		\
 		"$SWAP_PARTITION" 	\
 		"$DISTRIB_CODENAME" 	\
 		"$VERSION_CODENAME" 	\
 		"$INSTALL_TYPE" 	\
 		"$VERSION" 		\
-
-	if [[ -z "install.sh" ]]; then
-		error "install.sh is not generated in your directory"
-		exit 1	
-	else 
-		success "install.sh is successfully generated in your directory"
-		exit 0
-	fi
 }
 
 #================================================================
