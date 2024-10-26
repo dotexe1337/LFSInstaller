@@ -442,7 +442,6 @@ install() {
 		exit 1
 	fi
 
-	# Change the following
 	if [[ -e "install.sh" ]]; then
 		info "Installing LFS Release Build Version $VERSION"
 		sudo ./install.sh				
@@ -805,6 +804,7 @@ help() {
 	printf "  ${BOLD}--create-partition${ENDCOLOR}								Specifies new device blocks of partition\n"
 	printf "  ${BOLD}-m, --mount${ENDCOLOR}									Mounts LFS to a target partition\n"
 	printf "  ${BOLD}-um, --unmount${ENDCOLOR}								Unmounts LFS from a target partition\n"
+	printf "  ${BOLD}--chroot${ENDCOLOR}									Enters chroot environment on an isolated machine\n"
 	echo ""
 	echo "Options:"
 	printf "  ${BOLD}-v, --version${ENDCOLOR}									Specifies LFS Release Build Version\n"
@@ -855,6 +855,7 @@ while [[ "$#" -gt 0 ]]; do
 		--create-partition) create_partition ;;
 		-m|--mount) mount ;;
 		-um|--unmount) unmount ;;
+		--chroot) chroot ;;
 		-c|--create) create_script ;;
 		-i|--install) install ;;
 		*) error "Unknown parameter passed: "; exit 1 ;;
