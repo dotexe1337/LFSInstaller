@@ -70,7 +70,7 @@ Options:
   -vc, --version-codename							Specifies version codename
   -dc, --distrib-codename							Specifies distrib codename
   --mount							                Mounts target partition to LFS mounting point
-  --unmount							              Unmounts target partition from LFS mounting point
+  --unmount							                Unmounts target partition from LFS mounting point
 
 Others:
   -h, --help									Show help message
