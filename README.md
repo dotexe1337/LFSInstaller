@@ -1,6 +1,6 @@
 # LFSInstaller - Linux From Scratch Script Installer
 
-![new_video-ezgif com-crop](https://github.com/user-attachments/assets/72c916b2-268c-49a4-a3c7-a00c1f8a1659)
+![ezgif-2-e576ab9176](https://github.com/user-attachments/assets/16a41527-b9b9-452a-9356-f7386008b615)
 
 LFS installer from LFS book (_LinuxFromScratch.org_) for Linux enthusiasts and/or professionals who want to select their tools without extreme maintenance.
 
