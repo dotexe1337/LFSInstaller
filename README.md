@@ -87,32 +87,32 @@ sudo ./LFSInstaller --version-list
 ```
 
 The following release builds of LFS that you can select from are the following: 
-|        **Release Build**        	| **Version** 	| **Release Date** 	|
-|:-------------------------------:	|-------------	|------------------	|
-| LFS-12.2 Release                	| 12.2        	| 2024/09/01       	|
-| LFS-12.2-rc1 Release            	| 12.2-rc1    	| 2024/08/18       	|
-| LFS-12.1 Release                	| 12.1        	| 2024/03/01       	|
-| LFS-12.2-rc1 Release            	| 12.2        	| 2024/02/15       	|
-| LFS-12.0 Release                	| 12.0        	| 2023/09/01       	|
-| LFS-12.0-rc1 Release            	| 12.0-rc1    	| 2023/08/15       	|
-| LFS-11.3 Release                	| 11.3        	| 2023/03/01       	|
-| LFS-11.3-rc1 Release            	| 11.3-rc1    	| 2023/02/14       	|
-| LFS-11.2 Release                	| 11.2        	| 2022/09/01       	|
-| LFS-11.2-rc1 Release            	| 11.2-rc1    	| 2022/08/21       	|
-| LFS Stable Version 11.1 Release 	| 11.1        	| 2022/03/01       	|
-| LFS-11.1-rc1 Release            	| 11.1-rc1    	| 2022/02/15       	|
-| LFS-11.0 Release                	| 11.0        	| 2021/09/01       	|
-| LFS-11.0-rc3 Release            	| 11.0-rc3    	| 2021/08/25       	|
-| LFS-11.0-rc2 Release            	| 11.0-rc2    	| 2021/08/20       	|
-| LFS-11.0-rc1 Release            	| 11.0-rc1    	| 2021/08/15       	|
-| LFS Stable Version 10.1 Release 	| 10.1        	| 2021/03/01       	|
-| LFS-10.1-rc1 Release            	| 10.1-rc1    	| 2021/02/19       	|
-| LFS Stable Version 10.0 Release 	| 10.0        	| 2020/09/01       	|
-| LFS-10.0-rc1 Release            	| 10.0-rc1    	| 2020/08/15       	|
-| LFS Stable Version 9.1 Release  	| 9.1         	| 2020/03/01       	|
-| LFS 9.1-rc1 Release             	| 9.1-rc1     	| 2020/02/14       	|
-| LFS Stable Version 9.0 Release  	| 9.0         	| 2019/09/01       	|
-| LFS 9.0-rc1 Release             	| 9.0-rc1     	| 2019/08/15       	|
+|        **Release Build**        	| **Version**  	| **Release Date** 	|
+|:-------------------------------:	|--------------	|------------------	|
+| LFS-12.2 Release                	| **12.2**     	| 2024/09/01       	|
+| LFS-12.2-rc1 Release            	| **12.2-rc1** 	| 2024/08/18       	|
+| LFS-12.1 Release                	| **12.1**     	| 2024/03/01       	|
+| LFS-12.2-rc1 Release            	| **12.2**     	| 2024/02/15       	|
+| LFS-12.0 Release                	| **12.0**     	| 2023/09/01       	|
+| LFS-12.0-rc1 Release            	| **12.0-rc1** 	| 2023/08/15       	|
+| LFS-11.3 Release                	| **11.3**     	| 2023/03/01       	|
+| LFS-11.3-rc1 Release            	| **11.3-rc1** 	| 2023/02/14       	|
+| LFS-11.2 Release                	| **11.2**     	| 2022/09/01       	|
+| LFS-11.2-rc1 Release            	| **11.2-rc1** 	| 2022/08/21       	|
+| LFS Stable Version 11.1 Release 	| **11.1**     	| 2022/03/01       	|
+| LFS-11.1-rc1 Release            	| **11.1-rc1** 	| 2022/02/15       	|
+| LFS-11.0 Release                	| **11.0**     	| 2021/09/01       	|
+| LFS-11.0-rc3 Release            	| **11.0-rc3** 	| 2021/08/25       	|
+| LFS-11.0-rc2 Release            	| **11.0-rc2** 	| 2021/08/20       	|
+| LFS-11.0-rc1 Release            	| **11.0-rc1** 	| 2021/08/15       	|
+| LFS Stable Version 10.1 Release 	| **10.1**     	| 2021/03/01       	|
+| LFS-10.1-rc1 Release            	| **10.1-rc1** 	| 2021/02/19       	|
+| LFS Stable Version 10.0 Release 	| **10.0**     	| 2020/09/01       	|
+| LFS-10.0-rc1 Release            	| **10.0-rc1** 	| 2020/08/15       	|
+| LFS Stable Version 9.1 Release  	| **9.1**      	| 2020/03/01       	|
+| LFS 9.1-rc1 Release             	| **9.1-rc1**  	| 2020/02/14       	|
+| LFS Stable Version 9.0 Release  	| **9.0**      	| 2019/09/01       	|
+| LFS 9.0-rc1 Release             	| **9.0-rc1**  	| 2019/08/15       	|
 
 ### Automatic Disk Management & Partition Selection
 If you have not created a partition before initializing the LFS installation and you do not want to go through the manual configuration of creating such partition, you can 
