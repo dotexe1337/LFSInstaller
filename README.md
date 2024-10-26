@@ -74,7 +74,7 @@ packages of your choice in an isolated environment:
 sudo ./LFSInstaller.sh --chroot
 ```
 
-### Backward Compatibility
+### Version Selection (Release Selection)
 You can select specific version through backward compatibility if the kernel or host machine does not support latest versions of source packages. Therefore, you can 
 select by using '--version' or '-v' to specify the build version of LFS to install specific packages for your hardware needs on any machine.
 
