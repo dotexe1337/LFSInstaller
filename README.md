@@ -175,6 +175,7 @@ It is recommended to execute this script as a root user !.
 
 # Important Note
 It is highly recommended that you install LFS by phase installation type.
+It is also extremely important that you check the scripts themselves to see exactly how you want to proceed the installation.
 
 ## License
 This project is licensed under MIT License. See the [LICENSE] file for details.
