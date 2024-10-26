@@ -38,6 +38,7 @@ If you want to immediately create LFS Installation script without the use of man
 sudo ./LFSInstaller.sh -c -v <VERSION> -p <PARTITION_HERE>
 ```
 
+# Features
 ### Installation Types
 You can select two types of installation scripts that you want to produce which are the following and can be executed as it follows:
 
