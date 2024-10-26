@@ -36,6 +36,43 @@ If you want to immediately create LFS Installation script without the use of man
 sudo ./LFSInstaller.sh -c -v <VERSION> -p <PARTITION_HERE>
 ```
 
+### Installation Types
+You can select two types of installation scripts that you want to produce which are the following and can be executed as it follows:
+
+#### Single
+The installlation will be produced as a single script that will append the installation of packages into the main installation script, by which the installation script would be called 'install.sh'.
+
+#### Phases
+The installation will be installed in phases, meaning that each stage of the installation will be created as each script
+in order to ensure that the following target machine meets its requirements. The phases can be represented as such:
+
+| **Phase 1** | Build Preparation    |
+|-------------|----------------------|
+| **Phase 2** | Cross Toolchain      |
+| **Phase 3** | Chroot               |
+| **Phase 4** | System Configuration |
+
+The following install type can be prompted before creating installation script(s).
+```
+sudo ./LFSInstaller.sh -c --install-type="SINGLE"
+sudo ./LFSInstaller.sh -c --install-type="PHASE"
+```
+
+### Automatic Mounting and Unmounting
+You can mount the LFS mounting point to the target partition and unmount automatically with certain flags that you can pass through to perform such process through the following:
+```
+sudo ./LFSInstaller.sh -m
+sudo ./LFSInstaller.sh -m -f 
+sudo ./LFSInstaller.sh -m -l 
+```
+
+### Entering Chroot Environment
+If the mount is successful and you completed two phases of installation, you can enter chroot environment to install 
+packages of your choice in an isolated environment:
+```
+sudo ./LFSInstaller.sh --chroot
+```
+
 ### Backward Compatibility
 You can select specific version through backward compatibility if the kernel or host machine does not support latest versions of source packages. Therefore, you can 
 select by using '--version' or '-v' to specify the build version of LFS to install specific packages for your hardware needs on any machine.
@@ -90,6 +127,9 @@ LFSInstaller - Linux From Scratch Shell Script Installer
 Usage: ./LFSInstaller.sh [modes] [options] [others]
 It is recommended to execute this script as a root user !.
 ```
+
+# Important
+I highly recommend that you install LFS through phase installation type 
 
 ## License
 This project is licensed under MIT License. See the [LICENSE] file for details.
