@@ -69,7 +69,9 @@ Options:
   -sp, --swap-partition								Specifies SWAP partition
   -vc, --version-codename							Specifies version codename
   -dc, --distrib-codename							Specifies distrib codename
- 
+  --mount							Specifies distrib codename
+  --unmount							Specifies distrib codename
+
 Others:
   -h, --help									Show help message
   -u, --usage									Show usage information
