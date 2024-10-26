@@ -63,7 +63,7 @@ sudo ./LFSInstaller.sh -c --install-type="PHASE"
 ```
 
 > [!WARNING]
-> It is highly recommended that you install LFS by phase installation type if you want to ensure that it reflects the state of your 
+> It is highly recommended that you install LFS by **phase** installation type if you want to ensure that it reflects the state of your 
 LFS target machine properly. 
 
 ### Automatic Mounting and Unmounting
