@@ -46,11 +46,12 @@ The installlation will be produced as a single script that will append the insta
 The installation will be installed in phases, meaning that each stage of the installation will be created as each script
 in order to ensure that the following target machine meets its requirements. The phases can be represented as such:
 
-| **Phase 1** | Build Preparation    |
-|-------------|----------------------|
-| **Phase 2** | Cross Toolchain      |
-| **Phase 3** | Chroot               |
-| **Phase 4** | System Configuration |
+| **Installation Lifecycle** 	| **Installation State** 	|
+|----------------------------	|------------------------	|
+| **Phase 1**                	| Build Preparation      	|
+| **Phase 2**                	| Cross Toolchain        	|
+| **Phase 3**                	| Chroot                 	|
+| **Phase 4**                	| System Configuration   	|
 
 The following install type can be prompted before creating installation script(s).
 ```
@@ -128,8 +129,8 @@ Usage: ./LFSInstaller.sh [modes] [options] [others]
 It is recommended to execute this script as a root user !.
 ```
 
-# Important
-I highly recommend that you install LFS through phase installation type 
+# Important Note
+It is highly recommended that you install LFS by phase installation type.
 
 ## License
 This project is licensed under MIT License. See the [LICENSE] file for details.
