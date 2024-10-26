@@ -474,41 +474,27 @@ create_partition() {
 	    fi
 	done
 
-	# Check if any tools were found
 	if [ ${#selected_tools[@]} -eq 0 ]; then
 		error "No disk management tools found."
 		exit 1
 	fi
 
-	echo "Please select the tools you want to use from the following list (space-separated):"
+	echo "Please select the tools you want to use from the following list:"
 	for i in "${!selected_tools[@]}"; do
-		echo "$((i + 1)). ${selected_tools[1]}"
+		echo "$((i + 0)). ${selected_tools[i]}"
 	done
 
-	# Read user input for tool selection
-	read -p "Enter the numbers of the disk management tools you want to select (e.g., 1 3 5): " -a user_input
-	
-	# Build the array of selected tools based on user input
-	user_selected_tools=()
-	for num in "${user_input[@]}"; do
-		index=$((num - 1))
-		if [ "$index" -ge 0 ] && [ "$index" -lt "${selected_tools[@]}" ]; then
-			user_selected_tools+=("${selected_tools[index]}")
-		else
-			error "Invalid selection: $num"
-		fi
-	done
+	read -p "Enter the number of the disk management tool you want to select: " user_input
 
-	# Display the selected tools 
-	echo "You selected the following tools:"
-	for tool in "${user_selected_tools[@]}"; do
-		echo "- $tool"
-	done
-
-	# Executes selected tool to perform operation
-	bash -c "sudo $tool; exec bash" &
-
-	echo "Scan completed."
+    	if [[ "$user_input" =~ ^[0-9]+$ ]] && [ "$user_input" -ge 0 ] && [ "$user_input" -lt "${#selected_tools[@]}" ]; then
+        	tool="${selected_tools[user_input]}"
+        	echo "You selected: $tool"
+        
+        	sudo "$tool"
+        	echo "Operation completed."
+    	else
+        	echo "Error: Invalid selection: $user_input"
+    	fi
 }
 
 #================================================================
@@ -577,7 +563,6 @@ create_script() {
 				read -p "Enter the number corresponding to your choice (1-23): " -a answer
 				case "$answer" in 
 					1 )
-						# VERSION="9.0-rc1"
 						VERSION="${VERSION_LIST[0]}"
 						break
 						;;
@@ -818,6 +803,8 @@ help() {
 	printf "  ${BOLD}-i, --install${ENDCOLOR}									Starts LFS Installation script\n"
 	printf "  ${BOLD}-it, --install-type${ENDCOLOR}								Specifies installation type\n"
 	printf "  ${BOLD}--create-partition${ENDCOLOR}								Specifies new device blocks of partition\n"
+	printf "  ${BOLD}-m, --mount${ENDCOLOR}									Mounts LFS to a target partition\n"
+	printf "  ${BOLD}-um, --unmount${ENDCOLOR}								Unmounts LFS from a target partition\n"
 	echo ""
 	echo "Options:"
 	printf "  ${BOLD}-v, --version${ENDCOLOR}									Specifies LFS Release Build Version\n"
@@ -833,7 +820,9 @@ help() {
   	printf "  ${BOLD}--version-list${ENDCOLOR}								Show list of LFS Release Builds\n"
 	echo " "
 	echo "Examples:"
-  	printf "  ${BOLD}./LFSInstaller -c${ENDCOLOR}								Creates standard installation script in interactive mode\n"
+  	printf "  ${BOLD}./LFSInstaller -m${ENDCOLOR}								Initializes mounting procedure\n"
+  	printf "  ${BOLD}./LFSInstaller -m -f${ENDCOLOR}								Forces mounting procedure\n"
+	printf "  ${BOLD}./LFSInstaller -c${ENDCOLOR}								Creates standard installation script in interactive mode (if no values have passed)\n"
   	printf "  ${BOLD}./LFSInstaller --partition='/dev/sda1' --install-type='PHASE' -c${ENDCOLOR}		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.\n"
   	printf "  ${BOLD}./LFSInstaller --version='9.0' -c${ENDCOLOR}						Creates installation script that uses the release build version '9.0'\n"
 	exit 0
@@ -864,6 +853,8 @@ while [[ "$#" -gt 0 ]]; do
 		-vc|--version-codename) VERSION_CODENAME="$2" shift ;;
 		-dc|--distrib-codename) DISTRIB_CODENAME="$2" shift ;;
 		--create-partition) create_partition ;;
+		-m|--mount) mount ;;
+		-um|--unmount) unmount ;;
 		-c|--create) create_script ;;
 		-i|--install) install ;;
 		*) error "Unknown parameter passed: "; exit 1 ;;
