@@ -75,14 +75,53 @@ sudo ./LFSInstaller.sh --chroot
 ```
 
 ### Version Selection (Release Selection)
-You can select specific version through backward compatibility if the kernel or host machine does not support latest versions of source packages. Therefore, you can 
-select by using '--version' or '-v' to specify the build version of LFS to install specific packages for your hardware needs on any machine.
+If you're unsure if the latest release build of LFS is compatible with your kernel or hardware for installation, you can select the version of your choice by 
+passing the argument '--version' or '-v' of the following which you can specify the build version to install specific version of packages of your choice:
+```
+sudo ./LFSInstaller -v="12.2"
+```
+
+If you are uncertain about the version that you can choose from, you can execute this command to display the list of release builds of LFS:
+```
+sudo ./LFSInstaller --version-list
+```
+
+The following release builds of LFS that you can select from are the following: 
+|        **Release Build**        	| **Version** 	| **Release Date** 	|
+|:-------------------------------:	|-------------	|------------------	|
+| LFS-12.2 Release                	| 12.2        	| 2024/09/01       	|
+| LFS-12.2-rc1 Release            	| 12.2-rc1    	| 2024/08/18       	|
+| LFS-12.1 Release                	| 12.1        	| 2024/03/01       	|
+| LFS-12.2-rc1 Release            	| 12.2        	| 2024/02/15       	|
+| LFS-12.0 Release                	| 12.0        	| 2023/09/01       	|
+| LFS-12.0-rc1 Release            	| 12.0-rc1    	| 2023/08/15       	|
+| LFS-11.3 Release                	| 11.3        	| 2023/03/01       	|
+| LFS-11.3-rc1 Release            	| 11.3-rc1    	| 2023/02/14       	|
+| LFS-11.2 Release                	| 11.2        	| 2022/09/01       	|
+| LFS-11.2-rc1 Release            	| 11.2-rc1    	| 2022/08/21       	|
+| LFS Stable Version 11.1 Release 	| 11.1        	| 2022/03/01       	|
+| LFS-11.1-rc1 Release            	| 11.1-rc1    	| 2022/02/15       	|
+| LFS-11.0 Release                	| 11.0        	| 2021/09/01       	|
+| LFS-11.0-rc3 Release            	| 11.0-rc3    	| 2021/08/25       	|
+| LFS-11.0-rc2 Release            	| 11.0-rc2    	| 2021/08/20       	|
+| LFS-11.0-rc1 Release            	| 11.0-rc1    	| 2021/08/15       	|
+| LFS Stable Version 10.1 Release 	| 10.1        	| 2021/03/01       	|
+| LFS-10.1-rc1 Release            	| 10.1-rc1    	| 2021/02/19       	|
+| LFS Stable Version 10.0 Release 	| 10.0        	| 2020/09/01       	|
+| LFS-10.0-rc1 Release            	| 10.0-rc1    	| 2020/08/15       	|
+| LFS Stable Version 9.1 Release  	| 9.1         	| 2020/03/01       	|
+| LFS 9.1-rc1 Release             	| 9.1-rc1     	| 2020/02/14       	|
+| LFS Stable Version 9.0 Release  	| 9.0         	| 2019/09/01       	|
+| LFS 9.0-rc1 Release             	| 9.0-rc1     	| 2019/08/15       	|
 
 ### Automatic Disk Management & Partition Selection
-On manual installation, you would normally have to select your partition manually and you have to check if you have a specific disk management software installed.
-With LFSInstaller, it will scan the list of Disk Management softwares that is installed on your host machine and allow you to select the disk partition software you can
-use to proceed with the partitioning. If you do not want to use the disk partition, you can proceed with either using automatic with prompt provided to you or use 
-manual for maintenance operation of implementing partition
+If you have not created a partition before initializing the LFS installation and you do not want to go through the manual configuration of creating such partition, you can 
+create your partition through LFSInstaller by the following command:
+```
+sudo ./LFSInstaller --create-partition
+```
+
+The following process scans a list of Disk management application in your host machine, by which you can select such software in order to proceed with partitioning.
 
 ## Help
 ```
