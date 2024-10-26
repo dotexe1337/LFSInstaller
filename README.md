@@ -174,9 +174,14 @@ Usage: ./LFSInstaller.sh [modes] [options] [others]
 It is recommended to execute this script as a root user !.
 ```
 
-# Important Note
-It is highly recommended that you install LFS by phase installation type.
-It is also extremely important that you check the scripts themselves to see exactly how you want to proceed the installation.
+# Important Notes
+[!WARNING]
+It is highly recommended that you install LFS by phase installation type if you want to ensure that it reflects the state of your 
+LFS target machine properly. 
+
+[!IMPORTANT]
+It is essential you review the installation script(s) before initializing the installation to ensure that there are no conflicts of 
+packages that you have chosen that fits your requirements of your target machine.
 
 ## License
 This project is licensed under MIT License. See the [LICENSE] file for details.
