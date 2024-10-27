@@ -82,10 +82,10 @@ sudo ./LFSInstaller.sh -c --install-type="PHASE"
 ```
 
 > [!WARNING]
-> It is highly recommended that you install LFS by **phase installation typ to ensure** that your isolated system is properly configured and set up correctly from each step of the installation.
+> It is highly recommended that you install LFS by **phase installation type to ensure** that your isolated system is properly configured and set up correctly from each step of the installation.
 
 > [!IMPORTANT]
-> It is **essential** and a **must** that you must** review the installation script(s)** before initializing the installation to ensure that there are no conflicts or major prone errors during the installation process.
+> It is **essential** and a **must** that you must **review the installation script(s)** before initializing the installation to ensure that there are no conflicts or major prone errors during the installation process.
 
 ### Automatic Mounting and Unmounting
 You can mount the LFS mounting point to the target partition and unmount automatically with certain flags that you can pass through to perform such process through the following:
