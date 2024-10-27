@@ -111,7 +111,7 @@ sudo ./LFSInstaller -v="12.2"
 
 If you are uncertain about the version that you can choose from, you can execute this command to display the list of release builds of LFS:
 ```
-sudo ./LFSInstaller --version-list
+./LFSInstaller --version-list
 ```
 
 <p align="center">
