@@ -51,24 +51,7 @@ sudo ./LFSInstaller.sh -c --install-type="SINGLE"
 The installation will be installed in phases, meaning that each stage of the installation will be created as each script
 in order to ensure that the following target machine meets its requirements. The phases can be represented as such:
 
-| **Installation Lifecycle** 	| **Installation State** 	|
-|----------------------------	|------------------------	|
-| **Phase 1**                	| Build Preparation      	|
-| **Phase 2**                	| Cross Toolchain        	|
-| **Phase 3**                	| Chroot                 	|
-| **Phase 4**                	| System Configuration   	|
-
-<div align="center">Center</div>
-
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-1wig{font-weight:bold;text-align:left;vertical-align:top}
-.tg .tg-0lax{text-align:left;vertical-align:top}
-</style>
+<div align="center"></div>
 <table class="tg"><thead>
   <tr>
     <th class="tg-1wig">Installation Lifecycle</th>
@@ -98,15 +81,17 @@ in order to ensure that the following target machine meets its requirements. The
   </tr>
 </tbody></table>
 
-
-
 ```
 sudo ./LFSInstaller.sh -c --install-type="PHASE"
 ```
 
 > [!WARNING]
 > It is highly recommended that you install LFS by **phase** installation type if you want to ensure that it reflects the state of your 
-LFS target machine properly. 
+LFS target machine properly.
+
+> [!IMPORTANT]
+> It is essential that you review the installation script(s) before initializing the installation to ensure that there are no conflicts of 
+packages or further errors when initializing LFS on your target machine.
 
 ### Automatic Mounting and Unmounting
 You can mount the LFS mounting point to the target partition and unmount automatically with certain flags that you can pass through to perform such process through the following:
@@ -136,32 +121,137 @@ sudo ./LFSInstaller --version-list
 ```
 
 The following release builds of LFS that you can select from are the following: 
-|        **Release Builds**       	| **Versions** 	| **Release Dates** 	|
-|:-------------------------------:	|--------------	|-------------------	|
-| LFS-12.2 Release                	| **12.2**     	| 2024/09/01        	|
-| LFS-12.2-rc1 Release            	| **12.2-rc1** 	| 2024/08/18        	|
-| LFS-12.1 Release                	| **12.1**     	| 2024/03/01        	|
-| LFS-12.2-rc1 Release            	| **12.2**     	| 2024/02/15        	|
-| LFS-12.0 Release                	| **12.0**     	| 2023/09/01        	|
-| LFS-12.0-rc1 Release            	| **12.0-rc1** 	| 2023/08/15        	|
-| LFS-11.3 Release                	| **11.3**     	| 2023/03/01        	|
-| LFS-11.3-rc1 Release            	| **11.3-rc1** 	| 2023/02/14        	|
-| LFS-11.2 Release                	| **11.2**     	| 2022/09/01        	|
-| LFS-11.2-rc1 Release            	| **11.2-rc1** 	| 2022/08/21        	|
-| LFS Stable Version 11.1 Release 	| **11.1**     	| 2022/03/01        	|
-| LFS-11.1-rc1 Release            	| **11.1-rc1** 	| 2022/02/15        	|
-| LFS-11.0 Release                	| **11.0**     	| 2021/09/01        	|
-| LFS-11.0-rc3 Release            	| **11.0-rc3** 	| 2021/08/25        	|
-| LFS-11.0-rc2 Release            	| **11.0-rc2** 	| 2021/08/20        	|
-| LFS-11.0-rc1 Release            	| **11.0-rc1** 	| 2021/08/15        	|
-| LFS Stable Version 10.1 Release 	| **10.1**     	| 2021/03/01        	|
-| LFS-10.1-rc1 Release            	| **10.1-rc1** 	| 2021/02/19        	|
-| LFS Stable Version 10.0 Release 	| **10.0**     	| 2020/09/01        	|
-| LFS-10.0-rc1 Release            	| **10.0-rc1** 	| 2020/08/15        	|
-| LFS Stable Version 9.1 Release  	| **9.1**      	| 2020/03/01        	|
-| LFS 9.1-rc1 Release             	| **9.1-rc1**  	| 2020/02/14        	|
-| LFS Stable Version 9.0 Release  	| **9.0**      	| 2019/09/01        	|
-| LFS 9.0-rc1 Release             	| **9.0-rc1**  	| 2019/08/15        	|
+
+<div align="center">
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-amwm">Release Build</th>
+    <th class="tg-amwm">Version</th>
+    <th class="tg-amwm">Release Date</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0lax">LFS-12.2 Release</td>
+    <td class="tg-1wig">12.2</td>
+    <td class="tg-0lax">2024/09/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-12.2-rc1 Release</td>
+    <td class="tg-1wig">12.2-rc1</td>
+    <td class="tg-0lax">2024/08/18</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-12.1 Release</td>
+    <td class="tg-1wig">12.1</td>
+    <td class="tg-0lax">2024/03/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-12.2-rc1 Release</td>
+    <td class="tg-1wig">12.2</td>
+    <td class="tg-0lax">2024/02/15</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-12.0 Release</td>
+    <td class="tg-1wig">12.0</td>
+    <td class="tg-0lax">2023/09/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-12.0-rc1 Release</td>
+    <td class="tg-1wig">12.0-rc1</td>
+    <td class="tg-0lax">2023/08/15</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-11.3 Release</td>
+    <td class="tg-1wig">11.3</td>
+    <td class="tg-0lax">2023/03/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-11.3-rc1 Release</td>
+    <td class="tg-1wig">11.3-rc1</td>
+    <td class="tg-0lax">2023/02/14</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-11.2 Release</td>
+    <td class="tg-1wig">11.2</td>
+    <td class="tg-0lax">2022/09/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-11.2-rc1 Release</td>
+    <td class="tg-1wig">11.2-rc1</td>
+    <td class="tg-0lax">2022/08/21</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS Stable Version 11.1 Release</td>
+    <td class="tg-1wig">11.1</td>
+    <td class="tg-0lax">2022/03/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-11.1-rc1 Release</td>
+    <td class="tg-1wig">11.1-rc1</td>
+    <td class="tg-0lax">2022/02/15</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-11.0 Release</td>
+    <td class="tg-1wig">11.0</td>
+    <td class="tg-0lax">2021/09/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-11.0-rc3 Release</td>
+    <td class="tg-1wig">11.0-rc3</td>
+    <td class="tg-0lax">2021/08/25</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-11.0-rc2 Release</td>
+    <td class="tg-1wig">11.0-rc2</td>
+    <td class="tg-0lax">2021/08/20</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-11.0-rc1 Release</td>
+    <td class="tg-1wig">11.0-rc1</td>
+    <td class="tg-0lax">2021/08/15</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS Stable Version 10.1 Release</td>
+    <td class="tg-1wig">10.1</td>
+    <td class="tg-0lax">2021/03/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-10.1-rc1 Release</td>
+    <td class="tg-1wig">10.1-rc1</td>
+    <td class="tg-0lax">2021/02/19</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS Stable Version 10.0 Release</td>
+    <td class="tg-1wig">10.0</td>
+    <td class="tg-0lax">2020/09/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS-10.0-rc1 Release</td>
+    <td class="tg-1wig">10.0-rc1</td>
+    <td class="tg-0lax">2020/08/15</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS Stable Version 9.1 Release</td>
+    <td class="tg-1wig">9.1</td>
+    <td class="tg-0lax">2020/03/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS 9.1-rc1 Release</td>
+    <td class="tg-1wig">9.1-rc1</td>
+    <td class="tg-0lax">2020/02/14</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS Stable Version 9.0 Release</td>
+    <td class="tg-1wig">9.0</td>
+    <td class="tg-0lax">2019/09/01</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">LFS 9.0-rc1 Release</td>
+    <td class="tg-1wig">9.0-rc1</td>
+    <td class="tg-0lax">2019/08/15</td>
+  </tr>
+</tbody></table>
+</div>
 
 ### Automatic Disk Management & Partition Selection
 If you have not created a partition before initializing the LFS installation and you do not want to go through the manual configuration of creating such partition, you can 
@@ -219,10 +309,6 @@ LFSInstaller - Linux From Scratch Shell Script Installer
 Usage: ./LFSInstaller.sh [modes] [options] [others]
 It is recommended to execute this script as a root user !.
 ```
-
-> [!IMPORTANT]
-> It is essential that you review the installation script(s) before initializing the installation to ensure that there are no conflicts of 
-packages or further errors when initializing LFS on your target machine.
 
 ## License
 This project is licensed under MIT License. See the [LICENSE] file for details.
