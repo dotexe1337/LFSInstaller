@@ -263,7 +263,7 @@ The following process scans a list of disk utility and management application in
 <div align="center">
 <table class="tg"><thead>
   <tr>
-    <th class="tg-7btt">Disk Utility and Management Programs</th>
+    <th class="tg-7btt">Disk Utility Programs</th>
   </tr></thead>
 <tbody>
   <tr>
