@@ -86,8 +86,7 @@ sudo ./LFSInstaller.sh -c --install-type="PHASE"
 ```
 
 > [!WARNING]
-> It is highly recommended that you install LFS by **phase** installation type if you want to ensure that it reflects the state of your 
-LFS target machine properly.
+> It is highly recommended that you install LFS by **phase** installation type if you want to ensure that it reflects the state of your LFS target machine properly.
 
 > [!IMPORTANT]
 > It is essential that you review the installation script(s) before initializing the installation to ensure that there are no conflicts of 
