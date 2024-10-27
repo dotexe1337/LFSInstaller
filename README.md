@@ -4,10 +4,7 @@
   <img src="https://github.com/user-attachments/assets/16a41527-b9b9-452a-9356-f7386008b615" alt="Logo Banner">
 </p>
 
-----------------------------------------------------------------------------------------------------------------------------
-
-## Description
-Following the instruction manual for building Linux From Scratch, even for experienced developers, can be a tedious repetitive task if they hate reimplementing it manually for maintenance. This is also with addition of fixing errors after compiling specific packages that fail to perform compilation. LFSInstaller aims to mitigate theses problems automatically through previous bug errors when building LFS.
+LFSInstaller aims to make the process easier, which is a LFS script installation generator that produces a script installation template for you to decide how you want to proceed with the LFS installation.
 
 # Getting LFSInstaller
 Clone LFSInstaller repository to a suitable directory.
@@ -46,7 +43,6 @@ The installlation will be produced as a single script that will append the insta
 ```
 sudo ./LFSInstaller.sh -c --install-type="SINGLE"
 ```
-
 #### Phases
 The installation will be installed in phases, meaning that each stage of the installation will be created as each script
 in order to ensure that the following target machine meets its requirements. The phases can be represented as such:
@@ -86,11 +82,10 @@ sudo ./LFSInstaller.sh -c --install-type="PHASE"
 ```
 
 > [!WARNING]
-> It is highly recommended that you install LFS by **phase** installation type if you want to ensure that it reflects the state of your LFS target machine properly.
+> It is highly recommended that you install LFS by **phase installation typ to ensure** that your isolated system is properly configured and set up correctly from each step of the installation.
 
 > [!IMPORTANT]
-> It is essential that you review the installation script(s) before initializing the installation to ensure that there are no conflicts of 
-packages or further errors when initializing LFS on your target machine.
+> It is **essential** and a **must** that you must** review the installation script(s)** before initializing the installation to ensure that there are no conflicts or major prone errors during the installation process.
 
 ### Automatic Mounting and Unmounting
 You can mount the LFS mounting point to the target partition and unmount automatically with certain flags that you can pass through to perform such process through the following:
@@ -260,6 +255,46 @@ sudo ./LFSInstaller --create-partition
 ```
 
 The following process scans a list of Disk management application in your host machine, by which you can select such software in order to proceed with partitioning.
+
+<div align="center">
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-7btt">Disk Utility Programs</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow">cfdisk</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">fdisk</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">parted</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">lsblk</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">gparted</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">gdisk</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">df</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">mount</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">umount</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">blkid</td>
+  </tr>
+</tbody>
+</table>
+</div>
 
 ## Help
 ```
