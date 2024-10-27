@@ -115,7 +115,7 @@ If you are uncertain about the version that you can choose from, you can execute
 ```
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/a40f7aa8-e563-4bad-aea3-a8e384f672b7" alt="version-list">
+  <img src="https://github.com/user-attachments/assets/60b01003-bc12-4d3e-af7c-00e54b5acbad" alt="version-list">
 </p>
 
 The following release builds of LFS that you can select from are the following: 
