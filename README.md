@@ -9,7 +9,7 @@ LFSInstaller is a Linux From Scratch script installation generator that produces
 # Getting LFSInstaller
 Clone LFSInstaller repository to a suitable directory.
 ```
-git clone https://github.com/eliaz5536/lfsinstaller.git
+git clone https://github.com/eliaz5536/LFSInstaller.git
 ```
 
 Go into the repository directory and add execute permission to LFSInstaller.sh.
@@ -28,7 +28,7 @@ To create your first LFS installation script to start your installation, perform
 sudo ./LFSInstaller.sh -c
 ```
 
-If you want to immediately create LFS Installation script without the use of manually entering the properties from scratch, you can perform the following that would skip certain instructions:
+If you want to immediately create LFS Installation script with configurations implemented, you can pass arguments with the following command with this example:
 ```
 sudo ./LFSInstaller.sh -c -v <VERSION> -p <PARTITION_HERE>
 ```
@@ -257,6 +257,10 @@ create your partition through LFSInstaller by the following command:
 ```
 sudo ./LFSInstaller --create-partition
 ```
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f9ec9173-dfb6-48a7-b8cf-2ebe5a2bb8e7" alt="partition">
+</p>
 
 The following process scans a list of disk utility and management application in your host machine, by which you can select such software in order to proceed with partitioning.
 
