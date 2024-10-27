@@ -495,7 +495,9 @@ create_partition() {
 				;;
 		esac	
 
-        	sudo "$tool"
+		if [[ ! "$tool" == "fdisk" ]]; then
+			sudo "$tool"
+		fi
         	echo "Operation completed."
     	else
         	echo "Error: Invalid selection: $user_input"
