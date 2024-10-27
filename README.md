@@ -4,8 +4,6 @@
   <img src="https://github.com/user-attachments/assets/16a41527-b9b9-452a-9356-f7386008b615" alt="Logo Banner">
 </p>
 
-LFS installer from LFS book (_LinuxFromScratch.org_) for Linux enthusiasts and/or professionals who want to select their tools without extreme maintenance.
-
 ----------------------------------------------------------------------------------------------------------------------------
 
 ## Description
