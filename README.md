@@ -43,22 +43,64 @@ You can select two types of installation scripts that you want to produce which 
 #### Single
 The installlation will be produced as a single script that will append the installation of packages into the main installation script, by which the installation script would be called 'install.sh'.
 
+```
+sudo ./LFSInstaller.sh -c --install-type="SINGLE"
+```
+
 #### Phases
 The installation will be installed in phases, meaning that each stage of the installation will be created as each script
 in order to ensure that the following target machine meets its requirements. The phases can be represented as such:
 
-<p align="center">
 | **Installation Lifecycle** 	| **Installation State** 	|
 |----------------------------	|------------------------	|
 | **Phase 1**                	| Build Preparation      	|
 | **Phase 2**                	| Cross Toolchain        	|
 | **Phase 3**                	| Chroot                 	|
 | **Phase 4**                	| System Configuration   	|
-</p>
 
-The following install type can be prompted before creating installation script(s).
+<div align="center">Center</div>
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-1wig{font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-1wig">Installation Lifecycle</th>
+    <th class="tg-1wig">Installation State</th>
+    <th class="tg-1wig">Installation Description</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0lax">Phase 1</td>
+    <td class="tg-0lax">Build Preparation</td>
+    <td class="tg-0lax">Creating and setting up LFS partition in order to build the LFS system.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Phase 2</td>
+    <td class="tg-0lax">Cross Toolchain</td>
+    <td class="tg-0lax">Compiling and installing cross toolchain (binutils, gcc and glibc) and temporary tools using the cross-toolchain. </td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Phase 3</td>
+    <td class="tg-0lax">Chroot</td>
+    <td class="tg-0lax">Entering chroot environment on the isolated LFS system to install selected packages.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Phase 4</td>
+    <td class="tg-0lax">System Configuration</td>
+    <td class="tg-0lax">Setting up system configuration such as the kernel and bootloader.</td>
+  </tr>
+</tbody></table>
+
+
+
 ```
-sudo ./LFSInstaller.sh -c --install-type="SINGLE"
 sudo ./LFSInstaller.sh -c --install-type="PHASE"
 ```
 
