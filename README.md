@@ -276,25 +276,10 @@ The following process scans a list of Disk management application in your host m
     <td class="tg-c3ow">parted</td>
   </tr>
   <tr>
-    <td class="tg-baqh">lsblk</td>
-  </tr>
-  <tr>
     <td class="tg-baqh">gparted</td>
   </tr>
   <tr>
     <td class="tg-baqh">gdisk</td>
-  </tr>
-  <tr>
-    <td class="tg-baqh">df</td>
-  </tr>
-  <tr>
-    <td class="tg-baqh">mount</td>
-  </tr>
-  <tr>
-    <td class="tg-baqh">umount</td>
-  </tr>
-  <tr>
-    <td class="tg-baqh">blkid</td>
   </tr>
 </tbody>
 </table>
