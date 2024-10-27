@@ -461,7 +461,7 @@ install() {
 #     1 - Disk management tools is not available on the host machine.
 #================================================================
 create_partition() {
-	disk_tools=("cfdisk" "fdisk" "parted" "lsblk" "gparted" "gdisk" "df" "mount" "umount" "blkid")
+	disk_tools=("cfdisk" "fdisk" "parted" "lsblk" "gparted" "gdisk")
 	selected_tools=()
 
 	echo "Scanning for disk management tools..."	
@@ -489,6 +489,12 @@ create_partition() {
         	tool="${selected_tools[user_input]}"
         	echo "You selected: $tool"
         
+		case $tool in 
+			"fdisk")
+				sudo "$tool" $PARTITION
+				;;
+		esac	
+
         	sudo "$tool"
         	echo "Operation completed."
     	else
