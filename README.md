@@ -47,12 +47,14 @@ The installlation will be produced as a single script that will append the insta
 The installation will be installed in phases, meaning that each stage of the installation will be created as each script
 in order to ensure that the following target machine meets its requirements. The phases can be represented as such:
 
-| **Installation Lifecycle** 	| **Installation State** 	|
-|----------------------------	|------------------------	|
-| **Phase 1**                	| Build Preparation      	|
-| **Phase 2**                	| Cross Toolchain        	|
-| **Phase 3**                	| Chroot                 	|
-| **Phase 4**                	| System Configuration   	|
+<p align="center">
+  | **Installation Lifecycle** 	| **Installation State** 	|
+  |----------------------------	|------------------------	|
+  | **Phase 1**                	| Build Preparation      	|
+  | **Phase 2**                	| Cross Toolchain        	|
+  | **Phase 3**                	| Chroot                 	|
+  | **Phase 4**                	| System Configuration   	|
+</p>
 
 The following install type can be prompted before creating installation script(s).
 ```
