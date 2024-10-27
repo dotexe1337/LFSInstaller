@@ -4,7 +4,7 @@
   <img src="https://github.com/user-attachments/assets/16a41527-b9b9-452a-9356-f7386008b615" alt="Logo Banner">
 </p>
 
-LFSInstaller aims to make the process easier, which is a LFS script installation generator that produces a script installation template for you to decide how you want to proceed with the LFS installation.
+LFSInstaller is a Linux From Scratch script installation generator that produces a script installation template for you to decide how you want to proceed with the LFS installation.
 
 # Getting LFSInstaller
 Clone LFSInstaller repository to a suitable directory.
