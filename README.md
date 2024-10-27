@@ -258,12 +258,12 @@ create your partition through LFSInstaller by the following command:
 sudo ./LFSInstaller --create-partition
 ```
 
-The following process scans a list of Disk management application in your host machine, by which you can select such software in order to proceed with partitioning.
+The following process scans a list of disk utility and management application in your host machine, by which you can select such software in order to proceed with partitioning.
 
 <div align="center">
 <table class="tg"><thead>
   <tr>
-    <th class="tg-7btt">Disk Utility Programs</th>
+    <th class="tg-7btt">Disk Utility and Management Programs</th>
   </tr></thead>
 <tbody>
   <tr>
