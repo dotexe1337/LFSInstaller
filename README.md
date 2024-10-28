@@ -45,7 +45,7 @@ If you want to immediately create LFS Installation script with arguments, you ca
 You can select two types of installation scripts that you want to produce which are the following and can be executed as it follows:
 
 #### Single
-The installlation will be produced as a single script that will append the installation of packages into the main installation script _install.sh_.
+The installation will be produced as a single script that will append the installation of packages into the main installation script _install.sh_.
 The commands can be executed through the following:
 ```
 ./LFSInstaller.sh --install-type=single -c
