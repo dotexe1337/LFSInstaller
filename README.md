@@ -30,7 +30,6 @@ To create your first LFS installation script to start your installation, perform
 <p align="center">
   <img src="https://github.com/user-attachments/assets/9cc8f119-f7e8-490f-bca8-725426fb6c84" alt="Interactive Installation">
 </p>
-
 If you want to immediately create LFS Installation script with arguments, you can pass those arguments with the following command with this example to have a head start of creating the installation script(s):
 ```
 ./LFSInstaller.sh -c -v=<VERSION> -p=<PARTITION> -sp=<SWAP_PARTITION> -vc=<VERSION_CODENAME> -dc=<DISTRIBUTION_CODENAME> -c
