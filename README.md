@@ -40,6 +40,12 @@ If you want to immediately create LFS Installation script with arguments, you ca
   <img src="https://github.com/user-attachments/assets/58455c7d-2640-43b0-8460-6daf5592203a" alt="Interactive Installation with arguments">
 </p>
 
+You can easily initialize the installation process (single or phase-by-phase) after the creation of the installation script(s) by executing one of the following commands:
+```
+./LFSInstaller.sh --install
+./LFSInstaller.sh -i
+```
+
 # Features
 ### Installation Types
 You can select two types of installation scripts that you want to produce which are the following and can be executed as it follows:
