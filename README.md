@@ -46,6 +46,7 @@ You can select two types of installation scripts that you want to produce which 
 
 #### Single
 The installlation will be produced as a single script that will append the installation of packages into the main installation script _install.sh_.
+The commands can be executed through the following:
 ```
 ./LFSInstaller.sh --install-type=single -c
 ./LFSInstaller.sh --install-type=s -c
@@ -87,6 +88,7 @@ in order to ensure that the following target machine meets its requirements. The
   </tr>
 </tbody></table>
 
+The commands can be executed through the following:
 ```
 ./LFSInstaller.sh --install-type=phase -c
 ./LFSInstaller.sh --install-type=p -c
