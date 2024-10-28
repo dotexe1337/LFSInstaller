@@ -546,9 +546,9 @@ phase_script() {
 #     1 - Target installation script does not exist on host machine.
 #================================================================
 verify_existing_file() {
-	local $TARGET_FILE=$1
+	local $TARGET_FILE="$1"
 
-        if [[ -z $TARGET_FILE ]]; then
+        if [[ -z "$TARGET_FILE" ]]; then
                 error "$TARGET_INSTALLATION_SCRIPT is not generated in your directory"
                 exit 1  
         else 
@@ -561,7 +561,7 @@ verify_existing_file() {
 # FUNCTION: single_installation
 # DESCRIPTION:
 #     Initializes generating LFS installation script through
-#     "single" installation type.
+#     single installation type.
 # PARAMETERS:
 #     None 
 # RETURNS:
@@ -584,7 +584,7 @@ single_installation() {
 # FUNCTION: phase_installation
 # DESCRIPTION:
 #     Initializes generating LFS installation script through
-#     "single" installation type.
+#     phase-by-phase installation type.
 # PARAMETERS:
 #     None
 # RETURNS:
@@ -592,7 +592,7 @@ single_installation() {
 #================================================================
 phase_installation() {
 	for dir in $CHAPTER_DIRS; do
-		PHASE_INSTALLATION_SCRIPT=$(phase_installation_script "$dir")
+		PHASE_INSTALLATION_SCRIPT=$(phase_script "$dir")
 		if [[ -n "$PHASE_INSTALLATION_SCRIPT" ]]; then
 			if [[ ! -e "$PHASE_INSTALLATION_SCRIPT" ]]; then
 				TARGET_INSTALLATION_SCRIPT="$PHASE_INSTALLATION_SCRIPT"
