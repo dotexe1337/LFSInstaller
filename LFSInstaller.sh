@@ -958,7 +958,6 @@ fi
 
 case "$INSTALL_TYPE" in
 	"s"|"single"|"p"|"phase")
-		break
 		;;
 	*)
 		error "Unknown Installation Type Parameter: $INSTALL_TYPE"

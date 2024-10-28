@@ -467,7 +467,7 @@ progress() {
     	CHAPTER_NUMBER=$(echo "$CHAPTER_DIR" | sed -E 's/.*chapter([0-9]{2}).*/\1/')
     	CHAPTER_NUMBER=$(printf "%d" "$CHAPTER_NUMBER")
 
-	PROGRESS=$(( CHAPTER_NUMBER * 100 / TOTAL_CHAPTER_DIR ))
+	PROGRESS=$(( CHAPTER_NUMBER * 100 / TOTAL_CHAPTER_DIRS ))
 
 	echo "Progress: $PROGRESS"
 }
@@ -537,7 +537,7 @@ phase_script() {
 
         if [ "$CHAPTER_NUMBER" -ge 2 ] && [ "$CHAPTER_NUMBER" -lt 4 ]; then
                 echo "phase1.sh"
-        elif [ "$CHAPTER_NUMBER" -ge 5 ] [ "$CHAPTER_NUMBER" -lt 6 ]; then
+        elif [ "$CHAPTER_NUMBER" -ge 5 ] && [ "$CHAPTER_NUMBER" -lt 6 ]; then
                 echo "phase2.sh"
         elif [ "$CHAPTER_NUMBER" -ge 7 ] && [ "$CHAPTER_NUMBER" -lt 8 ]; then
                 echo "phase3.sh"
