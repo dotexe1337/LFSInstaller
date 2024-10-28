@@ -1,4 +1,4 @@
-# LFSInstaller - Linux From Scratch Script Installer
+# LFSInstaller - Linux From Scratch Script Template Installer
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/16a41527-b9b9-452a-9356-f7386008b615" alt="Logo Banner">
