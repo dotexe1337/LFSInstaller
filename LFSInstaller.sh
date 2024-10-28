@@ -724,7 +724,7 @@ create_script() {
 	fi
 
 	if [ -z "$INSTALL_TYPE" ]; then
-		INSTALL_VALUES=("SINGLE" "PHASES")
+		INSTALL_VALUES=("single" "phase")
 		match_found=0
 		for install in "${INSTALL_VALUES[@]}"; do
 			if [ "$INSTALL_TYPE" = "$install" ]; then
@@ -759,12 +759,12 @@ create_script() {
 				case "$answer" in 
 					1)
 						info "Installation Type: Single Script Installation"
-						INSTALL_TYPE="SINGLE"
+						INSTALL_TYPE="single"
 						break
 						;;
 					2 )
 						info "Installation Type: Phase-by-Phase Installation"
-						INSTALL_TYPE="PHASES"
+						INSTALL_TYPE="phase"
 						break
 						;;
 					* )
