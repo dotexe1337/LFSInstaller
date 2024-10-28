@@ -27,11 +27,17 @@ To create your first LFS installation script to start your installation, perform
 ```
 sudo ./LFSInstaller.sh -c
 ```
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9cc8f119-f7e8-490f-bca8-725426fb6c84" alt="Interactive Installation">
+</p>
 
 If you want to immediately create LFS Installation script with arguments, you can pass those arguments with the following command with this example to have a head start of creating the installation script(s):
 ```
-sudo ./LFSInstaller.sh -c -v <VERSION> -p <PARTITION_HERE>
+sudo ./LFSInstaller.sh -c -v=<VERSION> -p=<PARTITION> -sp=<SWAP_PARTITION> -vc=<VERSION_CODENAME> -dc=<DISTRIBUTION_CODENAME> -c
 ```
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/58455c7d-2640-43b0-8460-6daf5592203a" alt="Interactive Installation with arguments">
+</p>
 
 # Features
 ### Installation Types
