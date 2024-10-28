@@ -123,8 +123,10 @@ ENDCOLOR="\e[0m"
 #     None
 #================================================================
 info() {
-        local message=$1
-        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+	if [[ "$VERBOSE" == true ]]; then
+		local message=$1
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+	fi
 }
 
 #================================================================
@@ -137,8 +139,10 @@ info() {
 #     None
 #================================================================
 bold_info() {
-        local message=$1
-        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+	if [[ "$VERBOSE" == true ]]; then
+		local message=$1
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+	fi
 }
 
 #================================================================
@@ -164,8 +168,10 @@ success() {
 #     None
 #================================================================
 warning() {
-        local message=$1
-        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+	if [[ "$VERBOSE" == true ]]; then
+		local message=$1
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+	fi
 }
 
 #================================================================
@@ -178,8 +184,10 @@ warning() {
 #     None
 #================================================================
 bold_warning() {
-        local message=$1
-        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+	if [[ "$VERBOSE" == true ]]; then
+		local message=$1
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+	fi
 }
 
 #================================================================
@@ -208,6 +216,28 @@ error() {
 bold_error() {
         local message=$1
         printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+}
+
+#================================================================
+# FUNCTION: check_file
+# DESCRIPTION:
+#     Checks if target file exists
+# PARAMETERS:
+#     None
+# RETURNS:
+#     0 - Target file exists on the host machine.
+#     1 - Target file does not exist on the host machine.
+#================================================================
+check_file() {
+	local $TARGET_FILE="$1"
+
+	if [[ -e "$TARGET_FILE" ]]; then
+		info "$TARGET_FILE exists in your host machine."
+		return 0
+	else 
+		error "$TARGET_FILE does not exist on the host machine."
+		return 1
+	fi
 }
 
 #================================================================
@@ -442,12 +472,34 @@ install() {
 		exit 1
 	fi
 
-	if [[ -e "install.sh" ]]; then
-		info "Installing LFS Release Build Version $VERSION"
-		sudo ./install.sh				
-	else 
-		error "File 'install.sh' does not exist in the script's directory."
+	if [ "$INSTALL_TYPE" == "s" ] || [ "$INSTALL_TYPE" == "single" ]; then
+		CHECK_COMMAND=$(check_file "install.sh")
+		check_file "install.sh"
+		if [ $CHECK_COMMAND -eq 0 ]; then
+			info "Initializing single installation script..."
+			sudo ./$TARGET_INSTALLATION_FILE
+			exit 0
+		fi
 	fi
+
+	if [ "$INSTALL_TYPE" == "p" ] || [ "$INSTALL_TYPE" == "phase" ]; then
+		MISSING_PHASE_FILE=false
+		PHASE_FILES=("phase1.sh" "phase2.sh" "phase3.sh" "phase4.sh")	
+		for phase_file in ${PHASE_FILES[@]}; do
+			CHECK_PHASE_COMMAND=$(check phase_file)	
+			if [ $CHECK_PHASE_COMMAND -eq 1 ]; then
+				error "$phase_file installation script does not exist in your phase installation"
+				MISSING_PHASE_FILE=true
+			fi
+		done
+
+		if [[ "$MISSING_PHASE_FILE" == "true" ]]; then
+			error "Unable to proceed with installation due to missing phase installation script(s)."
+			exit 1
+		fi
+	fi
+
+	exit 1
 }
 
 #================================================================
@@ -461,6 +513,8 @@ install() {
 #     1 - Disk management tools is not available on the host machine.
 #================================================================
 create_partition() {
+	# Pass arguement here
+
 	disk_tools=("cfdisk" "fdisk" "parted" "lsblk" "gparted" "gdisk")
 	selected_tools=()
 
@@ -826,6 +880,7 @@ help() {
 	printf "  ${BOLD}-h, --help${ENDCOLOR}									Show help message\n"
   	printf "  ${BOLD}-u, --usage${ENDCOLOR}									Show usage information\n"
   	printf "  ${BOLD}--version-list${ENDCOLOR}								Show list of LFS Release Builds\n"
+  	printf "  ${BOLD}--verbose${ENDCOLOR}									Enable verbose mode\n"
 	echo " "
 	echo "Examples:"
   	printf "  ${BOLD}./LFSInstaller -m${ENDCOLOR}								Initializes mounting procedure\n"
@@ -848,25 +903,87 @@ DISTRIB_CODENAME=""
 INSTALL_TYPE=""
 VERSION=""
 
+VERBOSE=false
+
 while [[ "$#" -gt 0 ]]; do
-	case $1 in
+	# case $1 in
+	case "$1" in
 		-u|--usage) usage ;;
 		-h|--help) help ;;
 		--version-list) display_version_list ;;
-		-v|--version) VERSION="$2" shift ;;
-		-p|--partition) PARTITION="$2" shift ;;
-		-s|--swap) SWAP=true shift ;;
-		-sp|--swap-partition) SWAP_PARTITION="$2" shift ;;
-		-it|--install-type) INSTALL_TYPE="$2" shift ;;
-		-vc|--version-codename) VERSION_CODENAME="$2" shift ;;
-		-dc|--distrib-codename) DISTRIB_CODENAME="$2" shift ;;
+		-v=*|--version=*) VERSION="${1#*=}" ;;
+		-p=*|--partition=*) PARTITION="${1#*=}" ;;
+		-sp=*|--swap-partition=*) SWAP_PARTITION="${1#*=}" ;;
+		-it=*|--install-type=*) INSTALL_TYPE="${1#*=}" INSTALL_TYPE="${INSTALL_TYPE,,}";;
+		-vc=*|--version-codename=*) VERSION_CODENAME="${1#*=}" ;;
+		-dc|--distrib-codename) DISTRIB_CODENAME="${1#*=}" ;;
 		--create-partition) create_partition ;;
 		-m|--mount) mount ;;
 		-um|--unmount) unmount ;;
 		--chroot) chroot ;;
 		-c|--create) create_script ;;
 		-i|--install) install ;;
-		*) error "Unknown parameter passed: "; exit 1 ;;
+		--verbose|--verbose) VERBOSE=true ;;
+		*) error "Unknown parameter passed: $1"; exit 1 ;;
 	esac
 	shift
 done
+
+if [ -n "$VERSION" ]; then
+	match=false
+	for version in ${VERSION_LIST[@]}; do
+		if [[ "$VERSION" == "$version" ]]; then
+			info "Version: $VERSION"
+			match=true	
+			break
+		fi	
+	done
+	if [[ "$match" = "false" ]]; then
+		error "Version $VERSION does not match with any of the list of LFS release builds" 
+		exit 1
+	fi
+fi
+
+if [[ -n "$PARTITION" ]]; then
+	AVAILABLE_PARTITION=$(verify_partition "$PARTITION")
+	if [ $? -eq 0 ]; then
+		info "Partition: $PARTITION"
+	else
+		error "Partition $PARTITION does not exist on the host machine."
+		exit 1
+	fi
+fi
+
+if [[ -n "$SWAP_PARTITION" ]]; then
+	AVAILABLE_PARTITION=$(verify_partition "$SWAP_PARTITION")
+	if [ $? -eq 0 ]; then
+		info "Swap Partition: $SWAP_PARTITION"
+	else
+		error "Swap Partition $SWAP_PARTITION does not exist on the host machine."
+		exit 1
+	fi
+fi
+
+if [[ -n "$INSTALL_TYPE" ]]; then
+	INVALID_INSTALL_TYPE=false
+	if [ "$INSTALL_TYPE" == "s" ] || [ "$INSTALL_TYPE" == "single" ]; then
+		info "Installation Type: Single Script Installation"		
+		INVALID_INSTALL_TYPE=true
+	fi
+	if [ "$INSTALL_TYPE" == "p" ] || [ "$INSTALL_TYPE" == "phase" ]; then
+		info "Installation Type: Phase-by-Phase Script Installation"		
+		INVALID_INSTALL_TYPE=true
+	fi
+	if [[ "$INVALID_INSTALL_TYPE" = "false" ]]; then
+		error "Unknown Installation Type Parameter: $INSTALL_TYPE"
+		exit 1
+	fi
+fi
+
+if [[ -n "$VERSION_CODENAME" ]]; then
+	info "Version Codename: $VERSION_CODENAME"
+fi
+
+if [[ -n "$DISTRIB_CODENAME" ]]; then
+	info "Distrib Codename: $DISTRIB_CODENAME"
+fi
