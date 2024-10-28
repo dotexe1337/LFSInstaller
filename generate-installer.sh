@@ -122,8 +122,10 @@ ENDCOLOR="\e[0m"
 #     None
 #================================================================
 info() {
-        local message=$1
-        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+	if [[ "$VERBOSE" = true ]]; then
+		local message=$1
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+	fi
 }
 
 #================================================================
@@ -136,8 +138,10 @@ info() {
 #     None
 #================================================================
 bold_info() {
-        local message=$1
-        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+	if [[ "$VERBOSE" = true ]]; then
+		local message=$1
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+	fi
 }
 
 #================================================================
@@ -163,8 +167,10 @@ success() {
 #     None
 #================================================================
 warning() {
-        local message=$1
-        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+	if [[ "$VERBOSE" = true ]]; then
+		local message=$1
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+	fi
 }
 
 #================================================================
@@ -177,8 +183,10 @@ warning() {
 #     None
 #================================================================
 bold_warning() {
-        local message=$1
-        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+	if [[ "$VERBOSE" = true ]]; then
+		local message=$1
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+	fi
 }
 
 #================================================================
@@ -616,9 +624,15 @@ DISTRIB_CODENAME=$3
 VERSION_CODENAME=$4
 INSTALL_TYPE=$5
 VERSION=$6
-SWAP=$7
+VERBOSE=$7
 #=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-
 
+bold_info "Partition: $PARTITION"
+if [[ -n $SWAP_PARTITION ]]; then
+	bold_info "Swap Partition: $SWAP_PARTITION"
+fi
+
+bold_info "Version: $VERSION"
 VERSION_DIRECTORY="$(pwd)/releases/$VERSION"
 if [[ "$VERSION" == "12.2" ]]; then
 	tar -xf $VERSION_DIRECTORY/LFS-$VERSION-SYSV.tar.xz
@@ -628,6 +642,7 @@ fi
 
 MAJOR_VERSION=$(echo "$VERSION" | cut -d '.' -f 1)
 MAJOR_VERSION_DIRECTORY=""
+bold_info "Major Version: $MAJOR_VERSION"
 if [[ "$MAJOR_VERSION" == "9" ]]; then
 	MAJOR_VERSION_DIRECTORY="$(pwd)/$VERSION/chapter06"
 else
@@ -667,25 +682,30 @@ for opt in "${SELECTED_SOFTWARES[@]}"; do
 	echo "- $opt"
 done
 
-bold_info "Partition: $PARTITION"
-if [[ -n $SWAP_PARTITION ]]; then
-	bold_info "Swap Partition: $SWAP_PARTITION"
-fi
 bold_info "Distribution Codename: $DISTRIB_CODENAME"
 bold_info "Version Codename: $VERSION_CODENAME"
-bold_info "Install Type: $INSTALL_TYPE"
-bold_info "Version: $VERSION"
 
-echo "Generating $INSTALL_TYPE LFS installation script(s)..."
+case "$INSTALL_TYPE" in 
+	"s"|"single")
+		INSTALL_TYPE="single"
+		break
+		;;
+	"p"|"phase")
+		INSTALL_TYPE="phase"
+		break
+		;;
+esac
 
 CHAPTER_DIRS=$(find "$(pwd)/$VERSION" -type d -regex '.*chapter[0-9][0-9].*' | sort)
 TOTAL_CHAPTER_DIRS=$(echo "$CHAPTER_DIRS" | wc -l)
 
 case $INSTALL_TYPE in
-	"SINGLE")
+	"single")
+		bold_info "Installation Type: Single Script Installation"            
 		single_installation
 		;;
-	"PHASE")
+	"phase")
+		bold_info "Installation Type: Phase-by-Phase Script Installation"            
 		phase_installation
 		;;
 esac

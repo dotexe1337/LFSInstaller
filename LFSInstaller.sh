@@ -123,7 +123,7 @@ ENDCOLOR="\e[0m"
 #     None
 #================================================================
 info() {
-	if [[ "$VERBOSE" == true ]]; then
+	if [[ "$VERBOSE" = true ]]; then
 		local message=$1
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 	fi
@@ -139,7 +139,7 @@ info() {
 #     None
 #================================================================
 bold_info() {
-	if [[ "$VERBOSE" == true ]]; then
+	if [[ "$VERBOSE" = true ]]; then
 		local message=$1
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 	fi
@@ -168,7 +168,7 @@ success() {
 #     None
 #================================================================
 warning() {
-	if [[ "$VERBOSE" == true ]]; then
+	if [[ "$VERBOSE" = true ]]; then
 		local message=$1
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 	fi
@@ -184,7 +184,7 @@ warning() {
 #     None
 #================================================================
 bold_warning() {
-	if [[ "$VERBOSE" == true ]]; then
+	if [[ "$VERBOSE" = true ]]; then
 		local message=$1
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 	fi
@@ -513,8 +513,6 @@ install() {
 #     1 - Disk management tools is not available on the host machine.
 #================================================================
 create_partition() {
-	# Pass arguement here
-
 	disk_tools=("cfdisk" "fdisk" "parted" "lsblk" "gparted" "gdisk")
 	selected_tools=()
 
@@ -579,6 +577,7 @@ create_script() {
 	fi
 
 	if [ -z "$SWAP_PARTITION" ]; then
+		SWAP=false
 		while true; do
 			read -p "Do you want to use swap partition during LFS installation (Y/n): " answer
 			case "$answer" in 
@@ -589,7 +588,6 @@ create_script() {
 					;;
 				[Nn]* )
 					info "Disabled swap partition."
-					SWAP=false
 					break
 					;;
 				* )
@@ -598,7 +596,7 @@ create_script() {
 			esac
 		done
 
-		if [ "$SWAP" = "true" ]; then
+		if [ "$SWAP" = true ]; then
 			SWAP_PARTITION=$(select_partition)
 			if [ $? -eq 0 ]; then
 				info "Swap Partition: $SWAP_PARTITION"
@@ -821,7 +819,8 @@ create_script() {
 		"$DISTRIB_CODENAME" 	\
 		"$VERSION_CODENAME" 	\
 		"$INSTALL_TYPE" 	\
-		"$VERSION" 		
+		"$VERSION" 		\
+		"$VERBOSE" 		
 }
 
 #================================================================
@@ -896,13 +895,11 @@ VERSION_LIST=("9.0-rc1" "9.0" "9.1-rc1" "9.1" "10.0-rc1" "10.0" "10.1-rc1" "10.1
 	"12.1" "12.2-rc1" "12.2")
 
 PARTITION=""
-SWAP=false
 SWAP_PARTITION=""
 VERSION_CODENAME=""
 DISTRIB_CODENAME=""
 INSTALL_TYPE=""
 VERSION=""
-
 VERBOSE=false
 
 while [[ "$#" -gt 0 ]]; do
@@ -933,12 +930,11 @@ if [ -n "$VERSION" ]; then
 	match=false
 	for version in ${VERSION_LIST[@]}; do
 		if [[ "$VERSION" == "$version" ]]; then
-			info "Version: $VERSION"
 			match=true	
 			break
 		fi	
 	done
-	if [[ "$match" = "false" ]]; then
+	if [[ "$match" = false ]]; then
 		error "Version $VERSION does not match with any of the list of LFS release builds" 
 		exit 1
 	fi
@@ -946,9 +942,7 @@ fi
 
 if [[ -n "$PARTITION" ]]; then
 	AVAILABLE_PARTITION=$(verify_partition "$PARTITION")
-	if [ $? -eq 0 ]; then
-		info "Partition: $PARTITION"
-	else
+	if [ $? -eq 1 ]; then
 		error "Partition $PARTITION does not exist on the host machine."
 		exit 1
 	fi
@@ -956,29 +950,21 @@ fi
 
 if [[ -n "$SWAP_PARTITION" ]]; then
 	AVAILABLE_PARTITION=$(verify_partition "$SWAP_PARTITION")
-	if [ $? -eq 0 ]; then
-		info "Swap Partition: $SWAP_PARTITION"
-	else
+	if [ $? -eq 1 ]; then
 		error "Swap Partition $SWAP_PARTITION does not exist on the host machine."
 		exit 1
 	fi
 fi
 
-if [[ -n "$INSTALL_TYPE" ]]; then
-	INVALID_INSTALL_TYPE=false
-	if [ "$INSTALL_TYPE" == "s" ] || [ "$INSTALL_TYPE" == "single" ]; then
-		info "Installation Type: Single Script Installation"		
-		INVALID_INSTALL_TYPE=true
-	fi
-	if [ "$INSTALL_TYPE" == "p" ] || [ "$INSTALL_TYPE" == "phase" ]; then
-		info "Installation Type: Phase-by-Phase Script Installation"		
-		INVALID_INSTALL_TYPE=true
-	fi
-	if [[ "$INVALID_INSTALL_TYPE" = "false" ]]; then
+case "$INSTALL_TYPE" in
+	"s"|"single"|"p"|"phase")
+		break
+		;;
+	*)
 		error "Unknown Installation Type Parameter: $INSTALL_TYPE"
 		exit 1
-	fi
-fi
+		;;
+esac
 
 if [[ -n "$VERSION_CODENAME" ]]; then
 	info "Version Codename: $VERSION_CODENAME"
