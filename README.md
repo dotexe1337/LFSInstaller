@@ -23,12 +23,12 @@ Execute the shell script (It is recommended that you execute as a root user).
 sudo ./LFSInstaller.sh
 ```
 
-To create your first LFS installation script to start your installation, perform the following command:
+To create your first LFS installation script to start your installation, perform the following command which will go through interactive mode if no arguements have passed:
 ```
 sudo ./LFSInstaller.sh -c
 ```
 
-If you want to immediately create LFS Installation script with configurations implemented, you can pass arguments with the following command with this example:
+If you want to immediately create LFS Installation script with arguments, you can pass those arguments with the following command with this example to have a head start of creating the installation script(s):
 ```
 sudo ./LFSInstaller.sh -c -v <VERSION> -p <PARTITION_HERE>
 ```
