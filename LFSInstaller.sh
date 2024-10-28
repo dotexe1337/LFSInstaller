@@ -569,7 +569,7 @@ create_script() {
 	if [ -z "$PARTITION" ]; then
 		PARTITION=$(select_partition)
 		if [ $? -eq 0 ]; then
-			info "Partition: $PARTITION"
+			bold_info "Partition: $PARTITION"
 		else
 			error "Partition not selected"
 			exit 1
@@ -582,12 +582,10 @@ create_script() {
 			read -p "Do you want to use swap partition during LFS installation (Y/n): " answer
 			case "$answer" in 
 				[Yy]* )
-					info "Enabled swap partition."
 					SWAP=true
 					break
 					;;
 				[Nn]* )
-					info "Disabled swap partition."
 					break
 					;;
 				* )
@@ -599,7 +597,7 @@ create_script() {
 		if [ "$SWAP" = true ]; then
 			SWAP_PARTITION=$(select_partition)
 			if [ $? -eq 0 ]; then
-				info "Swap Partition: $SWAP_PARTITION"
+				bold_info "Swap Partition: $SWAP_PARTITION"
 			else
 				error "Swap partition not selected"
 				exit 1
@@ -719,7 +717,7 @@ create_script() {
 						;;
 				esac
 			done
-			info "LFS Release Build Version: $VERSION"
+			bold_info "Version: $VERSION"
 		fi
 	fi
 
@@ -758,12 +756,12 @@ create_script() {
 				# Convert the answer to lowercase for easier comparison
 				case "$answer" in 
 					1)
-						info "Installation Type: Single Script Installation"
+						bold_info "Installation Type: Single Script Installation"
 						INSTALL_TYPE="single"
 						break
 						;;
 					2 )
-						info "Installation Type: Phase-by-Phase Installation"
+						bold_info "Installation Type: Phase-by-Phase Installation"
 						INSTALL_TYPE="phase"
 						break
 						;;
@@ -786,9 +784,9 @@ create_script() {
 			read -p "Enter the name of your specific release: " distrib_codename
 		
 			if [[ -z "$distrib_codename" ]]; then
-				error "The DISTRIB CODENAME is empty. Please try again."
+				error "The distribution codename is empty. Please try again."
 			else 
-				info "DISTRIB_CODENAME: $distrib_codename"
+				bold_info "Distribution Codename: $distrib_codename"
 				DISTRIB_CODENAME="$distrib_codename"
 				break
 			fi
@@ -804,9 +802,9 @@ create_script() {
 			read -p "Enter the name of your codename of the distributed version: " version_codename
 		
 			if [[ -z "$version_codename" ]]; then
-				error "The VERSION CODENAME is empty. Please try again."
+				error "The version codename is empty. Please try again."
 			else 
-				info "VERSION_CODENAME: $version_codename"
+				bold_info "Version Codename: $version_codename"
 				VERSION_CODENAME="$version_codename"
 				break
 			fi
@@ -821,6 +819,8 @@ create_script() {
 		"$INSTALL_TYPE" 	\
 		"$VERSION" 		\
 		"$VERBOSE" 		
+
+	exit 0
 }
 
 #================================================================

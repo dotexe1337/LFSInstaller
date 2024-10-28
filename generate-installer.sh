@@ -276,8 +276,13 @@ append_install_script() {
 	local TARGET_INSTALLATION_SCRIPT=$1	
 	local TARGET_SCRIPT=$2
 
-	cat $TARGET_SCRIPT >> $TARGET_INSTALLATION_SCRIPT
-	echo "" >> $TARGET_INSTALLATION_SCRIPT
+	# cat "$TARGET_SCRIPT" >> "$TARGET_INSTALLATION_SCRIPT"
+	cat $TARGET_SCRIPT >> "$TARGET_INSTALLATION_SCRIPT"
+	echo "" >> "$TARGET_INSTALLATION_SCRIPT"
+
+	# cat $TARGET_SCRIPT >> $TARGET_INSTALLATION_SCRIPT
+	# echo "" >> $TARGET_INSTALLATION_SCRIPT
+
 	sudo rm -r $TARGET_SCRIPT
 }
 
@@ -431,14 +436,16 @@ scan_chapter() {
         mapfile -t pages < <(awk '/<div class="toc">/,/<\/div>/' $CHAPTER_DIR/$BASENAME_CHAPTER_DIR.html | grep '<a href=' | sed -n 's/.*<a href="\([^"]*\)".*/\1/p')
 
     	CHAPTER_NUMBER=$(echo "$CHAPTER_DIR" | sed -E 's/.*chapter([0-9]{2}).*/\1/')
-    	CHAPTER_NUMBER=$(printf "%d" "$CHAPTER_NUMBER")
+    	# CHAPTER_NUMBER=$(printf "%d" "$CHAPTER_NUMBER")
+	CHAPTER_NUMBER=$(printf "%d" "$((10#$CHAPTER_NUMBER))")
+
 	if [[ "$MAJOR_VERSION" == "9" ]]; then
-		if [ "$CHAPTER_NUMBER" -e 6 ]; then
+		if [ "$CHAPTER_NUMBER" -eq 6 ]; then
 			install_selected_packages "$CHAPTER_DIR" "$pages" "$TARGET_INSTALLATION_SCRIPT"
 			return			
 		fi
 	else
-		if [ "$CHAPTER_NUMBER" -e 8 ]; then
+		if [ "$CHAPTER_NUMBER" -eq 8 ]; then
 			install_selected_packages "$CHAPTER_DIR" "$pages" "$TARGET_INSTALLATION_SCRIPT"
 			return			
 		fi
@@ -465,7 +472,8 @@ progress() {
 	local CHAPTER_DIR="$1"
 
     	CHAPTER_NUMBER=$(echo "$CHAPTER_DIR" | sed -E 's/.*chapter([0-9]{2}).*/\1/')
-    	CHAPTER_NUMBER=$(printf "%d" "$CHAPTER_NUMBER")
+	# CHAPTER_NUMBER=$(printf "%d" "$CHAPTER_NUMBER")
+	CHAPTER_NUMBER=$(printf "%d" "$((10#$CHAPTER_NUMBER))")
 
 	PROGRESS=$(( CHAPTER_NUMBER * 100 / TOTAL_CHAPTER_DIRS ))
 
@@ -530,10 +538,10 @@ filter_script() {
 #     None
 #================================================================
 phase_script() {
-	local CHAPTER_DIR="$1"
+	local CHAPTER_DIR=$1
 
     	CHAPTER_NUMBER=$(echo "$CHAPTER_DIR" | sed -E 's/.*chapter([0-9]{2}).*/\1/')
-    	CHAPTER_NUMBER=$(printf "%d" "$CHAPTER_NUMBER")
+	CHAPTER_NUMBER=$(printf "%d" "$((10#$CHAPTER_NUMBER))")
 
         if [ "$CHAPTER_NUMBER" -ge 2 ] && [ "$CHAPTER_NUMBER" -lt 4 ]; then
                 echo "phase1.sh"
@@ -553,18 +561,13 @@ phase_script() {
 # PARAMETERS:
 #     $1 - Target file
 # RETURNS:
-#     0 - Target installation script exists on host machine.
-#     1 - Target installation script does not exist on host machine.
+#     0 - Target file exists on host machine.
+#     1 - Target file does not exist on host machine.
 #================================================================
 verify_existing_file() {
-	local $TARGET_FILE="$1"
-
-        if [[ -z "$TARGET_FILE" ]]; then
-                error "$TARGET_INSTALLATION_SCRIPT is not generated in your directory"
-                exit 1  
-        else 
-                success "$TARGET_INSTALLATION_SCRIPT is successfully generated in your directory"
-                exit 0
+	local TARGET_FILE="$1"
+        if [[ ! -e "$TARGET_FILE" ]]; then
+                error "$TARGET_FILE is not generated in your directory"
         fi
 }
 
@@ -583,7 +586,7 @@ single_installation() {
 	generate_bash_script "$TARGET_INSTALLATION_SCRIPT"
 
 	for dir in $CHAPTER_DIRS; do
-		progress "$dir" "$TOTAL_CHAPTER_DIRS"
+		# progress "$dir" "$TOTAL_CHAPTER_DIRS"
 		scan_chapter "$dir" "$TARGET_INSTALLATION_SCRIPT"
 	done
 
@@ -608,7 +611,7 @@ phase_installation() {
 			if [[ ! -e "$PHASE_INSTALLATION_SCRIPT" ]]; then
 				TARGET_INSTALLATION_SCRIPT="$PHASE_INSTALLATION_SCRIPT"
 			fi
-			progress "$dir"
+			# progress "$dir"
 			scan_chapter "$dir" "$TARGET_INSTALLATION_SCRIPT"
 		fi
 	done
@@ -616,6 +619,7 @@ phase_installation() {
 	PHASE_FILE_NAMES=("phase1.sh" "phase2.sh" "phase3.sh" "phase4.sh")
 	for phase_file in "${PHASE_FILE_NAMES[@]}"; do
 		verify_existing_file "$phase_file"
+		filter_script "$phase_file"
 	done
 }
 
@@ -674,7 +678,6 @@ while true; do
 			break
 		fi
 		SELECTED_SOFTWARES+=("${SYSTEM_PACKAGES[$choice]}")
-		info "Selected System Softwares: "
 	else 
 		error "Invalid choice, please try again."
 	fi
