@@ -532,6 +532,9 @@ filter_script() {
 phase_script() {
 	local CHAPTER_DIR="$1"
 
+    	CHAPTER_NUMBER=$(echo "$CHAPTER_DIR" | sed -E 's/.*chapter([0-9]{2}).*/\1/')
+    	CHAPTER_NUMBER=$(printf "%d" "$CHAPTER_NUMBER")
+
         if [ "$CHAPTER_NUMBER" -ge 2 ] && [ "$CHAPTER_NUMBER" -lt 4 ]; then
                 echo "phase1.sh"
         elif [ "$CHAPTER_NUMBER" -ge 5 ] [ "$CHAPTER_NUMBER" -lt 6 ]; then
@@ -688,11 +691,9 @@ bold_info "Version Codename: $VERSION_CODENAME"
 case "$INSTALL_TYPE" in 
 	"s"|"single")
 		INSTALL_TYPE="single"
-		break
 		;;
 	"p"|"phase")
 		INSTALL_TYPE="phase"
-		break
 		;;
 esac
 
