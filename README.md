@@ -20,12 +20,12 @@ chmod +x LFSInstaller.sh
 
 Execute the shell script (It is recommended that you execute as a root user).
 ```
-sudo ./LFSInstaller.sh
+./LFSInstaller.sh
 ```
 
 To create your first LFS installation script to start your installation, perform the following command which will go through interactive mode if no arguments have passed:
 ```
-sudo ./LFSInstaller.sh -c
+./LFSInstaller.sh -c
 ```
 <p align="center">
   <img src="https://github.com/user-attachments/assets/9cc8f119-f7e8-490f-bca8-725426fb6c84" alt="Interactive Installation">
@@ -33,7 +33,8 @@ sudo ./LFSInstaller.sh -c
 
 If you want to immediately create LFS Installation script with arguments, you can pass those arguments with the following command with this example to have a head start of creating the installation script(s):
 ```
-sudo ./LFSInstaller.sh -c -v=<VERSION> -p=<PARTITION> -sp=<SWAP_PARTITION> -vc=<VERSION_CODENAME> -dc=<DISTRIBUTION_CODENAME> -c
+./LFSInstaller.sh -c -v=<VERSION> -p=<PARTITION> -sp=<SWAP_PARTITION> -vc=<VERSION_CODENAME> -dc=<DISTRIBUTION_CODENAME> -c
+./LFSInstaller.sh -c --version=<VERSION> --partition=<PARTITION> --swap-partition=<SWAP_PARTITION> --version-codename=<VERSION_CODENAME> --distribution-codename=<DISTRIBUTION_CODENAME> -c
 ```
 <p align="center">
   <img src="https://github.com/user-attachments/assets/58455c7d-2640-43b0-8460-6daf5592203a" alt="Interactive Installation with arguments">
@@ -44,11 +45,14 @@ sudo ./LFSInstaller.sh -c -v=<VERSION> -p=<PARTITION> -sp=<SWAP_PARTITION> -vc=<
 You can select two types of installation scripts that you want to produce which are the following and can be executed as it follows:
 
 #### Single
-The installlation will be produced as a single script that will append the installation of packages into the main installation script, by which the installation script would be called 'install.sh'.
+The installlation will be produced as a single script that will append the installation of packages into the main installation script _install.sh_.
+```
+./LFSInstaller.sh --install-type=single -c
+./LFSInstaller.sh --install-type=s -c
+./LFSInstaller.sh -it=single -c
+./LFSInstaller.sh -it=s -c
+```
 
-```
-sudo ./LFSInstaller.sh -c --install-type="SINGLE"
-```
 #### Phases
 The installation will be installed in phases, meaning that each stage of the installation will be created as each script
 in order to ensure that the following target machine meets its requirements. The phases can be represented as such:
@@ -84,7 +88,10 @@ in order to ensure that the following target machine meets its requirements. The
 </tbody></table>
 
 ```
-sudo ./LFSInstaller.sh -c --install-type="PHASE"
+./LFSInstaller.sh --install-type=phase -c
+./LFSInstaller.sh --install-type=p -c
+./LFSInstaller.sh -it=phase -c
+./LFSInstaller.sh -it=p -c
 ```
 
 > [!WARNING]
@@ -96,23 +103,32 @@ sudo ./LFSInstaller.sh -c --install-type="PHASE"
 ### Automatic Mounting and Unmounting
 You can mount the LFS mounting point to the target partition and unmount automatically with certain flags that you can pass through to perform such process through the following:
 ```
-sudo ./LFSInstaller.sh -m
-sudo ./LFSInstaller.sh -m -f 
-sudo ./LFSInstaller.sh -m -l 
+# Standard mount
+./LFSInstaller.sh --mount
+./LFSInstaller.sh -m
+
+# Force mount
+./LFSInstaller.sh --mount -f
+./LFSInstaller.sh -m -f 
+
+# Lazy mount
+./LFSInstaller.sh --mount -l
+./LFSInstaller.sh -m -l 
 ```
 
 ### Entering Chroot Environment
 If the mount is successful and you completed two phases of installation, you can enter chroot environment to install 
 packages of your choice in an isolated environment:
 ```
-sudo ./LFSInstaller.sh --chroot
+./LFSInstaller.sh --chroot
 ```
 
 ### Version Selection (Release Selection)
 If you're unsure if the latest release build of LFS is compatible with your kernel or hardware for installation, you can select the version of your choice by 
 passing the argument '--version' or '-v' of the following which you can specify the build version to install specific version of packages of your choice:
 ```
-sudo ./LFSInstaller -v="12.2"
+./LFSInstaller --version=12.2 -c
+./LFSInstaller -v=12.2 -c
 ```
 
 If you are uncertain about the version that you can choose from, you can execute this command to display the list of release builds of LFS:
@@ -261,7 +277,7 @@ The following release builds of LFS that you can select from are the following:
 If you have not created a partition before initializing the LFS installation and you do not want to go through the manual configuration of creating such partition, you can 
 create your partition through LFSInstaller by the following command:
 ```
-sudo ./LFSInstaller --create-partition
+./LFSInstaller --create-partition
 ```
 
 <p align="center">
