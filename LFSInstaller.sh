@@ -358,6 +358,64 @@ mount() {
 		exit 1
 	fi
 
+	bold_info "Creating Virtual File System directories"
+	virtual_file_system=("dev" "proc" "sys" "run")
+	for vfs in "${virtual_file_system[@]}"; do
+		if [ ! -d /mnt/lfs/$vfs ]; then
+			info "Creating /mnt/lfs/$vfs directory..."
+			mkdir -v /mnt/lfs/$vfs
+			if [ $? -ne 0 ]; then
+				error "Failed to create /mnt/lfs/$vfs directory."
+				exit 1
+			fi
+		fi
+	done
+
+	bold_info "Mounting Virtual Kernel File Systems"
+	sudo mount -v --bind /dev/ /mnt/lfs/dev
+	if [ $? -ne 0 ]; then
+		error "Failed to mount /dev to /mnt/lfs/dev"
+		exit 1
+	fi
+
+	sudo mount -vt devpts devpts -o gid=5,mode=0620 /mnt/lfs/dev/pts
+	if [ $? -ne 0 ]; then
+		error "Failed to mount /dev/pts to /mnt/lfs/dev/pts"
+		exit 1
+	fi
+
+	sudo mount -vt proc proc /mnt/lfs/proc
+	if [ $? -ne 0 ]; then
+		error "Failed to mount proc to /mnt/lfs/proc"
+		exit 1
+	fi
+
+	sudo mount -vt sysfs sysfs /mnt/lfs/sys
+	if [ $? -ne 0 ]; then
+		error "Failed to mount sysfs to /mnt/lfs/sys"
+		exit 1
+	fi
+
+	sudo mount -vt tmpfs tmpfs /mnt/lfs/run
+	if [ $? -ne 0 ]; then
+		error "Failed to mount tmpfs to /mnt/lfs/run"
+		exit 1
+	fi
+
+	if [ -h /mnt/lfs/dev/shm ]; then
+		install -v -d -m 1777 /mnt/lfs$(realpath /dev/shm)
+		if [ $? -ne 0 ]; then
+			error "Failed to create directory and installation on /mnt/lfs$(realpath /dev/shm) path"
+			exit 1
+		fi
+	else
+		sudo mount -vt tmpfs -o nosuid,nodev tmpfs /mnt/lfs/dev/shm
+		if [ $? -ne 0 ]; then
+			error "Failed to mount tmpfs to /mnt/lfs/dev/shm"
+			exit 1
+		fi
+	fi
+
 	if verify_mount_point; then
 		success "$PARTITION mounted on /mnt/lfs"
 		exit 0
@@ -401,7 +459,7 @@ unmount() {
 		exit 0
 	fi
 
-	bold_info "Unmounting virtual file systems"	
+	bold_info "Unmounting Virtual File Systems"	
 	info "Unmounting /mnt/lfs/dev/pts"
 	eval $UNMOUNT_COMMAND /mnt/lfs/dev/pts
 	if [ $? -ne 0 ]; then
