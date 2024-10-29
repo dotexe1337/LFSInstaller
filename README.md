@@ -4,7 +4,7 @@
   <img src="https://github.com/user-attachments/assets/16a41527-b9b9-452a-9356-f7386008b615" alt="Logo Banner">
 </p>
 
-LFSInstaller is a Linux From Scratch script installation generator that produces a script installation template for you to decide how you want to proceed with the LFS installation.
+LFSInstaller is a Linux From Scratch script installation generator that produces a script installation template for you to decide how you want to proceed with the LFS installation. LFSInstaller extends from the original implementation of ALFS, jhalfs, by providing options of version selection from older LFS release builds and preference of the installation types.
 
 # Getting LFSInstaller
 Clone LFSInstaller repository to a suitable directory.
