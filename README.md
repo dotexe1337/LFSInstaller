@@ -348,7 +348,6 @@ Modes:
 Options:
   -v, --version									Specifies LFS Release Build Version
   -p, --partition								Specifies partition
-  -s, --swap									Enables SWAP partition
   -sp, --swap-partition								Specifies SWAP partition
   -vc, --version-codename							Specifies version codename
   -dc, --distrib-codename							Specifies distrib codename
@@ -360,10 +359,9 @@ Others:
  
 Examples:
   ./LFSInstaller -m								Initializes mounting procedure
-  ./LFSInstaller -m -f								Forces mounting procedure
   ./LFSInstaller -c								Creates standard installation script in interactive mode (if no values have passed)
-  ./LFSInstaller --partition='/dev/sda1' --install-type='PHASE' -c		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.
-  ./LFSInstaller --version='9.0' -c						Creates installation script that uses the release build version '9.0'
+  ./LFSInstaller --partition=/dev/sda1 --install-type=phase -c		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.
+  ./LFSInstaller --version=9.0 -c						Creates installation script that uses the release build version '9.0'
 ```
 
 ## Usage
