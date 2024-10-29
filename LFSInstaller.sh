@@ -251,14 +251,11 @@ check_file() {
 #     1 - Returns false if mount point is not mounted
 #================================================================
 verify_mount_point() {
-	MOUNT_POINT="/mnt/lfs"
-	info "Scanning mount point $MOUNT_POINT..."
+	# MOUNT_POINT="/mnt/lfs"
 	if grep -qs /mnt/lfs /proc/mounts; then
-		DEVICE=$(grep "$MOUNT_POINT" /proc/mounts | awk '{print $1}')
-		success "$MOUNT_POINT is mounted on $DEVICE."
+		# DEVICE=$(grep "$MOUNT_POINT" /proc/mounts | awk '{print $1}')
 		return 0
 	else
-		error "$MOUNT_POINT is not mounted."
 		return 1
 	fi
 }
@@ -307,50 +304,65 @@ select_partition() {
 #================================================================
 # FUNCTION: mount
 # DESCRIPTION:
-#     Mounts LFS drive to a target partition
+#     Mounts target partition to /mnt/lfs mount point
 # PARAMETERS:
 #     None
 # RETURNS:
-#     0 - Target partition is mounted to LFS mount point.
-#     1 - Target partition is not mounted successfully to LFS mount point.
+#     0 - Target partition is mounted to /mnt/lfs mount point.
+#     1 - Target partition is failed mounting to /mnt/lfs mount point.
 #================================================================
 mount() {
-	MOUNT_POINT_BOOLEAN=$(verify_mount_point)
-	if [ $? -eq 1 ]; then
-		if [[ -z $PARTITION ]]; then
-			PARTITION=$(select_partition)
-			if [ $? -eq 1 ]; then
-				error "Unavailable partition for mounting"
-				exit 1
-			fi
-		fi
+	if verify_mount_point; then
+		success "/mnt/lfs is already mounted."
+		exit 0
+	fi
 
-		info "Initializing mounting on target partition $PARTITION..."
-		# info "Creating $LFS directory..."	
+	if [[ -z $PARTITION ]]; then
+		PARTITION=$(select_partition)
+		if [ $? -eq 1 ]; then
+			error "Unavailable partition for mounting"
+			exit 1
+		fi
+	fi
+
+
+	if [ ! -d /mnt/lfs ]; then
 		info "Creating /mnt/lfs directory..."	
-		# mkdir -pv $LFS
 		mkdir -pv /mnt/lfs
-		info "Mounting target ext4 partition $PARTITION to $LFS..."
-		# mount -v -t ext4 $PARTITION $LFS
-		mount -v -t ext4 $PARTITION /mnt/lfs
-		info "Creating /mnt/lfs/home directory..."
-		# mkdir -v $LFS/home
-		mkdir -v /mnt/lfs/home
-		info "Mounting target ext4 partition $PARTITION to /mnt/lfs/home directory..."
-		# mount -v -t ext4 $PARTITION $LFS/home
-		mount -v -t ext4 $PARTITION /mnt/lfs/home
-		info "Verifying partition status"
-		MOUNT_POINT="/mnt/lfs"
-		if grep -qs "$MOUNT_POINT" /proc/mounts; then
-			if grep -qs "$PARTITION $MOUNT_POINT" /proc/mounts; then
-				success "$PARTITION successfully mounted on $MOUNT_POINT."
-				exit 0
-			else 
-				error "$PARTITION failed to mount on $MOUNT_POINT."
-				exit 1
-			fi	
+		if [ $? -ne 0 ]; then
+			error "Failed to create /mnt/lfs directory."
+			exit 1
 		fi
+	fi
 
+	info "Mounting partition $PARTITION to /mnt/lfs..."
+	sudo mount -v -t ext4 $PARTITION /mnt/lfs
+	if [ $? -ne 0 ]; then
+		error "Failed to mount $PARTITION to /mnt/lfs"
+		exit 1
+	fi
+
+	info "Creating /mnt/lfs/home directory..."
+	if [ ! -d /mnt/lfs/home ]; then
+		info "Creating /mnt/lfs/home directory..."
+		mkdir -v /mnt/lfs/home
+		if [ $? -ne 0 ]; then
+			error "Failed to create /mnt/lfs/home directory."
+			exit 1
+		fi
+	fi	
+
+	sudo mount -v -t ext4 $PARTITION /mnt/lfs/home
+	if [ $? -ne 0 ]; then
+		error "Failed to mount $PARTITION to /mnt/lfs/home"
+		exit 1
+	fi
+
+	if verify_mount_point; then
+		success "$PARTITION mounted on /mnt/lfs"
+		exit 0
+	else
+		error "Mounting Failed: $PARTITION is not mounted on /mnt/lfs"
 		exit 1
 	fi
 }
@@ -358,7 +370,7 @@ mount() {
 #================================================================
 # FUNCTION: unmount
 # DESCRIPTION:
-#     Unmounts LFS mount point from a partition.
+#     Unmounts target partition from LFS mount point.
 # PARAMETERS:
 #     $1 - Unmount flag arguments:
 #     		-f / --force - Force unmounting process
@@ -369,56 +381,91 @@ mount() {
 #================================================================
 unmount() {
 	FLAG=""
-	for arg in "$0"
-	do
-		case $arg in
-			-f|--force) FLAG="-f"; shift ;;
-			-l|--lazy) FLAG="-l"; shift ;;
-			*) error "Unknown umount parameter passed: "; exit 1 ;;
-		esac
-		shift
-	done
+	# for arg in "$0"
+	# do
+	# 	case $arg in
+	# 		-f|--force) FLAG="-f"; shift ;;
+	# 		-l|--lazy) FLAG="-l"; shift ;;
+	# 		*) error "Unknown umount parameter passed: "; exit 1 ;;
+	# 	esac
+	# 	shift
+	# done
 
 	UNMOUNT_COMMAND="umount $FLAG"	
 	if [[ -n "$FLAG" ]]; then
 		FLAG="-v"
 	fi
 
-	MOUNT_POINT_BOOLEAN=$(verify_mount_point)
-	if [[ "$MOUNT_POINT_BOOLEAN" == "0" ]]; then
-		bold_info "Unmounting the virtual file systems"	
-		info "Unmounting $LFS/dev/pts..."
-		eval $UNMOUNT_COMMAND $LFS/dev/pts
-		info "Unmounting $LFS/dev/shm..."
-		eval mountpoint -q $LFS/dev/shm && $UNMOUNT_COMMAND -v $LFS/dev/shm
-		info "Unmounting $LFS/dev..."
-		eval $UNMOUNT_COMMAND $LFS/dev
-		info "Unmounting $LFS/run..."
-		eval $UNMOUNT_COMMAND $LFS/run
-		info "Unmounting $LFS/proc..."
-		eval $UNMOUNT_COMMAND $LFS/proc
-		info "Unmounting $LFS/sys..."
-		eval $UNMOUNT_COMMAND $LFS/sys
-
-		bold_info "Unmounting the LFS file system"	
-		info "Unmounting $LFS/home..."
-		eval $UNMOUNT_COMMAND $LFS/home
-		info "Unmounting $LFS..."
-		eval $UNMOUNT_COMMAND $LFS
-
-		MOUNT_POINT=/mnt/lfs
-		if [ ! grep -qs "$MOUNT_POINT" /proc/mounts ]; then
-			success "The mount point $MOUNT_POINT is unmounted from partition"
-		else 
-			error "The mount point $MOUNT_POINT is currently still mounted from partition"
-			exit 1
-		fi
-	else
-		error "The mount point $MOUNT_POINT is not available on your host machine."
-		exit 1
+	if [ ! verify_mount_point ]; then
+		success "/mnt/lfs is already not mounted."
+		exit 0
 	fi
 
-	exit 0
+	bold_info "Unmounting virtual file systems"	
+	info "Unmounting /mnt/lfs/dev/pts"
+	eval $UNMOUNT_COMMAND /mnt/lfs/dev/pts
+	if [ $? -ne 0 ]; then
+		error "Failed to unmount /mnt/lfs/dev/pts"
+		# exit 1
+	fi
+
+	info "Unmounting /mnt/lfs/dev/shm"
+	eval mountpoint -q /mnt/lfs/dev/shm && $UNMOUNT_COMMAND -v /mnt/lfs/dev/shm
+	if [ $? -ne 0 ]; then
+		error "Failed to unmount /mnt/lfs/dev/shm"
+		# exit 1
+	fi
+
+	info "Unmounting /mnt/lfs/dev"
+	eval $UNMOUNT_COMMAND /mnt/lfs/dev
+	if [ $? -ne 0 ]; then
+		error "Failed to unmount /mnt/lfs/dev"
+		# exit 1
+	fi
+
+	info "Unmounting /mnt/lfs/run"
+	eval $UNMOUNT_COMMAND /mnt/lfs/run
+	if [ $? -ne 0 ]; then
+		error "Failed to unmount /mnt/lfs/run"
+		# exit 1
+	fi
+
+	info "Unmounting /mnt/lfs/proc"
+	eval $UNMOUNT_COMMAND /mnt/lfs/proc
+	if [ $? -ne 0 ]; then
+		error "Failed to unmount /mnt/lfs/proc"
+		# exit 1
+	fi
+
+	info "Unmounting /mnt/lfs/sys"
+	eval $UNMOUNT_COMMAND /mnt/lfs/sys
+	if [ $? -ne 0 ]; then
+		error "Failed to unmount /mnt/lfs/sys"
+		# exit 1
+	fi
+
+	bold_info "Unmounting LFS filesystem"
+	info "Unmounting /mnt/lfs/home"
+	eval $UNMOUNT_COMMAND /mnt/lfs/home
+	if [ $? -ne 0 ]; then
+		error "Failed to unmount /mnt/lfs/home"
+		# exit 1
+	fi
+
+	info "Unmounting /mnt/lfs"
+	eval $UNMOUNT_COMMAND /mnt/lfs
+	if [ $? -ne 0 ]; then
+		error "Failed to unmount /mnt/lfs"
+		# exit 1
+	fi
+
+	if [ ! verify_mount_point ]; then
+		success "/mnt/lfs is successfully unmounted."
+		exit 0
+	else 
+		error "/mnt/lfs failed to be unmounted."
+		exit 1
+	fi
 }
 
 #================================================================
