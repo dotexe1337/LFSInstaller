@@ -309,13 +309,12 @@ select_partition() {
 # DESCRIPTION:
 #     Mounts LFS drive to a target partition
 # PARAMETERS:
-#     $1 - Target Partition
+#     None
 # RETURNS:
 #     0 - Target partition is mounted to LFS mount point.
 #     1 - Target partition is not mounted successfully to LFS mount point.
 #================================================================
 mount() {
-	local PARTITION=$1
 	MOUNT_POINT_BOOLEAN=$(verify_mount_point)
 
 	if [[ "$MOUNT_POINT_BOOLEAN" == "1" ]]; then
@@ -323,25 +322,23 @@ mount() {
 			PARTITION=$(select_partition)
 		fi
 
-		info "Proceeding to mount $PARTITION to $LFS..."
-	
+		info "Initializing mounting on target partition $PARTITION..."
 		info "Creating $LFS directory..."	
 		mkdir -pv $LFS
-		info "Mounting $LFS to $PARTITION ext4 partiion..."	
+		info "Mounting target ext4 partition $PARTITION to $LFS..."
 		mount -v -t ext4 $PARTITION $LFS
-		info "Creating $LFS/home directory..."
-		mkdir -v $LFS/home
-		info "Mounting $LFS/home directory to $PARTITION ext4 partiion..."	
-		mount -v -t ext4 $PARTITION $LFS/home
-		
-		info "Verifying if the partition $PARTITION is mounted to $LFS..."
+		# info "Creating $LFS/home directory..."
+		# mkdir -v $LFS/home
+		# info "Mounting target ext4 partition $PARTITION to $LFS/home directory..."
+		# mount -v -t ext4 $PARTITION $LFS/home
+		info "Verifying partition status"
 		MOUNT_POINT="/mnt/lfs"
 		if grep -qs "$MOUNT_POINT" /proc/mounts; then
 			if grep -qs "$PARTITION $MOUNT_POINT" /proc/mounts; then
-				success "Partition $PARTITION is mounted on $MOUNT_POINT."
+				success "$PARTITION successfully mounted on $MOUNT_POINT."
 				exit 0
 			else 
-				error "Partition $PARTITION is not mounted on $MOUNT_POINT."
+				error "$PARTITION failed to mount on $MOUNT_POINT."
 				exit 1
 			fi	
 		fi
