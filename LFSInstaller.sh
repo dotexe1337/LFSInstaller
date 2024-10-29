@@ -316,21 +316,22 @@ select_partition() {
 #================================================================
 mount() {
 	MOUNT_POINT_BOOLEAN=$(verify_mount_point)
-
-	if [[ "$MOUNT_POINT_BOOLEAN" == "1" ]]; then
-		if [[ -n $PARTITION ]]; then
+	if [ $? -eq 1 ]; then
+		if [[ -z $PARTITION ]]; then
 			PARTITION=$(select_partition)
 		fi
+
+		export LFS=/mnt/lfs
 
 		info "Initializing mounting on target partition $PARTITION..."
 		info "Creating $LFS directory..."	
 		mkdir -pv $LFS
 		info "Mounting target ext4 partition $PARTITION to $LFS..."
 		mount -v -t ext4 $PARTITION $LFS
-		# info "Creating $LFS/home directory..."
-		# mkdir -v $LFS/home
-		# info "Mounting target ext4 partition $PARTITION to $LFS/home directory..."
-		# mount -v -t ext4 $PARTITION $LFS/home
+		info "Creating $LFS/home directory..."
+		mkdir -v $LFS/home
+		info "Mounting target ext4 partition $PARTITION to $LFS/home directory..."
+		mount -v -t ext4 $PARTITION $LFS/home
 		info "Verifying partition status"
 		MOUNT_POINT="/mnt/lfs"
 		if grep -qs "$MOUNT_POINT" /proc/mounts; then
@@ -450,6 +451,7 @@ display_version_list() {
 	for i in "${!VERSION_LIST[@]}"; do
 	        echo "$((i + 1)). ${VERSION_LIST[i]}"
 	done
+	exit 0
 }
 
 #================================================================
@@ -900,7 +902,6 @@ VERSION=""
 VERBOSE=false
 
 while [[ "$#" -gt 0 ]]; do
-	# case $1 in
 	case "$1" in
 		-u|--usage) usage ;;
 		-h|--help) help ;;
@@ -953,14 +954,16 @@ if [[ -n "$SWAP_PARTITION" ]]; then
 	fi
 fi
 
-case "$INSTALL_TYPE" in
-	"s"|"single"|"p"|"phase")
-		;;
-	*)
-		error "Unknown Installation Type Parameter: $INSTALL_TYPE"
-		exit 1
-		;;
-esac
+if [[ -n "$INSTALL_TYPE" ]]; then
+	case "$INSTALL_TYPE" in
+		"s"|"single"|"p"|"phase")
+			;;
+		*)
+			error "Unknown Installation Type Parameter: $INSTALL_TYPE"
+			exit 1
+			;;
+	esac
+fi
 
 if [[ -n "$VERSION_CODENAME" ]]; then
 	info "Version Codename: $VERSION_CODENAME"
