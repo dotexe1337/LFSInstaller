@@ -117,15 +117,23 @@ You can mount the LFS mounting point to the target partition and unmount automat
 ./LFSInstaller.sh -m
 ```
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d7bcd643-44bc-4c9a-8afb-2b6dc1a788d3" alt="Mounting">
+</p>
+
 #### Unmounting
 ```
+# Standard Unmount
+./LFSInstaller.sh --unmount
+./LFSInstaller.sh -um
+
 # Force unmount
-./LFSInstaller.sh --mount -f
-./LFSInstaller.sh -m -f 
+./LFSInstaller.sh --unmount -f
+./LFSInstaller.sh -um -f 
 
 # Lazy unmount
-./LFSInstaller.sh --mount -l
-./LFSInstaller.sh -m -l 
+./LFSInstaller.sh --unmount -l
+./LFSInstaller.sh -um -l 
 ```
 
 ### Entering Chroot Environment
