@@ -110,16 +110,20 @@ The commands can be executed through the following:
 
 ### Automatic Mounting and Unmounting
 You can mount the LFS mounting point to the target partition and unmount automatically with certain flags that you can pass through to perform such process through the following:
+
+#### Mounting
 ```
-# Standard mount
 ./LFSInstaller.sh --mount
 ./LFSInstaller.sh -m
+```
 
-# Force mount
+#### Unmounting
+```
+# Force unmount
 ./LFSInstaller.sh --mount -f
 ./LFSInstaller.sh -m -f 
 
-# Lazy mount
+# Lazy unmount
 ./LFSInstaller.sh --mount -l
 ./LFSInstaller.sh -m -l 
 ```
