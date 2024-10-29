@@ -4,7 +4,7 @@
   <img src="https://github.com/user-attachments/assets/16a41527-b9b9-452a-9356-f7386008b615" alt="Logo Banner">
 </p>
 
-LFSInstaller is a Linux From Scratch script installation generator that produces a script installation template for you to decide how you want to proceed with the LFS installation. LFSInstaller extends from the original implementation of ALFS, jhalfs, by providing options of version selection from older LFS release builds and preference of the installation types.
+LFSInstaller is a Linux From Scratch script installation generator that produces a script installation template for you to decide how you want to proceed with the LFS installation. LFSInstaller extends from the original implementation of ALFS, jhalfs, by providing options of version selection from older LFS release builds and preference of the installation types, with the addition of ideal executable installation script(s) with minimum requirement of manual interference.
 
 # Getting LFSInstaller
 Clone LFSInstaller repository to a suitable directory.
@@ -110,6 +110,7 @@ The commands can be executed through the following:
 
 ### Automatic Mounting and Unmounting
 You can mount the LFS mounting point to the target partition and unmount automatically with certain flags that you can pass through to perform such process through the following:
+You can mount your preferred target partition to the LFS mounting point and vice-versa automatically by executing one of the following commands that will also create directories for further modification of the LFS filesystem such as the virtual kernel file systems:
 
 #### Mounting
 ```
@@ -133,7 +134,7 @@ You can mount the LFS mounting point to the target partition and unmount automat
 
 ### Entering Chroot Environment
 If the mount is successful and you completed two phases of installation, you can enter chroot environment to install 
-packages of your choice in an isolated environment:
+packages of your choice in an isolated environment. However, your LFS drives must be mounted and with addition that the cross toolchain tools are compiled such as coreutils to access environment:
 ```
 ./LFSInstaller.sh --chroot
 ```
