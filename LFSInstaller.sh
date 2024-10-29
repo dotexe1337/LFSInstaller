@@ -430,30 +430,12 @@ mount() {
 # DESCRIPTION:
 #     Unmounts target partition from LFS mount point.
 # PARAMETERS:
-#     $1 - Unmount flag arguments:
-#     		-f / --force - Force unmounting process
-#     		-l / --lazy  - Slow unmounting process
+#     None
 # RETURNS:
-#     0 - LFS mountpoint is unmounted from partition.
+#     0 - LFS mountpoint is successfully unmounted from partition.
 #     1 - LFS mountpoint failed to be unmounted from partition.
 #================================================================
 unmount() {
-	FLAG=""
-	# for arg in "$0"
-	# do
-	# 	case $arg in
-	# 		-f|--force) FLAG="-f"; shift ;;
-	# 		-l|--lazy) FLAG="-l"; shift ;;
-	# 		*) error "Unknown umount parameter passed: "; exit 1 ;;
-	# 	esac
-	# 	shift
-	# done
-
-	UNMOUNT_COMMAND="umount $FLAG"	
-	if [[ -n "$FLAG" ]]; then
-		FLAG="-v"
-	fi
-
 	if [ ! verify_mount_point ]; then
 		success "/mnt/lfs is already not mounted."
 		exit 0
@@ -461,63 +443,64 @@ unmount() {
 
 	bold_info "Unmounting Virtual File Systems"	
 	info "Unmounting /mnt/lfs/dev/pts"
-	eval $UNMOUNT_COMMAND /mnt/lfs/dev/pts
+	umount -v /mnt/lfs/dev/pts
 	if [ $? -ne 0 ]; then
 		error "Failed to unmount /mnt/lfs/dev/pts"
-		# exit 1
+		exit 1
 	fi
 
 	info "Unmounting /mnt/lfs/dev/shm"
-	eval mountpoint -q /mnt/lfs/dev/shm && $UNMOUNT_COMMAND -v /mnt/lfs/dev/shm
+	mountpoint -q /mnt/lfs/dev/shm && umount -v /mnt/lfs/dev/shm
 	if [ $? -ne 0 ]; then
 		error "Failed to unmount /mnt/lfs/dev/shm"
-		# exit 1
+		exit 1
 	fi
 
 	info "Unmounting /mnt/lfs/dev"
-	eval $UNMOUNT_COMMAND /mnt/lfs/dev
+	umount -v /mnt/lfs/dev
 	if [ $? -ne 0 ]; then
 		error "Failed to unmount /mnt/lfs/dev"
-		# exit 1
+		exit 1
 	fi
 
 	info "Unmounting /mnt/lfs/run"
-	eval $UNMOUNT_COMMAND /mnt/lfs/run
+	umount -v /mnt/lfs/run
 	if [ $? -ne 0 ]; then
 		error "Failed to unmount /mnt/lfs/run"
-		# exit 1
+		exit 1
 	fi
 
 	info "Unmounting /mnt/lfs/proc"
-	eval $UNMOUNT_COMMAND /mnt/lfs/proc
+	umount -v /mnt/lfs/proc
 	if [ $? -ne 0 ]; then
 		error "Failed to unmount /mnt/lfs/proc"
-		# exit 1
+		exit 1
 	fi
 
 	info "Unmounting /mnt/lfs/sys"
-	eval $UNMOUNT_COMMAND /mnt/lfs/sys
+	umount -v /mnt/lfs/sys
 	if [ $? -ne 0 ]; then
 		error "Failed to unmount /mnt/lfs/sys"
-		# exit 1
+		exit 1
 	fi
 
 	bold_info "Unmounting LFS filesystem"
 	info "Unmounting /mnt/lfs/home"
-	eval $UNMOUNT_COMMAND /mnt/lfs/home
+	umount -v /mnt/lfs/home
 	if [ $? -ne 0 ]; then
 		error "Failed to unmount /mnt/lfs/home"
-		# exit 1
+		exit 1
 	fi
 
 	info "Unmounting /mnt/lfs"
-	eval $UNMOUNT_COMMAND /mnt/lfs
+	umount -v /mnt/lfs
 	if [ $? -ne 0 ]; then
 		error "Failed to unmount /mnt/lfs"
-		# exit 1
+		exit 1
 	fi
 
-	if [ ! verify_mount_point ]; then
+	verify_mount_point
+	if [ $? -eq 1 ]; then
 		success "/mnt/lfs is successfully unmounted."
 		exit 0
 	else 
@@ -533,11 +516,12 @@ unmount() {
 # PARAMETERS:
 #     None
 # RETURNS:
-#     1 - LFS Mount point is not mounted to partition
+#     1 - LFS mount point is not mounted to partition
 #================================================================
 chroot() {
-	MOUNT_POINT_BOOLEAN=$(verify_mount_point)
-	if [[ "$MOUNT_POINT_BOOLEAN" = "1" ]]; then
+	verify_mount_point
+	if [ $? -ne 0 ]; then
+		error "/mnt/lfs is not mounted."	
 		exit 1
 	fi
 
