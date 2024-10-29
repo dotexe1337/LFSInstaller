@@ -118,23 +118,18 @@ You can mount the LFS mounting point to the target partition and unmount automat
 ```
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/d7bcd643-44bc-4c9a-8afb-2b6dc1a788d3" alt="Mounting">
+  <img src="https://github.com/user-attachments/assets/11691e05-e0ae-46e9-881a-e32947e022fd" alt="Mounting">
 </p>
 
 #### Unmounting
 ```
-# Standard Unmount
 ./LFSInstaller.sh --unmount
 ./LFSInstaller.sh -um
-
-# Force unmount
-./LFSInstaller.sh --unmount -f
-./LFSInstaller.sh -um -f 
-
-# Lazy unmount
-./LFSInstaller.sh --unmount -l
-./LFSInstaller.sh -um -l 
 ```
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1ef53934-4ee9-4a40-9e8f-7e3c7340f07c" alt="Unmounting">
+</p>
 
 ### Entering Chroot Environment
 If the mount is successful and you completed two phases of installation, you can enter chroot environment to install 
