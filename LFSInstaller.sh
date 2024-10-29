@@ -319,19 +319,26 @@ mount() {
 	if [ $? -eq 1 ]; then
 		if [[ -z $PARTITION ]]; then
 			PARTITION=$(select_partition)
+			if [ $? -eq 1 ]; then
+				error "Unavailable partition for mounting"
+				exit 1
+			fi
 		fi
 
-		export LFS=/mnt/lfs
-
 		info "Initializing mounting on target partition $PARTITION..."
-		info "Creating $LFS directory..."	
-		mkdir -pv $LFS
+		# info "Creating $LFS directory..."	
+		info "Creating /mnt/lfs directory..."	
+		# mkdir -pv $LFS
+		mkdir -pv /mnt/lfs
 		info "Mounting target ext4 partition $PARTITION to $LFS..."
-		mount -v -t ext4 $PARTITION $LFS
-		info "Creating $LFS/home directory..."
-		mkdir -v $LFS/home
-		info "Mounting target ext4 partition $PARTITION to $LFS/home directory..."
-		mount -v -t ext4 $PARTITION $LFS/home
+		# mount -v -t ext4 $PARTITION $LFS
+		mount -v -t ext4 $PARTITION /mnt/lfs
+		info "Creating /mnt/lfs/home directory..."
+		# mkdir -v $LFS/home
+		mkdir -v /mnt/lfs/home
+		info "Mounting target ext4 partition $PARTITION to /mnt/lfs/home directory..."
+		# mount -v -t ext4 $PARTITION $LFS/home
+		mount -v -t ext4 $PARTITION /mnt/lfs/home
 		info "Verifying partition status"
 		MOUNT_POINT="/mnt/lfs"
 		if grep -qs "$MOUNT_POINT" /proc/mounts; then
@@ -343,6 +350,8 @@ mount() {
 				exit 1
 			fi	
 		fi
+
+		exit 1
 	fi
 }
 
