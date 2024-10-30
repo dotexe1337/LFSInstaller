@@ -276,12 +276,8 @@ append_install_script() {
 	local TARGET_INSTALLATION_SCRIPT=$1	
 	local TARGET_SCRIPT=$2
 
-	# cat "$TARGET_SCRIPT" >> "$TARGET_INSTALLATION_SCRIPT"
 	cat $TARGET_SCRIPT >> "$TARGET_INSTALLATION_SCRIPT"
 	echo "" >> "$TARGET_INSTALLATION_SCRIPT"
-
-	# cat $TARGET_SCRIPT >> $TARGET_INSTALLATION_SCRIPT
-	# echo "" >> $TARGET_INSTALLATION_SCRIPT
 
 	sudo rm -r $TARGET_SCRIPT
 }
@@ -300,14 +296,12 @@ append_install_script() {
 #     	     content matches with system packages.
 #================================================================
 extract_html_to_shell() {
-	local TARGET_DIRECTORY=$1
-	local TARGET_HTML=$2
-	local TARGET_INSTALLATION_SCRIPT=$3
+	local TARGET_HTML=$1
+	local TARGET_INSTALLATION_SCRIPT=$2
 
-	PACKAGE_EXTRACT=$(scan_package_name "$TARGET_DIRECTORY" "$TARGET_HTML")
-	PACKAGE_EXTRACT_STATUS=$?
-	if [ $PACKAGE_EXTRACT_STATUS -eq 0 ]; then
-	 	extract_package "$TARGET_DIRECTORY/$TARGET_HTML"
+	scan_package_name "$TARGET_HTML"
+	if [ $? -eq 0 ]; then
+		extract_package "$TARGET_HTML" "$TARGET_INSTALLATION_SCRIPT"
 		return
 	fi
 
@@ -346,6 +340,18 @@ extract_package() {
 		 sed -i '/^mkdir -v build/i rm -r build' $TARGET_SCRIPT
          fi
 
+	 if [[ "$result_lower" =~ [[:space:]] ]]; then
+		 read -ra spaces <<< "$result_lower"
+		 for package in "${SYSTEM_PACKAGES[@]}"; do
+			 for name in "${spaces[@]}"; do
+				 package_lower=$(echo "$package" | tr '[:upper:]' '[:lower:]')
+				 if [[ "$package_lower" == "$name" ]]; then
+					 result_lower="$package_lower"
+				 fi
+			 done			
+		done
+	 fi
+
          COMMAND="cd ../$result_lower"
          sed -i "1i $COMMAND" "$TARGET_SCRIPT"
 
@@ -366,14 +372,15 @@ extract_package() {
 #================================================================
 install_selected_packages() {
 	local TARGET_DIR="$1"
-	local TARGET_HTML="$2"
-	local TARGET_INSTALLATION_SCRIPT="$3"
+	local TARGET_INSTALLATION_SCRIPT="$2"
+	local pages="${@:3}"
 
-	HEADER=$(xmllint --html --xpath 'string(//h1[@class="sect1"])' "$TARGET_DIR/$TARGET_HTML" 2>/dev/null | sed 's/^[0-9. ]*//' | tr -s ' ' | sed 's/ - Pass 1//' | sed 's/ - Pass 2//' | xargs)
         for page in ${pages[@]}; do
+		HEADER=$(xmllint --html --xpath 'string(//h1[@class="sect1"])' "$TARGET_DIR/$page" 2>/dev/null | sed 's/^[0-9. ]*//' | tr -s ' ' | sed 's/ - Pass 1//' | sed 's/ - Pass 2//' | xargs)
+
 		for selected_packages in "${SELECTED_SOFTWARES[@]}"; do
-			if [[ "$selected_package" == "$HEADER" ]]; then
-				extract_html_to_shell "$TARGET_DIR" "$TARGET_DIR/$page" "$TARGET_INSTALLATION_SCRIPT"
+			if [[ "$selected_packages" == "$HEADER" ]]; then
+				extract_html_to_shell "$TARGET_DIR/$page" "$TARGET_INSTALLATION_SCRIPT"
 			fi
 		done
 	done
@@ -393,9 +400,10 @@ install_selected_packages() {
 #     1 - Package name does not match with the string of the header.
 #================================================================
 scan_package_name() {
-	local DIRECTORY="$1"
-	local PAGE="$2"
-	HEADER=$(xmllint --html --xpath 'string(//h1[@class="sect1"])' "$DIRECTORY/$PAGE" 2>/dev/null | sed 's/^[0-9. ]*//' | tr -s ' ' | sed 's/ - Pass 1//' | sed 's/ - Pass 2//' | xargs)
+	local PAGE="$1" 
+
+	HEADER=$(xmllint --html --xpath 'string(//h1[@class="sect1"])' "$PAGE" 2>/dev/null | sed 's/^[0-9. ]*//' | tr -s ' ' | sed 's/ - Pass 1//' | sed 's/ - Pass 2//' | xargs)
+
 	if [[ "$HEADER" =~ [[:space:]] ]]; then
 		read -ra spaces <<< "$HEADER"
 		for package in "${SYSTEM_PACKAGES[@]}"; do
@@ -435,49 +443,26 @@ scan_chapter() {
         BASENAME_CHAPTER_DIR=$(basename "$CHAPTER_DIR")
         mapfile -t pages < <(awk '/<div class="toc">/,/<\/div>/' $CHAPTER_DIR/$BASENAME_CHAPTER_DIR.html | grep '<a href=' | sed -n 's/.*<a href="\([^"]*\)".*/\1/p')
 
-    	CHAPTER_NUMBER=$(echo "$CHAPTER_DIR" | sed -E 's/.*chapter([0-9]{2}).*/\1/')
-    	# CHAPTER_NUMBER=$(printf "%d" "$CHAPTER_NUMBER")
+    	CHAPTER_NUMBER=$(echo "$CHAPTER_DIR" | sed -E 's/.*chapter([0-9]{1,2}).*/\1/')
 	CHAPTER_NUMBER=$(printf "%d" "$((10#$CHAPTER_NUMBER))")
-
+		
 	if [[ "$MAJOR_VERSION" == "9" ]]; then
 		if [ "$CHAPTER_NUMBER" -eq 6 ]; then
-			install_selected_packages "$CHAPTER_DIR" "$pages" "$TARGET_INSTALLATION_SCRIPT"
+			install_selected_packages "$CHAPTER_DIR" "$TARGET_INSTALLATION_SCRIPT" "${pages[@]}"
 			return			
 		fi
 	else
-		if [ "$CHAPTER_NUMBER" -eq 8 ]; then
-			install_selected_packages "$CHAPTER_DIR" "$pages" "$TARGET_INSTALLATION_SCRIPT"
-			return			
-		fi
+	 	if [ "$CHAPTER_NUMBER" -eq 8 ]; then
+	 		install_selected_packages "$CHAPTER_DIR" "$TARGET_INSTALLATION_SCRIPT" "${pages[@]}"
+	 		return			
+	 	fi
 	fi
 
         for page in ${pages[@]}; do
                 if grep -q '<pre[^>]*class="[^"]*userinput[^"]*"' "$CHAPTER_DIR/$page"; then
-			extract_html_to_shell "$CHAPTER_DIR" "$CHAPTER_DIR/$page" "$TARGET_INSTALLATION_SCRIPT"
+			extract_html_to_shell "$CHAPTER_DIR/$page" "$TARGET_INSTALLATION_SCRIPT"
                 fi
         done
-}
-
-#================================================================
-# FUNCTION: progress
-# DESCRIPTION:
-#     Calculates the state of progress during the creation of 
-#     LFS script installation.
-# PARAMETERS:
-#     $1 - Target chapter directory
-# RETURNS:
-#     None
-#================================================================
-progress() {
-	local CHAPTER_DIR="$1"
-
-    	CHAPTER_NUMBER=$(echo "$CHAPTER_DIR" | sed -E 's/.*chapter([0-9]{2}).*/\1/')
-	# CHAPTER_NUMBER=$(printf "%d" "$CHAPTER_NUMBER")
-	CHAPTER_NUMBER=$(printf "%d" "$((10#$CHAPTER_NUMBER))")
-
-	PROGRESS=$(( CHAPTER_NUMBER * 100 / TOTAL_CHAPTER_DIRS ))
-
-	echo "Progress: $PROGRESS"
 }
 
 #================================================================
@@ -508,11 +493,14 @@ generate_bash_script() {
 #================================================================
 filter_script() {
 	local TARGET_SCRIPT=$1
+	if ! head -n 1 "$TARGET_SCRIPT" | grep -q '^#!/bin/bash$'; then
+		sed -i '1i #!/bin/bash' $TARGET_SCRIPT	
+		sed -i '1a\\' $TARGET_SCRIPT	
+	fi
 	sed -i 's/&gt;/>/g' $TARGET_SCRIPT
 	sed -i 's/&lt;/</g' $TARGET_SCRIPT
 	sed -i 's/&amp;/\&/g' $TARGET_SCRIPT
 	sed -i "s|/dev/<xxx>|$PARTITION|g" $TARGET_SCRIPT
-
 	if [[ -n "$SWAP_PARTITION" ]]; then
 		sed -i "/mkswap/s|/dev/<yyy>|$SWAP_PARTITION|g" $TARGET_SCRIPT
 		sed -i "/swap/s|/dev/<yyy>|$SWAP_PARTITION|g" $TARGET_SCRIPT
@@ -521,7 +509,6 @@ filter_script() {
 	if [[ -z "$SWAP_PARTITION" ]]; then
 		sed -i '/mkswap\|swapon/d' $TARGET_SCRIPT
 	fi
-
 	sed -i "/ext4/s|/dev/<yyy>|$PARTITION|g" $TARGET_SCRIPT
 	sed -i "s|/dev/<yyy>|$PARTITION|g" $TARGET_SCRIPT
 	sed -i "s/<fff>/ext4/g" $TARGET_SCRIPT
@@ -547,7 +534,7 @@ phase_script() {
                 echo "phase1.sh"
         elif [ "$CHAPTER_NUMBER" -ge 5 ] && [ "$CHAPTER_NUMBER" -lt 6 ]; then
                 echo "phase2.sh"
-        elif [ "$CHAPTER_NUMBER" -ge 7 ] && [ "$CHAPTER_NUMBER" -lt 8 ]; then
+        elif [ "$CHAPTER_NUMBER" -ge 7 ] && [ "$CHAPTER_NUMBER" -le 8 ]; then
                 echo "phase3.sh"
         elif [ "$CHAPTER_NUMBER" -ge 9 ]; then
                 echo "phase4.sh"
@@ -586,7 +573,6 @@ single_installation() {
 	generate_bash_script "$TARGET_INSTALLATION_SCRIPT"
 
 	for dir in $CHAPTER_DIRS; do
-		# progress "$dir" "$TOTAL_CHAPTER_DIRS"
 		scan_chapter "$dir" "$TARGET_INSTALLATION_SCRIPT"
 	done
 
@@ -611,7 +597,6 @@ phase_installation() {
 			if [[ ! -e "$PHASE_INSTALLATION_SCRIPT" ]]; then
 				TARGET_INSTALLATION_SCRIPT="$PHASE_INSTALLATION_SCRIPT"
 			fi
-			# progress "$dir"
 			scan_chapter "$dir" "$TARGET_INSTALLATION_SCRIPT"
 		fi
 	done

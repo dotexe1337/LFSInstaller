@@ -979,11 +979,10 @@ help() {
   	printf "  ${BOLD}--verbose${ENDCOLOR}									Enable verbose mode\n"
 	echo " "
 	echo "Examples:"
-  	printf "  ${BOLD}./LFSInstaller -m${ENDCOLOR}								Initializes mounting procedure\n"
-  	printf "  ${BOLD}./LFSInstaller -m -f${ENDCOLOR}								Forces mounting procedure\n"
+  	printf "  ${BOLD}./LFSInstaller -m${ENDCOLOR}								Initialize mounting procedure\n"
 	printf "  ${BOLD}./LFSInstaller -c${ENDCOLOR}								Creates standard installation script in interactive mode (if no values have passed)\n"
-  	printf "  ${BOLD}./LFSInstaller --partition='/dev/sda1' --install-type='PHASE' -c${ENDCOLOR}		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.\n"
-  	printf "  ${BOLD}./LFSInstaller --version='9.0' -c${ENDCOLOR}						Creates installation script that uses the release build version '9.0'\n"
+  	printf "  ${BOLD}./LFSInstaller --partition=/dev/sda1 --install-type=phase -c${ENDCOLOR}			Creates installation script, on the /dev/sda1 partition, which will create shell script as phases.\n"
+  	printf "  ${BOLD}./LFSInstaller --version=9.0 -c${ENDCOLOR}						Creates installation script that uses the release build version 9.0\n"
 	exit 0
 }
 
