@@ -931,10 +931,13 @@ create_script() {
 #     None
 #================================================================
 usage() {
-	echo "LFSInstaller - Linux From Scratch Shell Script Installer"
+	echo "LFSInstaller"
+  	echo " "
+	echo "Linux From Scratch Script Template Installation Generator"
+	echo "It is recommended that you execute this script as a root user."
   	echo " "
 	echo "Usage: ./LFSInstaller.sh [modes] [options] [others]"
-	echo "It is recommended to execute this script as a root user !."
+  	echo " "
 	exit 0
 }
 
@@ -950,11 +953,10 @@ usage() {
 help() {
 	echo "LFSInstaller"
 	echo " "
-	echo "LFS Script Installer by which the user can decide how they want to customize their own package."
-	echo "This is designed to be a template starter for Linux enthusiasts who want to "
+	echo "Linux From Scratch Script Template Installation Generator"
+	echo "It is recommended that you execute this script as a root user."
 	echo ""
 	echo "Usage: ./LFSInstaller.sh [modes] [options] [others]"
-	echo "It is recommended to execute this script as a root user."
 	echo ""
 	echo "Modes: "
 	printf "  ${BOLD}-c, --create${ENDCOLOR}									Generates LFS installation script\n"
