@@ -401,4 +401,4 @@ It is recommended to execute this script as a root user !.
 ```
 
 ## License
-This project is licensed under MIT License. See the [LICENSE] file for details.
+This project is licensed under MIT License. See the [LICENSE](LICENSE) file for details.
