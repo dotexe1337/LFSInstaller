@@ -64,6 +64,7 @@ The commands can be executed through the following:
 The installation will be installed in phases, meaning that each stage of the installation will be created as each script
 in order to ensure that the following target machine meets its requirements. The phases can be represented as such:
 
+##### Version 10 and above
 <div align="center"></div>
 <table class="tg"><thead>
   <tr>
@@ -86,6 +87,32 @@ in order to ensure that the following target machine meets its requirements. The
     <td class="tg-0lax">Phase 3</td>
     <td class="tg-0lax">Chroot</td>
     <td class="tg-0lax">Entering chroot environment on the isolated LFS system to install selected packages.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Phase 4</td>
+    <td class="tg-0lax">System Configuration</td>
+    <td class="tg-0lax">Setting up system configuration such as the kernel and bootloader.</td>
+  </tr>
+</tbody></table>
+
+##### Version 9 
+<div align="center"></div>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-1wig">Installation Lifecycle</th>
+    <th class="tg-1wig">Installation State</th>
+    <th class="tg-1wig">Installation Description</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-0lax">Phase 1</td>
+    <td class="tg-0lax">Build Preparation</td>
+    <td class="tg-0lax">Creating and setting up LFS partition in order to build the LFS system.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Phase 2</td>
+    <td class="tg-0lax">Cross Toolchain & Chroot</td>
+    <td class="tg-0lax">Compiling cross toolchain with temporary tools and entering chroot environment to install selected packages.</td>
   </tr>
   <tr>
     <td class="tg-0lax">Phase 4</td>
