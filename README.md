@@ -388,7 +388,7 @@ Others:
 Examples:
   ./LFSInstaller -m								Initializes mounting procedure
   ./LFSInstaller -c								Creates standard installation script in interactive mode (if no values have passed)
-  ./LFSInstaller --partition=/dev/sda1 --install-type=phase -c		Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.
+  ./LFSInstaller --partition=/dev/sda1 --install-type=phase -c		        Creates installation script, on the '/dev/sda1' partition, which will create shell script as phases.
   ./LFSInstaller --version=9.0 -c						Creates installation script that uses the release build version '9.0'
 ```
 
