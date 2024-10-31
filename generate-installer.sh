@@ -47,6 +47,7 @@ current_year=$(date +"%Y")
 #################################################################
 # Colors
 BLACK="\e[30m"
+RED="\e[31m"
 GREEN="\e[32m"
 YELLOW="\e[33m"
 BLUE="\e[34m"
@@ -220,7 +221,7 @@ bold_error() {
 #================================================================
 # FUNCTION: display_menu
 # DESCRIPTION:
-#     Displays selection menu for choosing System software packages
+#     Displays selection menu for choosing system software packages
 # PARAMETERS:
 #     None
 # RETURNS:
@@ -264,8 +265,7 @@ display_menu() {
 #================================================================
 # FUNCTION: append_install_script
 # DESCRIPTION:
-#     Appends the content from target script to the main 
-#     installation script.
+#     Appends target script content to the target installation script.
 # PARAMETERS:
 #     $1 - Target Installation script
 #     $2 - Target script
@@ -273,8 +273,8 @@ display_menu() {
 #     None
 #================================================================
 append_install_script() {
-	local TARGET_INSTALLATION_SCRIPT=$1	
-	local TARGET_SCRIPT=$2
+	local TARGET_SCRIPT=$1
+	local TARGET_INSTALLATION_SCRIPT=$2
 
 	cat $TARGET_SCRIPT >> "$TARGET_INSTALLATION_SCRIPT"
 	echo "" >> "$TARGET_INSTALLATION_SCRIPT"
@@ -286,14 +286,14 @@ append_install_script() {
 # FUNCTION: extract_html_to_shell
 # DESCRIPTION:
 #     Extracts HTML content to a target script, which appends to the 
-#     main target installation script.
+#     target installation script.
 # PARAMETERS:
 #     $1 - Target directory
 #     $2 - Target HTML page
 #     $3 - Target installation script
 # RETURNS:
-#     void - Returns after completion of extracting package if HTML
-#     	     content matches with system packages.
+#     void - Returns void if extracting package is executed due to 
+#     	     matching package name of HTML header of the content
 #================================================================
 extract_html_to_shell() {
 	local TARGET_HTML=$1
@@ -308,7 +308,7 @@ extract_html_to_shell() {
  	TARGET_SCRIPT=$(basename "$TARGET_HTML" .html).sh
 	xmllint --html --xpath '//pre[@class="userinput"]' $TARGET_HTML 2>/dev/null | sed 's/<[^>]*>//g' > $TARGET_SCRIPT
 	
-	append_install_script "$TARGET_INSTALLATION_SCRIPT" "$TARGET_SCRIPT"
+	append_install_script "$TARGET_SCRIPT" "$TARGET_INSTALLATION_SCRIPT"
 }
 
 #================================================================
@@ -333,33 +333,33 @@ extract_package() {
 
          xmllint --html --xpath '//pre[@class="userinput"]' $TARGET_HTML 2>/dev/null | sed 's/<[^>]*>//g' > $TARGET_SCRIPT
 
-	 result_lower=$(echo "$RESULT" | tr '[:upper:]' '[:lower:]')
-
          if [[ "$RESULT" == *"Pass 2"* ]]; then
-		 RESULT=$(xmllint --html --xpath 'string(//h1[@class="sect1"])' $TARGET_HTML 2>/dev/null | sed 's/^[0-9. ]*//' | tr -s ' ' | sed 's/ - Pass 1//' | sed 's/ - Pass 2//' | xargs)
+		 RESULT=$(echo "$RESULT" | sed 's/ - Pass 2//' )
 		 sed -i '/^mkdir -v build/i rm -r build' $TARGET_SCRIPT
          fi
 
-	 if [[ "$result_lower" =~ [[:space:]] ]]; then
-		 read -ra spaces <<< "$result_lower"
+	 result_lowercase=$(echo "$RESULT" | tr '[:upper:]' '[:lower:]')
+
+	 if [[ "$result_lowercase" =~ [[:space:]] ]]; then
+		 read -ra spaces <<< "$result_lowercase"
 		 for package in "${SYSTEM_PACKAGES[@]}"; do
 			 for name in "${spaces[@]}"; do
-				 package_lower=$(echo "$package" | tr '[:upper:]' '[:lower:]')
-				 if [[ "$package_lower" == "$name" ]]; then
-					 result_lower="$package_lower"
+				 package_lowercase=$(echo "$package" | tr '[:upper:]' '[:lower:]')
+				 if [[ "$package_lowercase" == "$name" ]]; then
+					 result_lowercase="$package_lowercase"
 				 fi
 			 done			
 		done
 	 fi
 
-         COMMAND="cd ../$result_lower"
+         COMMAND="cd ../$result_lowercase"
          sed -i "1i $COMMAND" "$TARGET_SCRIPT"
 
-	 append_install_script "$TARGET_INSTALLATION_SCRIPT" "$TARGET_SCRIPT"
+	 append_install_script "$TARGET_SCRIPT" "$TARGET_INSTALLATION_SCRIPT"
 }
 
 #================================================================
-# FUNCTION: install_selected_packages
+# FUNCTION: install_selected_package
 # DESCRIPTION:
 #     Extracts package if the header matches with the name of 
 #     user's selected packages of the array.
@@ -370,14 +370,13 @@ extract_package() {
 # RETURNS:
 #     None
 #================================================================
-install_selected_packages() {
+install_selected_package() {
 	local TARGET_DIR="$1"
 	local TARGET_INSTALLATION_SCRIPT="$2"
 	local pages="${@:3}"
 
         for page in ${pages[@]}; do
 		HEADER=$(xmllint --html --xpath 'string(//h1[@class="sect1"])' "$TARGET_DIR/$page" 2>/dev/null | sed 's/^[0-9. ]*//' | tr -s ' ' | sed 's/ - Pass 1//' | sed 's/ - Pass 2//' | xargs)
-
 		for selected_packages in "${SELECTED_SOFTWARES[@]}"; do
 			if [[ "$selected_packages" == "$HEADER" ]]; then
 				extract_html_to_shell "$TARGET_DIR/$page" "$TARGET_INSTALLATION_SCRIPT"
@@ -389,9 +388,9 @@ install_selected_packages() {
 #================================================================
 # FUNCTION: scan_package_name
 # DESCRIPTION:
-#     Extracts header from target HTML page to perform string comparison 
-#     if header matches with any system packages of an LFS release
-#     build version.
+#     Extracts header from target HTML page to check matching string
+#     between the header and a system package from an array of an 
+#     LFS release build version.
 # PARAMETERS:
 #     $1 - Target directory
 #     $2 - Target HTML page
@@ -433,8 +432,8 @@ scan_package_name() {
 #     $1 - Target chapter directory
 #     $2 - Target installation script
 # RETURNS:
-#     void - Exits function after completion of installing selected 
-#     	     package from user's preference.
+#     void - Returns void if extracting selected package is executed 
+#     	     due to matching package name of HTML header of the content
 #================================================================
 scan_chapter() {
         local CHAPTER_DIR=$1
@@ -445,17 +444,12 @@ scan_chapter() {
 
     	CHAPTER_NUMBER=$(echo "$CHAPTER_DIR" | sed -E 's/.*chapter([0-9]{1,2}).*/\1/')
 	CHAPTER_NUMBER=$(printf "%d" "$((10#$CHAPTER_NUMBER))")
-		
-	if [[ "$MAJOR_VERSION" == "9" ]]; then
-		if [ "$CHAPTER_NUMBER" -eq 6 ]; then
-			install_selected_packages "$CHAPTER_DIR" "$TARGET_INSTALLATION_SCRIPT" "${pages[@]}"
-			return			
-		fi
-	else
-	 	if [ "$CHAPTER_NUMBER" -eq 8 ]; then
-	 		install_selected_packages "$CHAPTER_DIR" "$TARGET_INSTALLATION_SCRIPT" "${pages[@]}"
-	 		return			
-	 	fi
+
+	PACKAGE_DIRECTORY=$(echo "$MAJOR_VERSION_DIRECTORY" | sed -E 's/.*[^0-9]([0-9]+)$/\1/')
+	PACKAGE_DIRECTORY=$(printf "%d" "$((10#$PACKAGE_DIRECTORY))")
+	if [[ "$CHAPTER_NUMBER" == "$PACKAGE_DIRECTORY" ]]; then
+		install_selected_package "$MAJOR_VERSION_DIRECTORY" "$TARGET_INSTALLATION_SCRIPT" "${pages[@]}"
+		return
 	fi
 
         for page in ${pages[@]}; do
@@ -468,7 +462,7 @@ scan_chapter() {
 #================================================================
 # FUNCTION: generate_target_script
 # DESCRIPTION:
-#     Generates standard bash script as a means of target script.
+#     Generates standard bash script to create target script.
 # PARAMETERS:
 #     $1 - Target script name
 # RETURNS:
@@ -484,8 +478,8 @@ generate_bash_script() {
 #================================================================
 # FUNCTION: filter_script
 # DESCRIPTION:
-#     Manipulates the content of the script by checking characters
-#     to replace.
+#     Manipulates the content of target script by replacing and 
+#     appending content of the target script.
 # PARAMETERS:
 #     $1 - Target script
 # RETURNS:
@@ -530,21 +524,40 @@ phase_script() {
     	CHAPTER_NUMBER=$(echo "$CHAPTER_DIR" | sed -E 's/.*chapter([0-9]{2}).*/\1/')
 	CHAPTER_NUMBER=$(printf "%d" "$((10#$CHAPTER_NUMBER))")
 
-        if [ "$CHAPTER_NUMBER" -ge 2 ] && [ "$CHAPTER_NUMBER" -lt 4 ]; then
-                echo "phase1.sh"
-        elif [ "$CHAPTER_NUMBER" -ge 5 ] && [ "$CHAPTER_NUMBER" -lt 6 ]; then
-                echo "phase2.sh"
-        elif [ "$CHAPTER_NUMBER" -ge 7 ] && [ "$CHAPTER_NUMBER" -le 8 ]; then
-                echo "phase3.sh"
-        elif [ "$CHAPTER_NUMBER" -ge 9 ]; then
-                echo "phase4.sh"
-        fi	
+	if [[ "$MAJOR_VERSION" == "9" ]]; then
+		case "$CHAPTER_NUMBER" in 
+			2|3|4)
+				echo "phase1.sh"
+				;;
+			5|6)
+				echo "phase2.sh"
+				;;
+			7|8|9)
+				echo "phase3.sh"
+				;;
+		esac
+	else 
+		case "$CHAPTER_NUMBER" in 
+			2|3|4)
+				echo "phase1.sh"
+				;;
+			5|6)
+				echo "phase2.sh"
+				;;
+			7|8)
+				echo "phase3.sh"
+				;;
+			9|10|11)
+				echo "phase4.sh"
+				;;
+		esac
+	fi
 }
 
 #================================================================
 # FUNCTION: verify_existing_file
 # DESCRIPTION:
-#     Checks if target installation script exists on host machine.
+#     Checks if target file exists on host machine.
 # PARAMETERS:
 #     $1 - Target file
 # RETURNS:
@@ -554,15 +567,14 @@ phase_script() {
 verify_existing_file() {
 	local TARGET_FILE="$1"
         if [[ ! -e "$TARGET_FILE" ]]; then
-                error "$TARGET_FILE is not generated in your directory"
+                error "$TARGET_FILE doesn ot exist on the host machine."
         fi
 }
 
 #================================================================
 # FUNCTION: single_installation
 # DESCRIPTION:
-#     Initializes generating LFS installation script through
-#     single installation type.
+#     Initializes generating single LFS installation script.
 # PARAMETERS:
 #     None 
 # RETURNS:
@@ -583,8 +595,7 @@ single_installation() {
 #================================================================
 # FUNCTION: phase_installation
 # DESCRIPTION:
-#     Initializes generating LFS installation script through
-#     phase-by-phase installation type.
+#     Initializes generating phase-by-phase LFS installation script.
 # PARAMETERS:
 #     None
 # RETURNS:
@@ -676,24 +687,15 @@ done
 bold_info "Distribution Codename: $DISTRIB_CODENAME"
 bold_info "Version Codename: $VERSION_CODENAME"
 
-case "$INSTALL_TYPE" in 
-	"s"|"single")
-		INSTALL_TYPE="single"
-		;;
-	"p"|"phase")
-		INSTALL_TYPE="phase"
-		;;
-esac
-
 CHAPTER_DIRS=$(find "$(pwd)/$VERSION" -type d -regex '.*chapter[0-9][0-9].*' | sort)
 TOTAL_CHAPTER_DIRS=$(echo "$CHAPTER_DIRS" | wc -l)
 
 case $INSTALL_TYPE in
-	"single")
+	"s"|"single")
 		bold_info "Installation Type: Single Script Installation"            
 		single_installation
 		;;
-	"phase")
+	"p"|"phase")
 		bold_info "Installation Type: Phase-by-Phase Script Installation"            
 		phase_installation
 		;;
