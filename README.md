@@ -394,10 +394,10 @@ Examples:
 
 ## Usage
 ```
-LFSInstaller - Linux From Scratch Shell Script Installer
+LFSInstaller
  
 Usage: ./LFSInstaller.sh [modes] [options] [others]
-It is recommended to execute this script as a root user !.
+It is recommended to execute this script as a root user.
 ```
 
 ## License
