@@ -550,7 +550,6 @@ display_version_list() {
 	for i in "${!VERSION_LIST[@]}"; do
 	        echo "$((i + 1)). ${VERSION_LIST[i]}"
 	done
-	exit 0
 }
 
 #================================================================
@@ -1005,7 +1004,7 @@ while [[ "$#" -gt 0 ]]; do
 	case "$1" in
 		-u|--usage) usage ;;
 		-h|--help) help ;;
-		--version-list) display_version_list ;;
+		--version-list) display_version_list && exit 0 ;;
 		-v=*|--version=*) VERSION="${1#*=}" ;;
 		-p=*|--partition=*) PARTITION="${1#*=}" ;;
 		-sp=*|--swap-partition=*) SWAP_PARTITION="${1#*=}" ;;
