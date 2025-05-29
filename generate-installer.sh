@@ -567,7 +567,7 @@ phase_script() {
 verify_existing_file() {
 	local TARGET_FILE="$1"
         if [[ ! -e "$TARGET_FILE" ]]; then
-                error "$TARGET_FILE doesn ot exist on the host machine."
+                error "$TARGET_FILE does not exist on the host machine."
         fi
 }
 
