@@ -259,7 +259,7 @@ display_menu() {
 	printf "\n"
 	printf "\n"
 
-	echo -n "Enter the number corresponding to your choice (Enter 80 to Quit): "
+	echo -n "Enter the number corresponding to your choice (Enter 0 to Quit): "
 }
 
 #================================================================
